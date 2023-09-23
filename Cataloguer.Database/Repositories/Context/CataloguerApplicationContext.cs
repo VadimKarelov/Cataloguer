@@ -5,13 +5,27 @@ namespace Cataloguer.Database.Repositories.Context
 {
     internal class CataloguerApplicationContext : DbContext
     {
+        public DbSet<AgeGroup> AgeGroups { get; set; }
+        public DbSet<Brochure> Brochures { get; set; }
+        public DbSet<BrochurePosition> BrochurePositions { get; set; }
+        public DbSet<Distribution> Distributions { get; set; }
+        public DbSet<Gender> Genders { get; set; }
         public DbSet<Good> Goods { get; set; }
+        public DbSet<SellHistory> SellHistory { get; set; }
+        public DbSet<Town> Towns { get; set; }   
 
         public CataloguerApplicationContext()
         {
             Database.EnsureCreated();
 
+            AgeGroups = Set<AgeGroup>();
+            Brochures = Set<Brochure>();
+            BrochurePositions = Set<BrochurePosition>();
+            Distributions = Set<Distribution>();
+            Genders = Set<Gender>();
             Goods = Set<Good>();
+            SellHistory = Set<SellHistory>();
+            Towns = Set<Town>();
         }
     }
 }

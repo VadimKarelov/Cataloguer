@@ -19,32 +19,32 @@ namespace Cataloguer.Database.Repositories
             _goods = _context.Goods;
         }
 
-        public void Add(Good entity)
+        public async Task AddAsync(Good entity)
         {
             _goods.Add(entity);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
-        public void Delete(Good entity)
+        public async Task DeleteAsync(Good entity)
         {
             _goods.Remove(entity);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
         public async Task<Good?> TryGetAsync(Guid guid)
         {
-            return await _goods.FirstOrDefaultAsync();
+            return await _goods.FirstOrDefaultAsync(x => x.Id == guid);
         }
 
         public IQueryable<Good>? TryGetAll()
         {
-            return _goods;
+            return _goods.AsQueryable();
         }
 
-        public void Update(Good entity)
+        public async Task UpdateAsync(Good entity)
         {
             _goods.Update(entity);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
         public void Dispose()
