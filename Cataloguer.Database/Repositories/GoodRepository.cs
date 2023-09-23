@@ -10,42 +10,46 @@ namespace Cataloguer.Database.Repositories
     /// </summary>
     public class GoodRepository : IRepository<Good>
     {
+        private readonly CataloguerApplicationContext _context;
         private readonly DbSet<Good> _goods;
 
         public GoodRepository()
         {
-            var context = new CataloguerApplicationContext();
-            _goods = context.Goods;
+            _context = new CataloguerApplicationContext();
+            _goods = _context.Goods;
         }
 
         public void Add(Good entity)
         {
-            throw new NotImplementedException();
+            _goods.Add(entity);
+            _context.SaveChanges();
         }
 
         public void Delete(Good entity)
         {
-            throw new NotImplementedException();
+            _goods.Remove(entity);
+            _context.SaveChanges();
         }
 
-        public Good Get(Guid guid)
+        public async Task<Good?> TryGetAsync(Guid guid)
         {
-            throw new NotImplementedException();
+            return await _goods.FirstOrDefaultAsync();
         }
 
-        public IQueryable<Good> GetAll()
+        public IQueryable<Good>? TryGetAll()
         {
-            throw new NotImplementedException();
+            return _goods;
         }
 
         public void Update(Good entity)
         {
-            throw new NotImplementedException();
+            _goods.Update(entity);
+            _context.SaveChanges();
         }
 
         public void Dispose()
         {
-
+            _context.SaveChanges();
         }
     }
 }
