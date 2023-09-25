@@ -12,7 +12,7 @@ namespace Cataloguer.Database.Models
         /// Содержит информацию о возрастной групппе, можно будет добавить set
         /// </summary>
         [Column("description")]
-        public string Description => $"Включает в себя клиентов возрастом от {MinimalAge} до {MaximalAge} лет, включительно со всех сторон.";
+        public string Description { get; set; } = string.Empty;
 
         /// <summary>
         /// Нижняя граница группы в годах, включительно
