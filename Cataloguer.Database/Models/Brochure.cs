@@ -8,6 +8,9 @@ namespace Cataloguer.Database.Models
         [Column("id")]
         public Guid Id { get; set; }
 
+        [Column("status_id")]
+        public Guid StatusId { get; set; }
+
         [Column("name")]
         public string Name { get; set; } = string.Empty;
 
