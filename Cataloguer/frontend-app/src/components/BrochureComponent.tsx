@@ -1,16 +1,14 @@
 import React from "react";
-import {Empty, Layout, Spin} from "antd";
-import BrochureStore from "../stores/BrochureStore";
+import {Empty, Spin} from "antd";
 import {inject, observer} from "mobx-react";
 import BrochureWorkingAreaComponent from "./BrochureWorkingAreaComponent";
 import {Content} from "antd/es/layout/layout";
+import {BaseStoreInjector} from "../types/BrochureTypes";
 
 /**
  * Свойства компонента BrochureComponent.
- * @property brochureStore Хранилище данных по каталогам.
  */
-interface BrochureComponentProps {
-    brochureStore?: BrochureStore,
+interface BrochureComponentProps extends BaseStoreInjector {
 }
 
 /**

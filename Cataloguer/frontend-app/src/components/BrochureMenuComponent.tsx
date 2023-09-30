@@ -3,8 +3,8 @@ import {Menu, Space, Spin} from "antd";
 import type { MenuProps } from 'antd';
 import { MailOutlined } from '@ant-design/icons';
 import "../styles/BrochureMenu.css";
-import BrochureStore from "../stores/BrochureStore";
 import {inject, observer} from "mobx-react";
+import {BaseStoreInjector} from "../types/BrochureTypes";
 
 /**
  * Псевдотип, отражающий возможные статусы каталога.
@@ -15,8 +15,7 @@ type BrochureStatusType = "effective" | "ineffective" | "unchecked";
  * Свойства компонента BrochureMenuComponent.
  * @property brochureStore Хранилище данных по каталогам.
  */
-interface BrochureMenuComponentProps {
-    brochureStore?: BrochureStore,
+interface BrochureMenuComponentProps extends BaseStoreInjector {
 }
 
 /**

@@ -1,3 +1,5 @@
+import BrochureStore from "../stores/BrochureStore";
+
 /**
  * Свойства товара.
  * @property name Название.
@@ -13,13 +15,13 @@ interface GoodProps {
  * @property ageGroup Возрастная группа.
  * @property town Населённый пункт.
  * @property gender Пол.
- * @property edition Количество экземпляров каталога.
+ * @property count Количество экземпляров каталога.
  */
 interface DistributionProps {
     ageGroup: string,
     town: string,
     gender: string,
-    edition: number,
+    count: number,
 }
 
 /**
@@ -27,19 +29,37 @@ interface DistributionProps {
  * @property id Идентификатор.
  * @property creationDate Дата создания.
  * @property goods Набор товаров в каталоге.
- * @property count Тираж.
+ * @property edition Тираж.
  * @property distributions Множество рассылок.
  */
 interface BrochureProps {
     id: number,
     creationDate: string,
     goods: GoodProps[],
-    count: number,
+    edition: number,
     distributions?: DistributionProps[],
+}
+
+interface BaseStoreInjector {
+    brochureStore?: BrochureStore,
+}
+
+type customProp = {
+    [key: string]: any
+};
+
+interface BrochureBaseInfoProps {
+    name: string,
+    displayName: string,
+    order: number,
+    isVisible?: boolean
 }
 
 export type {
     GoodProps,
     DistributionProps,
-    BrochureProps
+    BrochureProps,
+    customProp,
+    BaseStoreInjector,
+    BrochureBaseInfoProps
 }

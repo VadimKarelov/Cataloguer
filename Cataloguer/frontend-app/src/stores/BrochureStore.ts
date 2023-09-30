@@ -1,5 +1,5 @@
 import { observable, action, makeAutoObservable } from "mobx"
-import {BrochureProps, GoodProps} from "../types/BrochureTypes";
+import {BrochureProps, DistributionProps, GoodProps} from "../types/BrochureTypes";
 import {random} from "../Utils";
 
 /**
@@ -47,13 +47,14 @@ class BrochureStore {
         this.onBrochureClick = this.onBrochureClick.bind(this);
         this.initBrochures = this.initBrochures.bind(this);
         this.getRandomGoods = this.getRandomGoods.bind(this);
+        this.getRandomDistributions = this.getRandomDistributions.bind(this);
     }
 
     /**
      * Возвращает случайные товары.
      */
     private getRandomGoods(): GoodProps[] {
-        const goodCount = 5;
+        const goodCount = 10;
         const names: Readonly<string[]> = [
             "iPad",
             "iPhone",
@@ -76,6 +77,48 @@ class BrochureStore {
     }
 
     /**
+     * Возвращает случайные рассылки.
+     * @private
+     */
+    private getRandomDistributions(): DistributionProps[] {
+        const brochureCount = 20;
+        const towns: Readonly<string[]> = [
+            "Пермь",
+            "Москва",
+            "Псков",
+            "Нальчик",
+            "Казань",
+            "Тюмень",
+            "Екатеринбург"
+        ];
+
+        const genders: Readonly<string[]> = [
+            "Мужчина",
+            "Женщина",
+            "Не выбрано",
+        ];
+
+        const ageGroups: Readonly<string[]> = [
+            "Пожилые",
+            "Взрослые",
+            "Молодые",
+        ];
+
+        const distributions: DistributionProps[] = [];
+
+        for (let i = 0; i < brochureCount; i++) {
+            const town = towns[random(0, towns.length - 1)];
+            const ageGroup = ageGroups[random(0, ageGroups.length - 1)];
+            const gender = genders[random(0, genders.length - 1)];
+            distributions.push(
+                {count: i + brochureCount, town: town, gender: gender, ageGroup: ageGroup}
+            );
+        }
+
+        return distributions;
+    }
+
+    /**
      * Инициализирует коллекцию каталогов.
      */
     private initBrochures(): void {
@@ -85,8 +128,9 @@ class BrochureStore {
             const tempCount = random(1, 5000);
             const tempCreationDate = new Date().toDateString();
             const tempGoods = this.getRandomGoods();
+            const tempDistributions = this.getRandomDistributions();
             tempBrochures.push(
-                { id: i, count: tempCount, creationDate: tempCreationDate, goods: tempGoods }
+                { id: i, edition: tempCount, creationDate: tempCreationDate, goods: tempGoods, distributions: tempDistributions }
             );
         }
         this.brochures = tempBrochures;
