@@ -3,6 +3,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Cataloguer.Database.Repositories.Context
 {
+    /// <summary>
+    /// Можно использовать только внутри проекта Database
+    /// </summary>
     internal class CataloguerApplicationContext : DbContext
     {
         public DbSet<AgeGroup> AgeGroups { get; set; }

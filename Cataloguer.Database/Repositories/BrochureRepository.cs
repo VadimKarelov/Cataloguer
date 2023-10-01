@@ -16,8 +16,13 @@ namespace Cataloguer.Database.Repositories
             _brochures = _context.Brochures;
         }
 
+        /// <summary>
+        /// Поле PositionCount будет автоматически пересчитано
+        /// </summary>
         public async Task AddAsync(Brochure entity)
         {
+            entity.PositionCount = _context.BrochurePositions.Count(x => x.BrochureId == entity.Id);
+
             _brochures.Add(entity);
             await _context.SaveChangesAsync();
         }
@@ -38,8 +43,13 @@ namespace Cataloguer.Database.Repositories
             return _brochures.AsQueryable();
         }
 
+        /// <summary>
+        /// Поле PositionCount будет автоматически пересчитано
+        /// </summary>
         public async Task UpdateAsync(Brochure entity)
         {
+            entity.PositionCount = _context.BrochurePositions.Count(x => x.BrochureId == entity.Id);
+
             _brochures.Update(entity);
             await _context.SaveChangesAsync();
         }
