@@ -15,20 +15,12 @@ namespace Cataloguer.Database.Repositories.Context
         public DbSet<Gender> Genders { get; set; }
         public DbSet<Good> Goods { get; set; }
         public DbSet<SellHistory> SellHistory { get; set; }
+        public DbSet<Status> Statuses { get; set; }
         public DbSet<Town> Towns { get; set; }   
 
         public CataloguerApplicationContext()
         {
             Database.EnsureCreated();
-
-            AgeGroups = Set<AgeGroup>();
-            Brochures = Set<Brochure>();
-            BrochurePositions = Set<BrochurePosition>();
-            Distributions = Set<Distribution>();
-            Genders = Set<Gender>();
-            Goods = Set<Good>();
-            SellHistory = Set<SellHistory>();
-            Towns = Set<Town>();
         }
     }
 }
