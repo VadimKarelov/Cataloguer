@@ -10,6 +10,7 @@ namespace Cataloguer.Database.Models
 
         [Column("status_id")]
         public Guid StatusId { get; set; }
+        public Status? Status { get; set; }
 
         [Column("name")]
         public string Name { get; set; } = string.Empty;
