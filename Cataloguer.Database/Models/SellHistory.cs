@@ -22,6 +22,9 @@ namespace Cataloguer.Database.Models
         [Column("sell_date")]
         public DateTime SellDate { get; set; }
 
+        /// <summary>
+        /// Количество купленных единиц товара в одной записи
+        /// </summary>
         [Column("good_count")]
         public int GoodCount { get; set; }
 
