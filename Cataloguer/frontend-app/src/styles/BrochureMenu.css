@@ -1,0 +1,9 @@
+
+.brochure-menu-style {
+    height: calc(100vh - 85px) !important;
+    overflow-y: scroll;
+}
+
+.brochure-menu-items-style {
+    margin-left: 30px;
+}

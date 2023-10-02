@@ -1,0 +1,10 @@
+
+.brochure-area-header-style {
+    height: 40px;
+    background-color: white;
+}
+
+.brochure-area-content-style {
+    height: calc(100vh - 130px);
+    background-color: white;
+}

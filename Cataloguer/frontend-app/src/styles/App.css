@@ -1,0 +1,32 @@
+
+.main-window-layout {
+    height: auto;
+}
+
+.main-window-header {
+    height: 50px;
+    background-color: aqua;
+}
+
+.main-window-buttons-panel-style {
+    height: 35px;
+    background-color: aquamarine;
+}
+
+.buttons-style {
+    margin: -15px 0 0 0 !important;
+}
+
+.main-window-content {
+    height: calc(100vh - 85px);
+    background-color: white;
+}
+
+.header-title {
+    margin: 0 0 0 0;
+}
+
+.sider-style {
+    background-color: white;
+    height: auto;
+}
