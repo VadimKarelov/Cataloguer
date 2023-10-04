@@ -61,20 +61,20 @@ namespace Cataloguer.Database.Repositories
 
         public async Task UpdateAsync(SellHistory entity)
         {
-            if (entity.Brochure == null && entity.BrochureId == Guid.Empty)
-            {
-                using var brochureRepository = new BrochureRepository();
-                var brochure = new Brochure();
-                await brochureRepository.AddAsync(brochure);
-                entity.Brochure = brochure;
-            }
-
             if (entity.Good == null && entity.GoodId == Guid.Empty)
             {
                 using var goodRepository = new GoodRepository();
                 var good = new Good();
                 await goodRepository.AddAsync(good);
                 entity.Good = good;
+            }
+
+            if (entity.Town == null && entity.TownId == Guid.Empty)
+            {
+                using var townRepository = new TownRepository();
+                var town = new Town();
+                await townRepository.AddAsync(town);
+                entity.Town = town;
             }
 
             _sells.Update(entity);
