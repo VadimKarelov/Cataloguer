@@ -1,5 +1,6 @@
 ﻿using Cataloguer.Database.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
 
 namespace Cataloguer.Database.Repositories.Context
 {
@@ -75,9 +76,17 @@ namespace Cataloguer.Database.Repositories.Context
 
         private T DoWithNotification<T>(Func<T> func, string funcName)
         {
-            Console.WriteLine($"Начало выполнения метода: {funcName}");
+            Console.WriteLine($"Начало выполнения метода: {func.Method.Name}");
+
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+
             var res = func();
-            Console.WriteLine($"Начало выполнения метода: {funcName}");
+
+            stopwatch.Stop();
+
+            Console.WriteLine($"Выполнен метод: {func.Method.Name} за {stopwatch.Elapsed.TotalSeconds} секунд");
+
             return res;
         }
     }
