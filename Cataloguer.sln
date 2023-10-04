@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cataloguer", "Cataloguer\Ca
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cataloguer.Database", "Cataloguer.Database\Cataloguer.Database.csproj", "{9DD174BE-5EC7-430C-AAEB-55FBD3AEC6CC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cataloguer.Server", "Cataloguer.Server\Cataloguer.Server.csproj", "{1B91475C-EE4B-4256-A7FA-84D05F933AB5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{9DD174BE-5EC7-430C-AAEB-55FBD3AEC6CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9DD174BE-5EC7-430C-AAEB-55FBD3AEC6CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9DD174BE-5EC7-430C-AAEB-55FBD3AEC6CC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1B91475C-EE4B-4256-A7FA-84D05F933AB5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1B91475C-EE4B-4256-A7FA-84D05F933AB5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1B91475C-EE4B-4256-A7FA-84D05F933AB5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1B91475C-EE4B-4256-A7FA-84D05F933AB5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
