@@ -23,6 +23,8 @@ namespace Cataloguer.Database.Repositories
         {
             entity.PositionCount = _context.BrochurePositions.Count(x => x.BrochureId == entity.Id);
 
+            entity.Status ??= _context.Statuses.First();
+
             _brochures.Add(entity);
             await _context.SaveChangesAsync();
         }
@@ -49,6 +51,8 @@ namespace Cataloguer.Database.Repositories
         public async Task UpdateAsync(Brochure entity)
         {
             entity.PositionCount = _context.BrochurePositions.Count(x => x.BrochureId == entity.Id);
+
+            entity.Status ??= _context.Statuses.First();
 
             _brochures.Update(entity);
             await _context.SaveChangesAsync();
