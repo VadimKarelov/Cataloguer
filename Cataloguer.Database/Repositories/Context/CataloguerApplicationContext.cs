@@ -1,6 +1,8 @@
 ﻿using Cataloguer.Database.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using System.Diagnostics;
+using System.Xml.XPath;
 
 namespace Cataloguer.Database.Repositories.Context
 {
@@ -47,6 +49,15 @@ namespace Cataloguer.Database.Repositories.Context
                     new Gender() { Name = "Женский" },
                     new Gender() { Name = "Боевой вертолет" }
                 });
+
+            modelBuilder.Entity<Status>().HasData(new Status[]
+                {
+                    new Status() { Name = "Не проверено" },
+                    new Status() { Name = "Эффективный" },
+                    new Status() { Name = "Не эффективный" },
+                });
+
+            modelBuilder.Entity<SellHistory>().HasData(DoWithNotification(GenerateSellHistory, "Создание истории покупок"));
         }
 
         private Town[] ReadTownsFromFile()
@@ -72,6 +83,35 @@ namespace Cataloguer.Database.Repositories.Context
                 .Distinct()
                 .Select(x => new Good() { Name = x })
                 .ToArray();
+        }
+
+        private SellHistory[] GenerateSellHistory()
+        {
+            const int size = 1000;
+
+            Random random = new Random();
+
+            var result = new SellHistory[size];
+
+            var availableGoods = this.Goods.ToArray();
+            var availableTowns = this.Towns.ToArray();
+            var today = DateTime.Now.ToOADate();
+
+            for (int i = 0; i < size; i++)
+            {
+                result[i] = new SellHistory()
+                {
+                    Good = availableGoods[random.Next(0, availableGoods.Length)],
+                    Town = availableTowns[random.Next(0, availableTowns.Length)],
+                    Age = random.Next(7, 90),
+                    SellDate = DateTime.FromOADate(today - random.NextDouble() * 100),
+                    GoodCount = random.Next(1, 20)                    
+                };
+                result[i].Price = this.SellHistory
+                    .FirstOrDefault(x => x.Good == result[i].Good)?.Price ?? 200 + random.Next(-100, 100);
+            }
+
+            return result;
         }
 
         private T DoWithNotification<T>(Func<T> func, string funcName)
