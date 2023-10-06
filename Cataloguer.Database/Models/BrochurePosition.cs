@@ -17,6 +17,6 @@ namespace Cataloguer.Database.Models
         public Good? Good { get; set; }
 
         [Column("price")]
-        public int Price { get; set; }
+        public decimal Price { get; set; }
     }
 }

@@ -17,7 +17,7 @@ namespace Cataloguer.Database.Models
         public Town? Town { get; set; }
 
         [Column("age")]
-        public int Age { get; set; }
+        public short Age { get; set; }
 
         [Column("sell_date")]
         public DateTime SellDate { get; set; }
