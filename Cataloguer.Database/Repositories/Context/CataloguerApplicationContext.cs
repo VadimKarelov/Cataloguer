@@ -1,8 +1,6 @@
 ﻿using Cataloguer.Database.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
 using System.Diagnostics;
-using System.Xml.XPath;
 
 namespace Cataloguer.Database.Repositories.Context
 {
@@ -103,7 +101,7 @@ namespace Cataloguer.Database.Repositories.Context
                 {
                     Good = availableGoods[random.Next(0, availableGoods.Length)],
                     Town = availableTowns[random.Next(0, availableTowns.Length)],
-                    Age = random.Next(7, 90),
+                    Age = (short)random.Next(7, 90),
                     SellDate = DateTime.FromOADate(today - random.NextDouble() * 100),
                     GoodCount = random.Next(1, 20)                    
                 };
