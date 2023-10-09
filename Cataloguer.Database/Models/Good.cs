@@ -9,7 +9,7 @@ namespace Cataloguer.Database.Models
     public class Good
     {
         [Column("id")]
-        public Guid Id { get; set; }
+        public int Id { get; set; }
 
         [Column("name")]
         public string Name { get; set; } = string.Empty;

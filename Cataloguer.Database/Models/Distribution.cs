@@ -6,7 +6,7 @@ namespace Cataloguer.Database.Models
     public class Distribution
     {
         [Column("id")]
-        public Guid Id { get; set; }
+        public int Id { get; set; }
 
         [Column("brochure_id")]
         public Guid BrochureId { get; set; }

@@ -6,7 +6,7 @@ namespace Cataloguer.Database.Models
     public class SellHistory
     {
         [Column("id")]
-        public Guid Id { get; set; }
+        public int Id { get; set; }
 
         [Column("good_id")]
         public Guid GoodId { get; set; }
