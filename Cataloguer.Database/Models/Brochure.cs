@@ -9,7 +9,7 @@ namespace Cataloguer.Database.Models
         public int Id { get; set; }
 
         [Column("status_id")]
-        public Guid StatusId { get; set; }
+        public int StatusId { get; set; }
         public Status? Status { get; set; }
 
         [Column("name")]

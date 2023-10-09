@@ -9,11 +9,11 @@ namespace Cataloguer.Database.Models
         public int Id { get; set; }
 
         [Column("good_id")]
-        public Guid GoodId { get; set; }
+        public int GoodId { get; set; }
         public Good? Good { get; set; }
 
         [Column("id")]
-        public Guid TownId { get; set; }
+        public int TownId { get; set; }
         public Town? Town { get; set; }
 
         [Column("age")]
