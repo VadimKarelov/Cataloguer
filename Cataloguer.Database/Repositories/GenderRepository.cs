@@ -38,9 +38,9 @@ namespace Cataloguer.Database.Repositories
             return _genders.AsQueryable();
         }
 
-        public async Task<Gender?> TryGetAsync(Guid guid)
+        public async Task<Gender?> TryGetAsync(int id)
         {
-            return await _genders.FirstOrDefaultAsync(x => x.Id == guid);
+            return await _genders.FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public async Task UpdateAsync(Gender entity)

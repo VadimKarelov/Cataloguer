@@ -18,21 +18,7 @@ namespace Cataloguer.Database.Repositories
 
         public async Task AddAsync(SellHistory entity)
         {
-            if (entity.Good == null && entity.GoodId == Guid.Empty)
-            {
-                using var goodRepository = new GoodRepository();
-                var good = new Good();
-                await goodRepository.AddAsync(good);
-                entity.Good = good;
-            }
-
-            if (entity.Town == null && entity.TownId == Guid.Empty)
-            {
-                using var townRepository = new TownRepository();
-                var town = new Town();
-                await townRepository.AddAsync(town);
-                entity.Town = town;
-            }
+            await CreateIfForeignEntetiesDoNotExistAsync(entity);
 
             _sells.Add(entity);
             await _context.SaveChangesAsync();
@@ -54,14 +40,22 @@ namespace Cataloguer.Database.Repositories
             return _sells.AsQueryable();
         }
 
-        public async Task<SellHistory?> TryGetAsync(Guid guid)
+        public async Task<SellHistory?> TryGetAsync(int id)
         {
-            return await _sells.FirstOrDefaultAsync(x => x.Id == guid);
+            return await _sells.FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public async Task UpdateAsync(SellHistory entity)
         {
-            if (entity.Good == null && entity.GoodId == Guid.Empty)
+            await CreateIfForeignEntetiesDoNotExistAsync(entity);
+
+            _sells.Update(entity);
+            await _context.SaveChangesAsync();
+        }
+
+        private async Task CreateIfForeignEntetiesDoNotExistAsync(SellHistory entity)
+        {
+            if (entity.Good == null && !_context.Goods.Any(x => x.Id == entity.GoodId))
             {
                 using var goodRepository = new GoodRepository();
                 var good = new Good();
@@ -69,16 +63,13 @@ namespace Cataloguer.Database.Repositories
                 entity.Good = good;
             }
 
-            if (entity.Town == null && entity.TownId == Guid.Empty)
+            if (entity.Town == null && !_context.Towns.Any(x => x.Id == entity.TownId))
             {
                 using var townRepository = new TownRepository();
                 var town = new Town();
                 await townRepository.AddAsync(town);
                 entity.Town = town;
             }
-
-            _sells.Update(entity);
-            await _context.SaveChangesAsync();
         }
     }
 }

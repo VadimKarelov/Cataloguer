@@ -38,9 +38,9 @@ namespace Cataloguer.Database.Repositories
             return _statuses.AsQueryable();
         }
 
-        public async Task<Status?> TryGetAsync(Guid guid)
+        public async Task<Status?> TryGetAsync(int id)
         {
-            return await _statuses.FirstOrDefaultAsync(x => x.Id == guid);
+            return await _statuses.FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public async Task UpdateAsync(Status entity)

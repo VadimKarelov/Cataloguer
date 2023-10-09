@@ -21,23 +21,7 @@ namespace Cataloguer.Database.Repositories
         /// </summary>
         public async Task AddAsync(Distribution entity)
         {
-            if (entity.Brochure == null && entity.BrochureId == Guid.Empty)
-            {
-                using var brochureRepository = new BrochureRepository();
-                var brochure = new Brochure();
-                await brochureRepository.AddAsync(brochure);
-                entity.Brochure = brochure;
-            }
-
-            // AgeGroup и Gender не нужно создавать
-
-            if (entity.Town == null && entity.TownId == Guid.Empty)
-            {
-                using var townRepository = new TownRepository();
-                var town = new Town();
-                await townRepository.AddAsync(town);
-                entity.Town = town;
-            }
+            await CreateIfForeignEntetiesDoNotExistAsync(entity);
 
             entity.BrochureCount = _context.BrochurePositions
                 .Where(x => x.BrochureId == entity.BrochureId)
@@ -63,9 +47,9 @@ namespace Cataloguer.Database.Repositories
             return _distributions.AsQueryable();
         }
 
-        public async Task<Distribution?> TryGetAsync(Guid guid)
+        public async Task<Distribution?> TryGetAsync(int id)
         {
-            return await _distributions.FirstOrDefaultAsync(x => x.Id == guid);
+            return await _distributions.FirstOrDefaultAsync(x => x.Id == id);
         }
 
         /// <summary>
@@ -73,7 +57,19 @@ namespace Cataloguer.Database.Repositories
         /// </summary>
         public async Task UpdateAsync(Distribution entity)
         {
-            if (entity.Brochure == null && entity.BrochureId == Guid.Empty)
+            await CreateIfForeignEntetiesDoNotExistAsync(entity);
+
+            entity.BrochureCount = _context.BrochurePositions
+                .Where(x => x.BrochureId == entity.BrochureId)
+                .Count();
+
+            _distributions.Update(entity);
+            await _context.SaveChangesAsync();
+        }
+
+        private async Task CreateIfForeignEntetiesDoNotExistAsync(Distribution entity)
+        {
+            if (entity.Brochure == null && !_context.Brochures.Any(x => x.Id == entity.BrochureId))
             {
                 using var brochureRepository = new BrochureRepository();
                 var brochure = new Brochure();
@@ -83,20 +79,13 @@ namespace Cataloguer.Database.Repositories
 
             // AgeGroup и Gender не нужно создавать
 
-            if (entity.Town == null && entity.TownId == Guid.Empty)
+            if (entity.Town == null && !_context.Towns.Any(x => x.Id == entity.TownId))
             {
                 using var townRepository = new TownRepository();
                 var town = new Town();
                 await townRepository.AddAsync(town);
                 entity.Town = town;
             }
-
-            entity.BrochureCount = _context.BrochurePositions
-                .Where(x => x.BrochureId == entity.BrochureId)
-                .Count();
-
-            _distributions.Update(entity);
-            await _context.SaveChangesAsync();
         }
     }
 }

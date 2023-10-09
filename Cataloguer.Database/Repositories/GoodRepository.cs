@@ -31,9 +31,9 @@ namespace Cataloguer.Database.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task<Good?> TryGetAsync(Guid guid)
+        public async Task<Good?> TryGetAsync(int id)
         {
-            return await _goods.FirstOrDefaultAsync(x => x.Id == guid);
+            return await _goods.FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public IQueryable<Good>? TryGetAll()

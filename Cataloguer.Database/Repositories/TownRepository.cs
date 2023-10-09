@@ -33,9 +33,9 @@ namespace Cataloguer.Database.Repositories
             return _towns.AsQueryable();
         }
 
-        public async Task<Town?> TryGetAsync(Guid guid)
+        public async Task<Town?> TryGetAsync(int id)
         {
-            return await _towns.FirstOrDefaultAsync(x => x.Id == guid);
+            return await _towns.FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public async Task UpdateAsync(Town entity)

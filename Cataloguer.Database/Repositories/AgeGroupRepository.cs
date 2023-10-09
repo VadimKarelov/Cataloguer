@@ -38,9 +38,9 @@ namespace Cataloguer.Database.Repositories
             return _groups.AsQueryable();
         }
 
-        public async Task<AgeGroup?> TryGetAsync(Guid guid)
+        public async Task<AgeGroup?> TryGetAsync(int id)
         {
-            return await _groups.FirstOrDefaultAsync(x => x.Id == guid);
+            return await _groups.FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public async Task UpdateAsync(AgeGroup entity)

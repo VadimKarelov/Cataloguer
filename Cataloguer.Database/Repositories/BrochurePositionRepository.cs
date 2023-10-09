@@ -2,7 +2,6 @@
 using Cataloguer.Database.Repositories.Context;
 using Cataloguer.Database.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using System.Text.RegularExpressions;
 
 namespace Cataloguer.Database.Repositories
 {
@@ -19,21 +18,7 @@ namespace Cataloguer.Database.Repositories
 
         public async Task AddAsync(BrochurePosition entity)
         {
-            if (entity.Brochure == null && entity.BrochureId == Guid.Empty)
-            {
-                using var brochureRepository = new BrochureRepository();
-                var brochure = new Brochure();
-                await brochureRepository.AddAsync(brochure);
-                entity.Brochure = brochure;
-            }
-
-            if (entity.Good == null && entity.GoodId == Guid.Empty)
-            {
-                using var goodRepository = new GoodRepository();
-                var good = new Good();
-                await goodRepository.AddAsync(good);
-                entity.Good = good;
-            }
+            await CreateIfForeignEntetiesDoNotExistAsync(entity);
 
             _positions.Add(entity);
             await _context.SaveChangesAsync();
@@ -55,14 +40,22 @@ namespace Cataloguer.Database.Repositories
             return _positions.AsQueryable();
         }
 
-        public async Task<BrochurePosition?> TryGetAsync(Guid guid)
+        public async Task<BrochurePosition?> TryGetAsync(int id)
         {
-            return await _positions.FirstOrDefaultAsync(x => x.Id == guid);
+            return await _positions.FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public async Task UpdateAsync(BrochurePosition entity)
         {
-            if (entity.Brochure == null && entity.BrochureId == Guid.Empty)
+            await CreateIfForeignEntetiesDoNotExistAsync(entity);
+
+            _positions.Update(entity);
+            await _context.SaveChangesAsync();
+        }
+
+        private async Task CreateIfForeignEntetiesDoNotExistAsync(BrochurePosition entity)
+        {
+            if (entity.Brochure == null && !_context.Brochures.Any(x => x.Id == entity.BrochureId))
             {
                 using var brochureRepository = new BrochureRepository();
                 var brochure = new Brochure();
@@ -70,16 +63,13 @@ namespace Cataloguer.Database.Repositories
                 entity.Brochure = brochure;
             }
 
-            if (entity.Good == null && entity.GoodId == Guid.Empty)
+            if (entity.Good == null && !_context.Goods.Any(x => x.Id == entity.GoodId))
             {
                 using var goodRepository = new GoodRepository();
                 var good = new Good();
                 await goodRepository.AddAsync(good);
                 entity.Good = good;
             }
-
-            _positions.Update(entity);
-            await _context.SaveChangesAsync();
         }
     }
 }
