@@ -24,6 +24,15 @@ namespace Cataloguer.Database.Repositories.Context
             Database.EnsureCreated();
         }
 
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.UseNpgsql("User ID=postgres;" +
+                "Password=postgres;" +
+                "Host=localhost;" +
+                "Port=5432;" +
+                "Database=CataloguerDataBasePostgres;");
+        }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // не стоит менять порядок инициализации
