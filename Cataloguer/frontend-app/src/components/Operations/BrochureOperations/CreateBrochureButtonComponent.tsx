@@ -45,6 +45,9 @@ interface CreateBrochureButtonComponentProps {
     mode: ButtonModes
 }
 
+/**
+ * Компонент кнопки Создать/Изменить, открывающий свою модалку.
+ */
 const CreateBrochureButtonComponent: React.FC<CreateBrochureButtonComponentProps> = (props) => {
     /**
      * Метаданные модалки редактирования каталога.
