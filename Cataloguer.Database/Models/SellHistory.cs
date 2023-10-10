@@ -1,18 +1,20 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Cataloguer.Database.Models
 {
     [Table("sell_history")]
     public class SellHistory
     {
+        [Key]
         [Column("id")]
-        public int Id { get; set; }
+        public int Id { get; set; } = -1;
 
         [Column("good_id")]
         public int GoodId { get; set; }
         public Good? Good { get; set; }
 
-        [Column("id")]
+        [Column("town_id")]
         public int TownId { get; set; }
         public Town? Town { get; set; }
 

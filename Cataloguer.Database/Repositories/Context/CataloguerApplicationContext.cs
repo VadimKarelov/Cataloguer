@@ -21,7 +21,7 @@ namespace Cataloguer.Database.Repositories.Context
 
         public CataloguerApplicationContext()
         {
-            Database.EnsureCreated();
+            if (Database.EnsureCreated()) CreateContextDependentTables();
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -31,47 +31,74 @@ namespace Cataloguer.Database.Repositories.Context
                 "Host=localhost;" +
                 "Port=5432;" +
                 "Database=CataloguerDataBasePostgres;");
+
+            optionsBuilder.LogTo(Console.WriteLine);
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            // не стоит менять порядок инициализации
-
-            modelBuilder.Entity<Town>().HasData(ReadTownsFromFile());
-
-            modelBuilder.Entity<Good>().HasData(DoWithNotification(ReadGoodsFromFile, "Чтение списка продуктов"));
-
             modelBuilder.Entity<AgeGroup>().HasData(new AgeGroup[]
                 {
-                    new AgeGroup() { Description = "Дети", MinimalAge = 0, MaximalAge = 14 },
-                    new AgeGroup() { Description = "Подростки", MinimalAge = 15, MaximalAge = 20 },
-                    new AgeGroup() { Description = "Молодые", MinimalAge = 21, MaximalAge = 35 },
-                    new AgeGroup() { Description = "Взрослые", MinimalAge = 36, MaximalAge = 50 },
-                    new AgeGroup() { Description = "Пожилые", MinimalAge = 51, MaximalAge = short.MaxValue },
+                    new AgeGroup() { Id = 1, Description = "Дети", MinimalAge = 0, MaximalAge = 14 },
+                    new AgeGroup() { Id = 2, Description = "Подростки", MinimalAge = 15, MaximalAge = 20 },
+                    new AgeGroup() { Id = 3, Description = "Молодые", MinimalAge = 21, MaximalAge = 35 },
+                    new AgeGroup() { Id = 4, Description = "Взрослые", MinimalAge = 36, MaximalAge = 50 },
+                    new AgeGroup() { Id = 5, Description = "Пожилые", MinimalAge = 51, MaximalAge = short.MaxValue },
                 });
 
             modelBuilder.Entity<Gender>().HasData(new Gender[]
                 {
-                    new Gender() { Name = "Мужской" },
-                    new Gender() { Name = "Женский" },
-                    new Gender() { Name = "Боевой вертолет" }
+                    new Gender() { Id = 1, Name = "Мужской" },
+                    new Gender() { Id = 2, Name = "Женский" },
+                    new Gender() { Id = 3, Name = "Боевой вертолет" }
                 });
 
             modelBuilder.Entity<Status>().HasData(new Status[]
                 {
-                    new Status() { Name = "Не проверено" },
-                    new Status() { Name = "Эффективный" },
-                    new Status() { Name = "Не эффективный" },
+                    new Status() { Id = 1, Name = "Не проверено" },
+                    new Status() { Id = 2, Name = "Эффективный" },
+                    new Status() { Id = 3, Name = "Не эффективный" },
                 });
 
-            modelBuilder.Entity<SellHistory>().HasData(DoWithNotification(GenerateSellHistory, "Создание истории покупок"));
+            modelBuilder.Entity<SellHistory>().HasKey(x => x.Id);
+        }
+
+        private void CreateContextDependentTables()
+        {
+            // костыльно, лучше добавить не ассинхронные методы добавления объектов в репозитории
+            Task.Run(async () =>
+            {
+                using (TownRepository repository = new())
+                {
+                    foreach (var item in ReadTownsFromFile())
+                    {
+                        await repository.AddAsync(item);
+                    }
+                }
+
+                using (GoodRepository repository = new())
+                {
+                    foreach (var item in DoWithNotification(ReadGoodsFromFile, "Чтение списка продуктов"))
+                    {
+                        await repository.AddAsync(item);
+                    }
+                }
+
+                using (SellHistoryRepository repository = new())
+                {
+                    foreach (var item in DoWithNotification(GenerateSellHistory, "Создание истории покупок"))
+                    {
+                        await repository.AddAsync(item);
+                    }
+                }
+            });
         }
 
         private Town[] ReadTownsFromFile()
         {
             Random random = new Random();
 
-            using StreamReader reader = new StreamReader("..\\..\\..\\Resources\\goroda.txt");
+            using StreamReader reader = new StreamReader("..\\Resources\\goroda.txt");
             return reader.ReadToEnd()
                 .Split()
                 .Where(x => !string.IsNullOrEmpty(x) && !x.Contains("Оспаривается"))
@@ -83,7 +110,7 @@ namespace Cataloguer.Database.Repositories.Context
         {
             Random random = new Random();
 
-            using StreamReader reader = new StreamReader("..\\..\\..\\Resources\\goods.txt");
+            using StreamReader reader = new StreamReader("..\\Resources\\goods.txt");
             return reader.ReadToEnd()
                 .Split()
                 .Where(x => !string.IsNullOrEmpty(x))

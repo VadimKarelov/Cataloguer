@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Cataloguer.Database.Models
 {
@@ -6,7 +7,7 @@ namespace Cataloguer.Database.Models
     public class AgeGroup
     {
         [Column("id")]
-        public int Id { get; set; }
+        public int Id { get; set; } = -1;
 
         /// <summary>
         /// Содержит информацию о возрастной групппе, можно будет добавить set
