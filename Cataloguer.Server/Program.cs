@@ -22,6 +22,9 @@ namespace Cataloguer.Server
         {
             app.MapGet($"{_baseRoute}/getBrochures", 
                 () => DataBaseHandler.GetCollection(nameof(Brochure)));
+
+            app.MapGet($"{_baseRoute}/getAgeGroups",
+                () => DataBaseHandler.GetCollection(nameof(AgeGroup)));
         }
     }
 }
