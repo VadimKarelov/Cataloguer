@@ -27,6 +27,7 @@ interface DistributionProps {
 /**
  * Свойства каталога.
  * @property id Идентификатор.
+ * @property name Наименование каталога.
  * @property creationDate Дата создания.
  * @property goods Набор товаров в каталоге.
  * @property edition Тираж.
@@ -34,6 +35,7 @@ interface DistributionProps {
  */
 interface BrochureProps {
     id: number,
+    name?: string,
     creationDate: string,
     goods: GoodProps[],
     edition: number,

@@ -130,7 +130,7 @@ class BrochureStore {
             const tempGoods = this.getRandomGoods();
             const tempDistributions = this.getRandomDistributions();
             tempBrochures.push(
-                { id: i, edition: tempCount, creationDate: tempCreationDate, goods: tempGoods, distributions: tempDistributions }
+                { id: i, name: `Каталог ${i}`, edition: tempCount, creationDate: tempCreationDate, goods: tempGoods, distributions: tempDistributions }
             );
         }
         this.brochures = tempBrochures;
