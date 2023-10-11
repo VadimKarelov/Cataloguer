@@ -1,10 +1,15 @@
 import '../styles/App.css';
 import React from "react";
-import {Button, Layout, Space, Typography} from "antd";
+import {Layout, Space, Typography} from "antd";
 import {Content, Header} from 'antd/es/layout/layout';
 import Sider from "antd/es/layout/Sider";
 import BrochureMenuComponent from "./BrochureMenuComponent";
 import BrochureComponent from "./BrochureComponent";
+import CreateBrochureButtonComponent, {
+    ButtonModes
+} from "./Operations/BrochureOperations/CreateBrochureButtonComponent";
+import DeleteBrochureButtonComponent from "./Operations/BrochureOperations/DeleteBrochureButtonComponent";
+import CheckEfficiencyButtonComponent from "./Operations/BrochureOperations/CheckEfficiencyButtonComponent";
 
 /**
  * Стартовый компонент.
@@ -21,10 +26,10 @@ const App = () => {
                 <Header className={"main-window-buttons-panel-style"}>
                     <div className={"buttons-style"}>
                         <Space>
-                            <Button>Создать</Button>
-                            <Button>Изменить</Button>
-                            <Button>Удалить</Button>
-                            <Button>Проверить</Button>
+                            <CreateBrochureButtonComponent mode={ButtonModes.CREATE}/>
+                            <CreateBrochureButtonComponent mode={ButtonModes.EDIT}/>
+                            <DeleteBrochureButtonComponent/>
+                            <CheckEfficiencyButtonComponent/>
                         </Space>
                     </div>
                 </Header>
