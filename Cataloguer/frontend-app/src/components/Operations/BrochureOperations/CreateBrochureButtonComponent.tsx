@@ -5,17 +5,18 @@ import {DatePicker, Form, Input, Table} from "antd";
 /**
  * Перечисления типов в метаданных для компонента CreateBrochureButtonComponent.
  */
-enum MetadataTypes {
+export enum MetadataTypes {
     STR_FIELD,
     NMBR_FIELD,
     TBL_FIELD,
     DATE_FIELD,
+    LIST_FIELD,
 }
 
 /**
  * Свойства метаданных для компонента CreateBrochureButtonComponent.
  */
-interface MetadataProps {
+export interface MetadataProps {
     id: string,
     name: string,
     type: MetadataTypes,

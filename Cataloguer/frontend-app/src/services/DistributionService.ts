@@ -1,21 +1,26 @@
 import BaseService from "./BaseService";
 
 /**
+ * Адрес backend.
+ */
+const BACKEND_ROUTE: Readonly<string> = process.env.BACKEND_ROUTE ?? "";
+
+/**
+ * Основной путь обращения к контроллеру.
+ */
+const BACKEND_CONTROLLER_ROUTE: Readonly<string> = `${BACKEND_ROUTE}/api/v1/distribution`;
+
+/**
  * Класс сервис для обращению к контроллеру рассылок.
  */
 class DistributionService extends BaseService {
     /**
-     * Основной путь обращения к контроллеру.
-     */
-    private BACKEND_BASE_ROUTE: Readonly<string> = "/api/v1/distribution";
-
-    /**
      * Отправляет запрос на создание рассылки.
      * @param params Параметры рассылки.
      */
-    public async createDistribution(params: object) {
+    public static async createDistribution(params: object) {
         const methodRoute = `/createDistribution`;
-        return await this.sendPostHttpRequest(this.BACKEND_BASE_ROUTE, methodRoute, params);
+        return await BaseService.sendPostHttpRequest(BACKEND_CONTROLLER_ROUTE, methodRoute, params);
     }
 
     /**
@@ -23,18 +28,26 @@ class DistributionService extends BaseService {
      * @param id Идентификатор рассылки.
      * @param params Параметры рассылки.
      */
-    public async updateDistribution(id: number, params: object) {
+    public static async updateDistribution(id: number, params: object) {
         const methodRoute = `/updateDistribution/id=${id}`;
-        return await this.sendPostHttpRequest(this.BACKEND_BASE_ROUTE, methodRoute, params);
+        return await BaseService.sendPostHttpRequest(BACKEND_CONTROLLER_ROUTE, methodRoute, params);
     }
 
     /**
      * Отправляет запрос на удаление рассылки.
      * @param id Идентификатор рассылки.
      */
-    public async deleteDistribution(id: number) {
+    public static async deleteDistribution(id: number) {
         const methodRoute = `/deleteDistribution/id=${id}`;
-        return await this.sendGetHttpRequest(this.BACKEND_BASE_ROUTE, methodRoute);
+        return await BaseService.sendGetHttpRequest(BACKEND_CONTROLLER_ROUTE, methodRoute);
+    }
+
+    /**
+     * Возвращает список возрастных групп.
+     */
+    public static async getAgeGroups() {
+        const methodRoute = `/getAgeGroups`;
+        return await BaseService.sendGetHttpRequest(`${BACKEND_CONTROLLER_ROUTE}/api/v1/cataloguer`, methodRoute);
     }
 }
 

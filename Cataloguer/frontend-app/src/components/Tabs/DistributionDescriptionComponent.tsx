@@ -5,6 +5,7 @@ import {NO_DATA_TEXT} from "../../Messages";
 import {BaseStoreInjector} from "../../types/BrochureTypes";
 import {inject, observer} from "mobx-react";
 import "../../styles/Tabs/DistributionsTab.css";
+import CreateDistributionButtonComponent from "../Operations/DistributionOperations/CreateDistributionButtonComponent";
 
 /**
  * Свойства компонента GoodsDescriptionComponent.
@@ -75,7 +76,7 @@ const DistributionDescriptionComponent: React.FC<DistributionDescriptionComponen
         hasData ? (
             <Layout>
                 <Header className={"distributions-tab-header-style"}>
-                    <Button>Добавить</Button>
+                    <CreateDistributionButtonComponent/>
                 </Header>
                 <Content className={"distributions-tab-content-style"}>
                     <Table

@@ -27,6 +27,10 @@ const BaseButtonComponent: React.FC<BaseButtonComponentProps> = (props) => {
      */
     const onButtonClick = () => {
         setIsOpen(true);
+        const callback = props?.buttonProps?.onClick
+        if (callback) {
+            callback();
+        }
     };
 
     return (

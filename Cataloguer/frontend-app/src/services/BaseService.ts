@@ -12,7 +12,7 @@ class BaseService {
      * @param subRoute Маршрут метода.
      * @protected
      */
-    protected async sendGetHttpRequest(baseRoute: Readonly<string>, subRoute: Readonly<string>) {
+    protected static async sendGetHttpRequest(baseRoute: Readonly<string>, subRoute: Readonly<string>) {
         const route: Readonly<string> = `${baseRoute}${subRoute}`;
         return await axios.get(route);
     }
@@ -24,7 +24,7 @@ class BaseService {
      * @param params Параметры запроса.
      * @protected
      */
-    protected async sendPostHttpRequest(baseRoute: Readonly<string>, subRoute: Readonly<string>, params: object) {
+    protected static async sendPostHttpRequest(baseRoute: Readonly<string>, subRoute: Readonly<string>, params: object) {
         const route: Readonly<string> = `${baseRoute}${subRoute}`;
         const formData = new FormData();
 

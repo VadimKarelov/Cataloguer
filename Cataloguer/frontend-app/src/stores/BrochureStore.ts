@@ -1,6 +1,7 @@
 import { observable, action, makeAutoObservable } from "mobx"
 import {BrochureProps, DistributionProps, GoodProps} from "../types/BrochureTypes";
 import {random} from "../Utils";
+import DistributionService from "../services/DistributionService";
 
 /**
  * Хранилище данных для каталога.
@@ -48,6 +49,25 @@ class BrochureStore {
         this.initBrochures = this.initBrochures.bind(this);
         this.getRandomGoods = this.getRandomGoods.bind(this);
         this.getRandomDistributions = this.getRandomDistributions.bind(this);
+
+        this.getAgeGroups = this.getAgeGroups.bind(this);
+        this.updateDistributionLists = this.updateDistributionLists.bind(this);
+    }
+
+    /**
+     * Возвращает возрастные группы.
+     */
+    private async getAgeGroups() {
+        return await DistributionService.getAgeGroups();
+    }
+
+    /**
+     * Обновляет список возврастных группы.
+     */
+    public updateDistributionLists() {
+        this.getAgeGroups().then(resp => {
+           console.log(resp)
+        });
     }
 
     /**
