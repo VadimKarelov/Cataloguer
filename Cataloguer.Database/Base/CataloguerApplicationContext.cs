@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 
-namespace Cataloguer.Database.Repositories.Context
+namespace Cataloguer.Database.Base
 {
     /// <summary>
     /// Можно использовать только внутри проекта Database
@@ -17,22 +17,21 @@ namespace Cataloguer.Database.Repositories.Context
         public DbSet<Good> Goods { get; set; }
         public DbSet<SellHistory> SellHistory { get; set; }
         public DbSet<Status> Statuses { get; set; }
-        public DbSet<Town> Towns { get; set; }   
+        public DbSet<Town> Towns { get; set; }
 
         public CataloguerApplicationContext()
         {
-            if (Database.EnsureCreated()) CreateContextDependentTables();
+            Database.EnsureCreated();
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+            //todo вынести в конфиг
             optionsBuilder.UseNpgsql("User ID=postgres;" +
                 "Password=postgres;" +
                 "Host=localhost;" +
                 "Port=5432;" +
                 "Database=CataloguerDataBasePostgres;");
-
-            optionsBuilder.LogTo(Console.WriteLine);
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -63,35 +62,25 @@ namespace Cataloguer.Database.Repositories.Context
             modelBuilder.Entity<SellHistory>().HasKey(x => x.Id);
         }
 
-        private void CreateContextDependentTables()
+        public void Init()
         {
-            // костыльно, лучше добавить не ассинхронные методы добавления объектов в репозитории
-            Task.Run(async () =>
+            if (!Towns.Any())
             {
-                using (TownRepository repository = new())
-                {
-                    foreach (var item in ReadTownsFromFile())
-                    {
-                        await repository.AddAsync(item);
-                    }
-                }
+                Towns.AddRange(ReadTownsFromFile());
+                this.SaveChanges();
+            }
 
-                using (GoodRepository repository = new())
-                {
-                    foreach (var item in DoWithNotification(ReadGoodsFromFile, "Чтение списка продуктов"))
-                    {
-                        await repository.AddAsync(item);
-                    }
-                }
+            if (!Goods.Any())
+            {
+                Goods.AddRange(DoWithNotification(ReadGoodsFromFile, "Чтение списка продуктов"));
+                this.SaveChanges();
+            }
 
-                using (SellHistoryRepository repository = new())
-                {
-                    foreach (var item in DoWithNotification(GenerateSellHistory, "Создание истории покупок"))
-                    {
-                        await repository.AddAsync(item);
-                    }
-                }
-            });
+            if (!SellHistory.Any())
+            {
+                SellHistory.AddRange(DoWithNotification(GenerateSellHistory, "Создание истории покупок"));
+                this.SaveChanges();
+            }
         }
 
         private Town[] ReadTownsFromFile()
@@ -127,8 +116,8 @@ namespace Cataloguer.Database.Repositories.Context
 
             var result = new SellHistory[size];
 
-            var availableGoods = this.Goods.ToArray();
-            var availableTowns = this.Towns.ToArray();
+            var availableGoods = Goods.ToArray();
+            var availableTowns = Towns.ToArray();
             var today = DateTime.Now.ToOADate();
 
             for (int i = 0; i < size; i++)
@@ -139,9 +128,9 @@ namespace Cataloguer.Database.Repositories.Context
                     Town = availableTowns[random.Next(0, availableTowns.Length)],
                     Age = (short)random.Next(7, 90),
                     SellDate = DateTime.FromOADate(today - random.NextDouble() * 100),
-                    GoodCount = random.Next(1, 20)                    
+                    GoodCount = random.Next(1, 20)
                 };
-                result[i].Price = this.SellHistory
+                result[i].Price = SellHistory
                     .FirstOrDefault(x => x.Good == result[i].Good)?.Price ?? 200 + random.Next(-100, 100);
             }
 

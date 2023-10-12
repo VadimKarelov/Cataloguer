@@ -6,8 +6,9 @@ namespace Cataloguer.Database.Models
     [Table("brochure_position")]
     public class BrochurePosition
     {
+        [Key]
         [Column("id")]
-        public int Id { get; set; } = -1;
+        public int Id { get; set; }
 
         [Column("brochure_id")]
         public int BrochureId { get; set; }

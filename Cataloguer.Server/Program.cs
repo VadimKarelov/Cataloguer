@@ -1,4 +1,6 @@
+using Cataloguer.Database.Commands.GetCommands;
 using Cataloguer.Database.Models;
+using System.Text.Json;
 
 namespace Cataloguer.Server
 {
@@ -22,6 +24,8 @@ namespace Cataloguer.Server
 
             var app = builder.Build();
 
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
             app.MapGet("/", () => "Hello World!");
 
             BrochureHandlerRegistration(app);
@@ -32,10 +36,10 @@ namespace Cataloguer.Server
         private static void BrochureHandlerRegistration(WebApplication app)
         {
             app.MapGet($"{_baseRoute}/getBrochures", 
-                () => DataBaseHandler.GetCollection(nameof(Brochure)));
+                () => JsonSerializer.Serialize(new GetListCommand<Brochure>().GetValues()));
 
             app.MapGet($"{_baseRoute}/getAgeGroups",
-                () => DataBaseHandler.GetCollection(nameof(AgeGroup)));
+                () => JsonSerializer.Serialize(new GetListCommand<AgeGroup>().GetValues()));
         }
     }
 }

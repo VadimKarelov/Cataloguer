@@ -6,8 +6,9 @@ namespace Cataloguer.Database.Models
     [Table("age_group")]
     public class AgeGroup
     {
+        [Key]
         [Column("id")]
-        public int Id { get; set; } = -1;
+        public int Id { get; set; }
 
         /// <summary>
         /// Содержит информацию о возрастной групппе, можно будет добавить set

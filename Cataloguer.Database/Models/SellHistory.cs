@@ -8,7 +8,7 @@ namespace Cataloguer.Database.Models
     {
         [Key]
         [Column("id")]
-        public int Id { get; set; } = -1;
+        public int Id { get; set; }
 
         [Column("good_id")]
         public int GoodId { get; set; }
