@@ -35,29 +35,24 @@ namespace Cataloguer.Server
             app.Run();
         }
 
-        private static void AddRoute(WebApplication app, string route, Func<object> action)
-        {
-            app.MapGet($"{_baseRoute}/{route}", () => JsonSerializer.Serialize(action()));
-        }
-
         private static void ListWithoutParametersRegistration(WebApplication app)
         {
             // в идеале прописать пути: get/AgeGroup или get/Town, то есть указать сущность. но сойдет и так
-            AddRoute(app, "getAgeGroups", () => new GetListCommand<AgeGroup>().GetValues());
-            AddRoute(app, "getBrochures", () => new GetListCommand<Brochure>().GetValues());
-            AddRoute(app, "getBrochurePositions", () => new GetListCommand<BrochurePosition>().GetValues());
-            AddRoute(app, "getDistributions", () => new GetListCommand<Distribution>().GetValues());
-            AddRoute(app, "getGenders", () => new GetListCommand<Gender>().GetValues());
-            AddRoute(app, "getGoods", () => new GetListCommand<Good>().GetValues());
-            AddRoute(app, "getSellHistory", () => new GetListCommand<SellHistory>().GetValues());
-            AddRoute(app, "getStatuses", () => new GetListCommand<Status>().GetValues());
-            AddRoute(app, "getTowns", () => new GetListCommand<Town>().GetValues());
+            app.MapGet(_baseRoute + "getAgeGroups", () => JsonSerializer.Serialize(() => new GetListCommand<AgeGroup>().GetValues()));
+            app.MapGet(_baseRoute + "getBrochures", () => JsonSerializer.Serialize(new GetListCommand<Brochure>().GetValues()));
+            app.MapGet(_baseRoute + "getBrochurePositions", () => JsonSerializer.Serialize(new GetListCommand<BrochurePosition>().GetValues()));
+            app.MapGet(_baseRoute + "getDistributions", () => JsonSerializer.Serialize(new GetListCommand<Distribution>().GetValues()));
+            app.MapGet(_baseRoute + "getGenders", () => JsonSerializer.Serialize(new GetListCommand<Gender>().GetValues()));
+            app.MapGet(_baseRoute + "getGoods", () => JsonSerializer.Serialize(new GetListCommand<Good>().GetValues()));
+            app.MapGet(_baseRoute + "getSellHistory", () => JsonSerializer.Serialize(new GetListCommand<SellHistory>().GetValues()));
+            app.MapGet(_baseRoute + "getStatuses", () => JsonSerializer.Serialize(new GetListCommand<Status>().GetValues()));
+            app.MapGet(_baseRoute + "getTowns", () => JsonSerializer.Serialize(new GetListCommand<Town>().GetValues()));
         }
 
         private static void GetSingleObjectRegistration(WebApplication app)
         {
-            app.Map("/getBrochure/id={id}", (int id) => JsonSerializer.Serialize(new GetCommand<Brochure>().GetValueById(id)));
-            app.Map("/getGood/id={id}", (int id) => JsonSerializer.Serialize(new GetCommand<Good>().GetValueById(id)));
+            app.Map(_baseRoute + "/getBrochure/id={id}", (int id) => JsonSerializer.Serialize(new GetCommand<Brochure>().GetValueById(id)));
+            app.Map(_baseRoute + "/getGood/id={id}", (int id) => JsonSerializer.Serialize(new GetCommand<Good>().GetValueById(id)));
         }
     }
 }
