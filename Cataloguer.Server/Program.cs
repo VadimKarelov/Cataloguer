@@ -51,8 +51,15 @@ namespace Cataloguer.Server
 
         private static void GetSingleObjectRegistration(WebApplication app)
         {
+            app.Map(_baseRoute + "/getAgeGroup/id={id}", (int id) => JsonSerializer.Serialize(new GetCommand<AgeGroup>().GetValueById(id)));
             app.Map(_baseRoute + "/getBrochure/id={id}", (int id) => JsonSerializer.Serialize(new GetCommand<Brochure>().GetValueById(id)));
+            app.Map(_baseRoute + "/getBrochurePosition/id={id}", (int id) => JsonSerializer.Serialize(new GetCommand<BrochurePosition>().GetValueById(id)));
+            app.Map(_baseRoute + "/getDistribution/id={id}", (int id) => JsonSerializer.Serialize(new GetCommand<Distribution>().GetValueById(id)));
+            app.Map(_baseRoute + "/getGender/id={id}", (int id) => JsonSerializer.Serialize(new GetCommand<Gender>().GetValueById(id)));
             app.Map(_baseRoute + "/getGood/id={id}", (int id) => JsonSerializer.Serialize(new GetCommand<Good>().GetValueById(id)));
+            app.Map(_baseRoute + "/getSellHistory/id={id}", (int id) => JsonSerializer.Serialize(new GetCommand<SellHistory>().GetValueById(id)));
+            app.Map(_baseRoute + "/getStatus/id={id}", (int id) => JsonSerializer.Serialize(new GetCommand<Status>().GetValueById(id)));
+            app.Map(_baseRoute + "/getTown/id={id}", (int id) => JsonSerializer.Serialize(new GetCommand<Town>().GetValueById(id)));
         }
     }
 }
