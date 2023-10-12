@@ -18,11 +18,14 @@ namespace Cataloguer.Server
                 {
                     builder.AllowAnyOrigin()
                         .AllowAnyMethod()
-                        .AllowAnyHeader();
+                        .AllowAnyHeader()
+                        .AllowCredentials();
                 });
             });
 
             var app = builder.Build();
+
+            app.UseCorsMiddleware();
 
             AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
