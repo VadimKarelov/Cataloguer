@@ -5,7 +5,7 @@ namespace Cataloguer.Database.Commands.GetCommands
 {
     public class GetCommand<T> : AbstractCommand where T : class
     {
-        public T? GetValueBuId(int id)
+        public T? GetValueById(int id)
         {
             var typename = typeof(T).ToString();
 

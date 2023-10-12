@@ -30,6 +30,7 @@ namespace Cataloguer.Server
                 string.Join("\n", endpointSources.SelectMany(x => x.Endpoints)));
 
             ListWithoutParametersRegistration(app);
+            GetSingleObjectRegistration(app);
 
             app.Run();
         }
@@ -51,6 +52,12 @@ namespace Cataloguer.Server
             AddRoute(app, "getSellHistory", () => new GetListCommand<SellHistory>().GetValues());
             AddRoute(app, "getStatuses", () => new GetListCommand<Status>().GetValues());
             AddRoute(app, "getTowns", () => new GetListCommand<Town>().GetValues());
+        }
+
+        private static void GetSingleObjectRegistration(WebApplication app)
+        {
+            app.Map("/getBrochure/id={id}", (int id) => JsonSerializer.Serialize(new GetCommand<Brochure>().GetValueById(id)));
+            app.Map("/getGood/id={id}", (int id) => JsonSerializer.Serialize(new GetCommand<Good>().GetValueById(id)));
         }
     }
 }
