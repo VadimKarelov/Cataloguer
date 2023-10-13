@@ -1,6 +1,6 @@
-<mxfile host="app.diagrams.net" modified="2023-10-13T18:18:58.831Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36" etag="4LlJRKAPggnAhpGkudiB" version="22.0.4" type="device">
+<mxfile host="app.diagrams.net" modified="2023-10-13T18:25:27.809Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/118.0.0.0 Safari/537.36" etag="2YiM-UpKYoSUecEUvzFZ" version="22.0.4" type="device">
   <diagram name="Страница — 1" id="dkIzatbvSpOLDC7T3Rk1">
-    <mxGraphModel dx="1195" dy="640" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="574" dy="307" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -251,6 +251,33 @@
               <mxPoint x="390" y="519" />
             </Array>
           </mxGeometry>
+        </mxCell>
+        <mxCell id="QjBXKHCjdzFogIoKbT-u-24" value="CorsMiddleware" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=none;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="880" y="40" width="240" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="QjBXKHCjdzFogIoKbT-u-26" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" vertex="1" parent="QjBXKHCjdzFogIoKbT-u-24">
+          <mxGeometry y="26" width="240" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="QjBXKHCjdzFogIoKbT-u-27" value="CorsMiddleware(HttpContext httpContext)" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="QjBXKHCjdzFogIoKbT-u-24">
+          <mxGeometry y="34" width="240" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="QjBXKHCjdzFogIoKbT-u-28" value="static CorsMiddlewareExtension" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=none;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="880" y="120" width="440" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="QjBXKHCjdzFogIoKbT-u-29" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" vertex="1" parent="QjBXKHCjdzFogIoKbT-u-28">
+          <mxGeometry y="26" width="440" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="QjBXKHCjdzFogIoKbT-u-30" value="static UseCorsMiddleware(this IApplicationBuilder builder) : IApplicationBuilder" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="QjBXKHCjdzFogIoKbT-u-28">
+          <mxGeometry y="34" width="440" height="26" as="geometry" />
+        </mxCell>
+        <mxCell id="QjBXKHCjdzFogIoKbT-u-31" value="static RoutesRegistrationExtension" style="swimlane;fontStyle=0;childLayout=stackLayout;horizontal=1;startSize=26;fillColor=none;horizontalStack=0;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=1;marginBottom=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="880" y="200" width="400" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="QjBXKHCjdzFogIoKbT-u-32" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;strokeColor=inherit;" vertex="1" parent="QjBXKHCjdzFogIoKbT-u-31">
+          <mxGeometry y="26" width="400" height="8" as="geometry" />
+        </mxCell>
+        <mxCell id="QjBXKHCjdzFogIoKbT-u-33" value="static RegisterRoutes(this WebApplicationApp app) : WebApplication" style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;whiteSpace=wrap;html=1;" vertex="1" parent="QjBXKHCjdzFogIoKbT-u-31">
+          <mxGeometry y="34" width="400" height="26" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
