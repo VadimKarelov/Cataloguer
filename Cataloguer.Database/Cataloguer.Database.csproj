@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
@@ -7,24 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Resources\goods.txt" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.11" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.11" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <XamlAppDef Include="Resources\goods.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </XamlAppDef>
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="Resources\goroda.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
 </Project>
