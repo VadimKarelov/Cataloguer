@@ -45,16 +45,19 @@ const DistributionDescriptionComponent: React.FC<DistributionDescriptionComponen
             title: "Населённый пункт",
             dataIndex: "town",
             key: "distributions_table_town",
+            width: 315
         },
         {
             title: "Возрастная группа",
             dataIndex: "ageGroup",
             key: "distributions_table_age_group",
+            width: 315
         },
         {
             title: "Число каталогов",
             dataIndex: "count",
             key: "distributions_table_count",
+            width: 128
         },
         {
             title: "Операция",
