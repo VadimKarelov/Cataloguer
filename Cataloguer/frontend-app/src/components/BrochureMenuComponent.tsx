@@ -93,7 +93,7 @@ const BrochureMenuComponent: React.FC<BrochureMenuComponentProps> = inject("broc
      */
     const onSelectBrochure = (event: {key: string}): void => {
         props.brochureStore?.reset();
-        console.log(event)
+
         const brochureKey: string = event.key ?? "";
         const id = brochureKey.slice(brochureKey.indexOf('_') + 1);
         props.brochureStore?.onBrochureClick(id !== "undefined" ? parseInt(id) : -1);

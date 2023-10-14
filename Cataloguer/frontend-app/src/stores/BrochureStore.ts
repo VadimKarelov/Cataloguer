@@ -202,7 +202,6 @@ class BrochureStore {
      * @param brochureId - идентификатор каталога.
      */
     public onBrochureClick(brochureId: number): void {
-        this.reset();
         if (isNaN(brochureId)) return;
 
         this.isBrochureSelected = true;
