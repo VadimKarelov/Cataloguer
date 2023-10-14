@@ -95,7 +95,7 @@ const CreateBrochureButtonComponent: React.FC<CreateBrochureButtonComponentProps
             <Form layout={"vertical"} colon={false}>
                 {metadata.map(formItem => {
                     return (
-                        <Form.Item label={formItem.name}>
+                        <Form.Item key={formItem.id} label={formItem.name}>
                             {getFormItemComponent(formItem)}
                         </Form.Item>
                     );

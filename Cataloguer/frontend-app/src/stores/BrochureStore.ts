@@ -4,6 +4,11 @@ import {random} from "../Utils";
 import DistributionService from "../services/DistributionService";
 
 /**
+ * Путь к данным каталога в session storage.
+ */
+const BROCHURE_SS_PATH: Readonly<string> = "ss_brochure";
+
+/**
  * Хранилище данных для каталога.
  */
 class BrochureStore {
@@ -49,9 +54,19 @@ class BrochureStore {
         this.initBrochures = this.initBrochures.bind(this);
         this.getRandomGoods = this.getRandomGoods.bind(this);
         this.getRandomDistributions = this.getRandomDistributions.bind(this);
+        this.getSavedBrochure = this.getSavedBrochure.bind(this);
+        this.saveBrochureToSessionStorage = this.saveBrochureToSessionStorage.bind(this);
+        this.getSavedBrochureMenu = this.getSavedBrochureMenu.bind(this);
+        this.reset = this.reset.bind(this);
 
         this.getAgeGroups = this.getAgeGroups.bind(this);
         this.updateDistributionLists = this.updateDistributionLists.bind(this);
+    }
+
+    public reset(): void {
+        this.currentBrochure = null;
+        sessionStorage.removeItem(BROCHURE_SS_PATH);
+        // this.brochures = [];
     }
 
     /**
@@ -64,7 +79,7 @@ class BrochureStore {
     /**
      * Обновляет список возврастных группы.
      */
-    public updateDistributionLists() {
+    public updateDistributionLists(): void {
         this.getAgeGroups().then(resp => {
            console.log(resp)
         });
@@ -157,23 +172,53 @@ class BrochureStore {
     }
 
     /**
+     * Возвращает меню с открытыми каталогами из session storage.
+     */
+    public getSavedBrochureMenu(): string[] {
+        const brochure = this.getSavedBrochure();
+        return brochure ? [`brochure_${brochure.id}`] : [];
+    }
+
+    /**
+     * Возвращает сохранённый каталог в сессии браузера.
+     */
+    public getSavedBrochure(): BrochureProps | null {
+        const json = sessionStorage.getItem(BROCHURE_SS_PATH);
+        if (json === null || json === "undefined") return null;
+        return JSON.parse(json);
+    }
+
+    /**
+     * Сохраняет каталог  в session storage.
+     * @param brochure - каталог.
+     */
+    private saveBrochureToSessionStorage(brochure: BrochureProps | null): void {
+        sessionStorage.setItem(BROCHURE_SS_PATH, JSON.stringify(brochure));
+    }
+
+
+    /**
      * Срабатывает после выбора каталога в меню.
      * @param brochureId - идентификатор каталога.
      */
     public onBrochureClick(brochureId: number): void {
+        this.reset();
+        if (isNaN(brochureId)) return;
+
         this.isBrochureSelected = true;
         this.isBrochureLoading = true;
+
         // some brochure load logic
-        const foundBrochure = this.brochures.find(brochure => brochure.id === brochureId) ?? null;
+        const foundBrochure = brochureId !== -1 ?
+            (this.brochures.find(brochure => brochure.id === brochureId) ?? null)
+            : null;
 
-        if (foundBrochure) {
-            this.currentBrochure = foundBrochure;
-        }
+        this.currentBrochure = foundBrochure;
+        this.saveBrochureToSessionStorage(foundBrochure);
 
-        //
         setTimeout(() => {
             this.isBrochureLoading = false;
-        }, 1000);
+        }, 500);
     }
 
     /**

@@ -2,8 +2,6 @@ import '../styles/App.css';
 import React from "react";
 import {Layout, Space, Typography} from "antd";
 import {Content, Header} from 'antd/es/layout/layout';
-import Sider from "antd/es/layout/Sider";
-import BrochureMenuComponent from "./BrochureMenuComponent";
 import BrochureComponent from "./BrochureComponent";
 import CreateBrochureButtonComponent, {
     ButtonModes
@@ -34,9 +32,6 @@ const App = () => {
                     </div>
                 </Header>
                 <Layout>
-                    <Sider width={350} className={"sider-style"}>
-                        <BrochureMenuComponent/>
-                    </Sider>
                     <Content className={"main-window-content"}>
                         <BrochureComponent/>
                     </Content>

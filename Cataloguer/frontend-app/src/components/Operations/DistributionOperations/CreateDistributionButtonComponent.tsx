@@ -46,7 +46,7 @@ const CreateDistributionButtonComponent: React.FC<CreateDistributionButtonCompon
             <Form layout={"vertical"} colon={false}>
                 {metadata.map(formItem => {
                     return (
-                        <Form.Item label={formItem.name}>
+                        <Form.Item key={formItem.id} label={formItem.name}>
                             {getFormItemComponent(formItem)}
                         </Form.Item>
                     );

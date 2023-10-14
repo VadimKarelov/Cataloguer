@@ -7,7 +7,7 @@ import BrochureDescriptionComponent from "./Tabs/BrochureDescriptionComponent";
 import DistributionDescriptionComponent from "./Tabs/DistributionDescriptionComponent";
 import GoodsDescriptionComponent from "./Tabs/GoodsDescriptionComponent";
 import {inject, observer} from "mobx-react";
-import {BaseStoreInjector} from "../types/BrochureTypes";
+import {BaseStoreInjector, BrochureProps} from "../types/BrochureTypes";
 
 /**
  * Перечисление для вкладок.
@@ -45,20 +45,56 @@ interface BrochureWorkingAreaComponentProps extends BaseStoreInjector {
 }
 
 /**
+ * Переменная для получения вкладки из хранилища
+ */
+const SS_SAVED_TAB: Readonly<string> = "ss_saved_tab";
+
+/**
  * Компонент рабочей области каталога.
  */
 const BrochureWorkingAreaComponent: React.FC<BrochureWorkingAreaComponentProps> = inject("brochureStore")(observer((props) => {
+    /**
+     * Выбранный каталог.
+     */
+    const [brochure, setBrochure] = useState<BrochureProps | null>(null);
+
     /**
      * Ключ текущей (выбранной) вкладки.
      */
     const [currentTabKey, setCurrentTabKey] = useState<string>(TabKeys.BROCHURE_TAB);
 
     /**
+     * Хук для изменения текущей вкладки.
+     * При обновлении страницы подставляет выбранную вкладку.
+     * При смене каталога устанавливает первую вкладку.
+     */
+    useEffect(() =>
+        setBrochure(prevBrochure => {
+            let key: string = TabKeys.BROCHURE_TAB;
+
+            const prevId = brochure !== null ? brochure.id : -1;
+            const currentBrochure = props.brochureStore?.currentBrochure ?? null;
+
+            if (currentBrochure) {
+                const currentId = currentBrochure.id;
+                if (currentId !== prevId && prevId === -1) {
+                    const oldTab = sessionStorage.getItem(SS_SAVED_TAB);
+                    key = oldTab !== null ? oldTab : TabKeys.BROCHURE_TAB;
+                }
+
+            }
+
+            setCurrentTabKey(key);
+            return currentBrochure;
+    }), [props.brochureStore?.currentBrochure?.id]);
+
+    /**
      * Измемняет ключ текущей вкладки.
      * @param tabKey Ключ вкладки.
      */
-    const onTabChange = (tabKey: string) => {
+    const onTabChange = (tabKey: string): void => {
         setCurrentTabKey(tabKey);
+        sessionStorage.setItem(SS_SAVED_TAB, tabKey);
     };
 
     /**
@@ -72,11 +108,6 @@ const BrochureWorkingAreaComponent: React.FC<BrochureWorkingAreaComponentProps> 
             default: return null;
         }
     };
-
-    /**
-     * Изменяет таб при смене каталога.
-     */
-    useEffect(() => setCurrentTabKey(TabKeys.BROCHURE_TAB), [props.brochureStore?.currentBrochure?.id]);
 
     return (
         <Layout>
