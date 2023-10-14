@@ -1,5 +1,5 @@
 import { observable, action, makeAutoObservable } from "mobx"
-import {BrochureProps, DistributionProps, GoodProps} from "../types/BrochureTypes";
+import {BrochureProps, DistributionProps, GoodProps, StatusArrayProps} from "../types/BrochureTypes";
 import {random} from "../Utils";
 import DistributionService from "../services/DistributionService";
 
@@ -7,6 +7,24 @@ import DistributionService from "../services/DistributionService";
  * Путь к данным каталога в session storage.
  */
 const BROCHURE_SS_PATH: Readonly<string> = "ss_brochure";
+
+/**
+ * Перечислимый тип для статусов.
+ */
+export enum Status {
+    EFFECTIVE,
+    INEFFECTIVE,
+    UNCHECKED,
+}
+
+/**
+ * Набор возможных статусов.
+ */
+export const BROCHURE_STATUSES: Readonly<StatusArrayProps[]> = [
+    {key: Status.UNCHECKED, value: "Не проверен"},
+    {key: Status.INEFFECTIVE, value: "Не эффективен"},
+    {key: Status.EFFECTIVE, value: "Эффективный"},
+];
 
 /**
  * Хранилище данных для каталога.
@@ -63,10 +81,12 @@ class BrochureStore {
         this.updateDistributionLists = this.updateDistributionLists.bind(this);
     }
 
+    /**
+     * Очищает данные о каталоге.
+     */
     public reset(): void {
         this.currentBrochure = null;
         sessionStorage.removeItem(BROCHURE_SS_PATH);
-        // this.brochures = [];
     }
 
     /**
@@ -113,7 +133,6 @@ class BrochureStore {
 
     /**
      * Возвращает случайные рассылки.
-     * @private
      */
     private getRandomDistributions(): DistributionProps[] {
         const brochureCount = 20;
@@ -164,8 +183,9 @@ class BrochureStore {
             const tempCreationDate = new Date().toDateString();
             const tempGoods = this.getRandomGoods();
             const tempDistributions = this.getRandomDistributions();
+            const status = BROCHURE_STATUSES[random(0, BROCHURE_STATUSES.length - 1)].value;
             tempBrochures.push(
-                { id: i, name: `Каталог ${i}`, edition: tempCount, creationDate: tempCreationDate, goods: tempGoods, distributions: tempDistributions }
+                { id: i, name: `Каталог ${i}`, edition: tempCount, creationDate: tempCreationDate, goods: tempGoods, distributions: tempDistributions, status: status }
             );
         }
         this.brochures = tempBrochures;

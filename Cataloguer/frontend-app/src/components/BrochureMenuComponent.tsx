@@ -1,15 +1,10 @@
 import React, {useEffect, useState} from "react";
 import {Menu, Space, Spin} from "antd";
 import type { MenuProps } from 'antd';
-import { MailOutlined } from '@ant-design/icons';
 import "../styles/BrochureMenu.css";
 import {inject, observer} from "mobx-react";
 import {BaseStoreInjector} from "../types/BrochureTypes";
-
-/**
- * Псевдотип, отражающий возможные статусы каталога.
- */
-type BrochureStatusType = "effective" | "ineffective" | "unchecked";
+import StatusIconsComponent from "./IconsComponent";
 
 /**
  * Свойства компонента BrochureMenuComponent.
@@ -22,31 +17,6 @@ interface BrochureMenuComponentProps extends BaseStoreInjector {
  * Компонент меню каталогов.
  */
 const BrochureMenuComponent: React.FC<BrochureMenuComponentProps> = inject("brochureStore")(observer((props) => {
-    /**
-     * Возвращает иконку, отражающую статус каталога.
-     * Пока только один статус.
-     * @param status Статус каталога.
-     */
-    const getStatusIcon = (status: BrochureStatusType = "unchecked") => {
-        switch (status) {
-            default: return (<MailOutlined />);
-        }
-    };
-
-    /**
-     * Возвращает компонент span для элемента меню.
-     * @param name Название каталога.
-     */
-    const getMenuItemSpan = (name: string) => {
-        return (
-            <span className={"brochure-menu-items-style"}>
-                <Space>
-                    {getStatusIcon()}{name}
-                </Space>
-            </span>
-        );
-    };
-
     /**
      * Хук для хранения коллекции элементов меню.
      */
@@ -73,6 +43,21 @@ const BrochureMenuComponent: React.FC<BrochureMenuComponentProps> = inject("broc
     }, []);
 
     /**
+     * Возвращает компонент span для элемента меню.
+     * @param name Название каталога.
+     * @param status Статус каталога.
+     */
+    const getMenuItemSpan = (name: string, status: string) => {
+        return (
+            <span className={"brochure-menu-items-style"}>
+                <Space>
+                    <StatusIconsComponent status={status}/>{name}
+                </Space>
+            </span>
+        );
+    };
+
+    /**
      * Хук, необходимый для преобразования каталогов и элементы, подходящие под компонент Menu.
      */
     useEffect(() => {
@@ -80,7 +65,7 @@ const BrochureMenuComponent: React.FC<BrochureMenuComponentProps> = inject("broc
         setBrochureItems(
             brochures.map(brochure => {
                 return ({
-                    label: getMenuItemSpan(`Каталог ${brochure.id}`),
+                    label: getMenuItemSpan(`Каталог ${brochure.id}`, brochure.status),
                     key: `brochure_${brochure.id}`,
                 });
             })
