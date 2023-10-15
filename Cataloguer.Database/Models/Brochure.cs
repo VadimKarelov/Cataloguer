@@ -31,7 +31,7 @@ namespace Cataloguer.Database.Models
         /// </summary>
         [Column("edition")]
         [JsonPropertyName("edition")]
-        public int Edition { get; set; }
+        public long Edition { get; set; }
 
         [Column("position_count")]
         [JsonPropertyName("positionCount")]
