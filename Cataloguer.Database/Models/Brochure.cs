@@ -33,6 +33,9 @@ namespace Cataloguer.Database.Models
         [JsonPropertyName("edition")]
         public long Edition { get; set; }
 
+        /// <summary>
+        /// Число товаров в каталоге
+        /// </summary>
         [Column("position_count")]
         [JsonPropertyName("positionCount")]
         public int PositionCount { get; set; }
