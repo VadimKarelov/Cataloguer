@@ -8,11 +8,11 @@ namespace Cataloguer.Database.Commands.GetCommands
     {
         public IEnumerable<Good> GetGoodsFromBrochure(int brochureId)
         {
-            var positions = Context.BrochurePositions
+            return Context.BrochurePositions
                 .Where(x => x.BrochureId == brochureId)
-                .Include(x => x.Good);
-
-            return positions.Select(x => x.Good!).ToArray();
+                .Include(x => x.Good)
+                .Select(x => x.Good!)
+                .ToArray();
         }
 
         public IEnumerable<Distribution> GetDistributionsFromBrochure(int brochureId)
