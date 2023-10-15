@@ -31,6 +31,7 @@ namespace Cataloguer.Server
             DefaultRoutesRegistration(app);
             ListWithoutParametersRegistration(app);
             GetSingleObjectRegistration(app);
+            GetSpecialRegistration(app);
 
             AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
@@ -47,7 +48,7 @@ namespace Cataloguer.Server
         [EnableCors()]
         private static void ListWithoutParametersRegistration(WebApplication app)
         {
-            // в идеале прописать пути: get/AgeGroup или get/Town, то есть указать сущность. но сойдет и так
+            // в идеале прописать пути: getList/AgeGroup или getList/Town, то есть указать сущность. но сойдет и так
             app.MapGet(_baseRoute + "/getAgeGroups", () => JsonSerializer.Serialize(() => new GetListCommand<AgeGroup>().GetValues()));
             app.MapGet(_baseRoute + "/getBrochures", () => JsonSerializer.Serialize(new GetListCommand<Brochure>().GetValues()));
             app.MapGet(_baseRoute + "/getBrochurePositions", () => JsonSerializer.Serialize(new GetListCommand<BrochurePosition>().GetValues()));
@@ -71,6 +72,12 @@ namespace Cataloguer.Server
             app.Map(_baseRoute + "/getSellHistory/id={id}", (int id) => JsonSerializer.Serialize(new GetCommand<SellHistory>().GetValueById(id)));
             app.Map(_baseRoute + "/getStatus/id={id}", (int id) => JsonSerializer.Serialize(new GetCommand<Status>().GetValueById(id)));
             app.Map(_baseRoute + "/getTown/id={id}", (int id) => JsonSerializer.Serialize(new GetCommand<Town>().GetValueById(id)));
+        }
+
+        [EnableCors()]
+        private static void GetSpecialRegistration(WebApplication app)
+        {
+            app.Map(_baseRoute + "/getBrochureGoods/id={brochureId}", (int brochureId) => JsonSerializer.Serialize(new GetSpecialRequstCommand().GetGoodsFromBrochure(brochureId)));
         }
     }
 }
