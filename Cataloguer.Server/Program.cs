@@ -78,6 +78,9 @@ namespace Cataloguer.Server
         private static void GetSpecialRegistration(WebApplication app)
         {
             app.Map(_baseRoute + "/getBrochureGoods/id={brochureId}", (int brochureId) => JsonSerializer.Serialize(new GetSpecialRequstCommand().GetGoodsFromBrochure(brochureId)));
+
+            app.Map(_baseRoute + "/getBrochureDistributions/id={brochureId}",
+                (int brochureId) => JsonSerializer.Serialize(new GetSpecialRequstCommand().GetDistributionsFromBrochure(brochureId)));
         }
     }
 }

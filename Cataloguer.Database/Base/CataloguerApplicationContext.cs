@@ -148,7 +148,7 @@ namespace Cataloguer.Database.Base
 
             stopwatch.Stop();
 
-            Console.WriteLine($"Выполнен метод: {func.Method.Name} за {stopwatch.Elapsed.TotalSeconds} секунд");
+            Console.WriteLine($"Выполнен метод: {funcName} за {stopwatch.Elapsed.TotalSeconds} секунд");
 
             return res;
         }

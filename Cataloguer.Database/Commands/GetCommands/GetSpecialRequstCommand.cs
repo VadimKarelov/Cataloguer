@@ -14,5 +14,12 @@ namespace Cataloguer.Database.Commands.GetCommands
 
             return positions.Select(x => x.Good!).ToArray();
         }
+
+        public IEnumerable<Distribution> GetDistributionsFromBrochure(int brochureId)
+        {
+            return Context.Distributions
+                .Where(x => x.BrochureId == brochureId)
+                .ToArray();
+        }
     }
 }
