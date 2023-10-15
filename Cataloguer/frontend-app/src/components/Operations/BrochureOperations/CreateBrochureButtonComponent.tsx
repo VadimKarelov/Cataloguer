@@ -5,17 +5,18 @@ import {DatePicker, Form, Input, Table} from "antd";
 /**
  * Перечисления типов в метаданных для компонента CreateBrochureButtonComponent.
  */
-enum MetadataTypes {
+export enum MetadataTypes {
     STR_FIELD,
     NMBR_FIELD,
     TBL_FIELD,
     DATE_FIELD,
+    LIST_FIELD,
 }
 
 /**
  * Свойства метаданных для компонента CreateBrochureButtonComponent.
  */
-interface MetadataProps {
+export interface MetadataProps {
     id: string,
     name: string,
     type: MetadataTypes,
@@ -94,7 +95,7 @@ const CreateBrochureButtonComponent: React.FC<CreateBrochureButtonComponentProps
             <Form layout={"vertical"} colon={false}>
                 {metadata.map(formItem => {
                     return (
-                        <Form.Item label={formItem.name}>
+                        <Form.Item key={formItem.id} label={formItem.name}>
                             {getFormItemComponent(formItem)}
                         </Form.Item>
                     );
