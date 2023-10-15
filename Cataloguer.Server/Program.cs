@@ -48,15 +48,15 @@ namespace Cataloguer.Server
         private static void ListWithoutParametersRegistration(WebApplication app)
         {
             // в идеале прописать пути: get/AgeGroup или get/Town, то есть указать сущность. но сойдет и так
-            app.MapGet(_baseRoute + "getAgeGroups", () => JsonSerializer.Serialize(() => new GetListCommand<AgeGroup>().GetValues()));
-            app.MapGet(_baseRoute + "getBrochures", () => JsonSerializer.Serialize(new GetListCommand<Brochure>().GetValues()));
-            app.MapGet(_baseRoute + "getBrochurePositions", () => JsonSerializer.Serialize(new GetListCommand<BrochurePosition>().GetValues()));
-            app.MapGet(_baseRoute + "getDistributions", () => JsonSerializer.Serialize(new GetListCommand<Distribution>().GetValues()));
-            app.MapGet(_baseRoute + "getGenders", () => JsonSerializer.Serialize(new GetListCommand<Gender>().GetValues()));
-            app.MapGet(_baseRoute + "getGoods", () => JsonSerializer.Serialize(new GetListCommand<Good>().GetValues()));
-            app.MapGet(_baseRoute + "getSellHistory", () => JsonSerializer.Serialize(new GetListCommand<SellHistory>().GetValues()));
-            app.MapGet(_baseRoute + "getStatuses", () => JsonSerializer.Serialize(new GetListCommand<Status>().GetValues()));
-            app.MapGet(_baseRoute + "getTowns", () => JsonSerializer.Serialize(new GetListCommand<Town>().GetValues()));
+            app.MapGet(_baseRoute + "/getAgeGroups", () => JsonSerializer.Serialize(() => new GetListCommand<AgeGroup>().GetValues()));
+            app.MapGet(_baseRoute + "/getBrochures", () => JsonSerializer.Serialize(new GetListCommand<Brochure>().GetValues()));
+            app.MapGet(_baseRoute + "/getBrochurePositions", () => JsonSerializer.Serialize(new GetListCommand<BrochurePosition>().GetValues()));
+            app.MapGet(_baseRoute + "/getDistributions", () => JsonSerializer.Serialize(new GetListCommand<Distribution>().GetValues()));
+            app.MapGet(_baseRoute + "/getGenders", () => JsonSerializer.Serialize(new GetListCommand<Gender>().GetValues()));
+            app.MapGet(_baseRoute + "/getGoods", () => JsonSerializer.Serialize(new GetListCommand<Good>().GetValues()));
+            app.MapGet(_baseRoute + "/getSellHistory", () => JsonSerializer.Serialize(new GetListCommand<SellHistory>().GetValues()));
+            app.MapGet(_baseRoute + "/getStatuses", () => JsonSerializer.Serialize(new GetListCommand<Status>().GetValues()));
+            app.MapGet(_baseRoute + "/getTowns", () => JsonSerializer.Serialize(new GetListCommand<Town>().GetValues()));
         }
 
         [EnableCors()]
