@@ -1,7 +1,7 @@
 import React from "react";
 import {Button, Layout, Result, Space, Table} from "antd";
 import {Content, Header} from "antd/es/layout/layout";
-import {NO_DATA_TEXT} from "../../Messages";
+import {NO_DATA_TEXT} from "../../constants/Messages";
 import {BaseStoreInjector} from "../../types/BrochureTypes";
 import {inject, observer} from "mobx-react";
 import "../../styles/Tabs/DistributionsTab.css";
