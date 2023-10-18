@@ -1,4 +1,4 @@
-import {Button, Layout, Result, Space, Table} from "antd";
+import {Button, Layout, Popconfirm, Result, Space, Table} from "antd";
 import React from "react";
 import {BaseStoreInjector} from "../../types/BrochureTypes";
 import {inject, observer} from "mobx-react";
@@ -49,8 +49,12 @@ const GoodsDescriptionComponent: React.FC<GoodsDescriptionComponentProps> = inje
             title: "Операция",
             dataIndex: "operation",
             key: "goods_table_operation",
-            render: () => (<Button>Удалить</Button>),
-            width: 110
+            width: 110,
+            render: () => (
+                <Popconfirm title={`Удалить товар?`} okText={"Удалить"} cancelText={"Отменить"} /*onConfirm={() => handleDelete(record.key)}*/>
+                    <Button>Удалить</Button>
+                </Popconfirm>
+            ),
         },
     ];
 

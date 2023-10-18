@@ -2,6 +2,7 @@ import { observable, action, makeAutoObservable } from "mobx"
 import {BrochureProps, DistributionProps, GoodProps, StatusArrayProps} from "../types/BrochureTypes";
 import {random} from "../Utils";
 import DistributionService from "../services/DistributionService";
+import {ageGroups, genders, goodsNames, towns} from "./HandbookExamples";
 
 /**
  * Путь к данным каталога в session storage.
@@ -100,9 +101,12 @@ class BrochureStore {
      * Обновляет список возврастных группы.
      */
     public updateDistributionLists(): void {
-        this.getAgeGroups().then(resp => {
-           console.log(resp)
-        });
+        this.getAgeGroups().then(
+            (resp => {
+               console.log(resp)
+            }),
+            (err) => console.log(err)
+        );
     }
 
     /**
@@ -110,19 +114,10 @@ class BrochureStore {
      */
     private getRandomGoods(): GoodProps[] {
         const goodCount = 10;
-        const names: Readonly<string[]> = [
-            "iPad",
-            "iPhone",
-            "PC",
-            "Monitor",
-            "Mouse",
-            "Keyboard",
-            "Laptop"
-        ];
         const goods: GoodProps[] = [];
 
         for (let i = 0; i < goodCount; i++) {
-            const tempName = `${names.at(random(0, names.length - 1))}_${i}`;
+            const tempName = `${goodsNames.at(random(0, goodsNames.length - 1))}_${i}`;
             goods.push(
                 {name: tempName, price: random(0, 10000)}
             );
@@ -136,28 +131,6 @@ class BrochureStore {
      */
     private getRandomDistributions(): DistributionProps[] {
         const brochureCount = 20;
-        const towns: Readonly<string[]> = [
-            "Пермь",
-            "Москва",
-            "Псков",
-            "Нальчик",
-            "Казань",
-            "Тюмень",
-            "Екатеринбург"
-        ];
-
-        const genders: Readonly<string[]> = [
-            "Мужчина",
-            "Женщина",
-            "Не выбрано",
-        ];
-
-        const ageGroups: Readonly<string[]> = [
-            "Пожилые",
-            "Взрослые",
-            "Молодые",
-        ];
-
         const distributions: DistributionProps[] = [];
 
         for (let i = 0; i < brochureCount; i++) {

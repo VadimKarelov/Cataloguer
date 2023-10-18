@@ -1,5 +1,5 @@
 import React from "react";
-import {Button, Layout, Result, Space, Table} from "antd";
+import {Button, Layout, Popconfirm, Result, Space, Table} from "antd";
 import {Content, Header} from "antd/es/layout/layout";
 import {NO_DATA_TEXT} from "../../constants/Messages";
 import {BaseStoreInjector} from "../../types/BrochureTypes";
@@ -63,11 +63,13 @@ const DistributionDescriptionComponent: React.FC<DistributionDescriptionComponen
             title: "Операция",
             dataIndex: "operation",
             key: "distributions_table_operation",
-            render: () => {
+            render: (_: any, row: any) => {
                 return (
                     <Space>
-                        <Button>Изменить</Button>
-                        <Button>Удалить</Button>
+                        <CreateDistributionButtonComponent row={row}/>
+                        <Popconfirm title={`Удалить рассылку?`} okText={"Удалить"} cancelText={"Отменить"} /*onConfirm={() => handleDelete(record.key)}*/>
+                            <Button>Удалить</Button>
+                        </Popconfirm>
                     </Space>
                 );
             },

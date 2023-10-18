@@ -3,12 +3,13 @@ import React from "react";
 import {MetadataProps, MetadataTypes} from "../BrochureOperations/CreateBrochureButtonComponent";
 import {Form, Input, Select} from "antd";
 import {inject, observer} from "mobx-react";
-import {BaseStoreInjector} from "../../../types/BrochureTypes";
+import {BaseStoreInjector, customProp, DistributionProps} from "../../../types/BrochureTypes";
 
 /**
  * Свойства компонента содания рассылки.
  */
 interface CreateDistributionButtonComponentProps extends BaseStoreInjector {
+    row?: DistributionProps
 }
 
 /**
@@ -21,7 +22,7 @@ const CreateDistributionButtonComponent: React.FC<CreateDistributionButtonCompon
     const metadata: Readonly<MetadataProps[]> = [
         { id: "distribution_gender", name: "Пол", type: MetadataTypes.LIST_FIELD},
         { id: "distribution_town", name: "Населённый пункт", type: MetadataTypes.LIST_FIELD},
-        { id: "distribution_age_group", name: "Возрастная группа", type: MetadataTypes.LIST_FIELD},
+        { id: "distribution_ageGroup", name: "Возрастная группа", type: MetadataTypes.LIST_FIELD},
         { id: "distribution_brochure_count", name: "Количество каталогов", type: MetadataTypes.NMBR_FIELD},
     ];
 
@@ -39,14 +40,29 @@ const CreateDistributionButtonComponent: React.FC<CreateDistributionButtonCompon
     };
 
     /**
+     * Возвращает значение для инициализации поля формы.
+     * @param key Название поля.
+     */
+    const getInitValue = (key: string) => {
+        const isEditButton = !!props.row;
+        if (!isEditButton) return null;
+
+        const finalKey = key.slice(key.lastIndexOf('_') + 1)
+        const parsable: customProp = props.row ?? {};
+        return parsable[finalKey] ?? null;
+    };
+
+    /**
      * Возвращает компонент формы.
      */
     const getForm = (): React.JSX.Element => {
         return (
             <Form layout={"vertical"} colon={false}>
                 {metadata.map(formItem => {
+                    const formId = formItem.id;
+                    const formName = formId.slice(formId.lastIndexOf('_') + 1);
                     return (
-                        <Form.Item key={formItem.id} label={formItem.name}>
+                        <Form.Item key={formItem.id} label={formItem.name} name={formName} initialValue={getInitValue(formItem.id)}>
                             {getFormItemComponent(formItem)}
                         </Form.Item>
                     );
@@ -66,8 +82,8 @@ const CreateDistributionButtonComponent: React.FC<CreateDistributionButtonCompon
      * Свойства модального окна.
      */
     const modalProps = {
-        title: "Создать рассылку",
-        okText: "Сохранить",
+        title: `${!props.row ? "Создать" : "Редактировать"} рассылку`,
+        okText: `${!props.row ? "Сохранить" : "Редактировать"}`,
         cancelText: "Отменить",
         children: getForm(),
     };
@@ -76,7 +92,7 @@ const CreateDistributionButtonComponent: React.FC<CreateDistributionButtonCompon
      * Свойства кнопки.
      */
     const buttonProps = {
-        buttonText: "Добавить",
+        buttonText: `${!props.row ? "Добавить" : "Изменить"}`,
         onClick: onButtonClick,
     };
 
