@@ -20,7 +20,15 @@ class GoodsService extends BaseService {
      * @param brochureId Идентификатор каталога.
      */
     public static async deleteBrochureGood(goodId: number, brochureId: number) {
-        const methodRoute = `/deleteBrochureGood/goodId=${goodId}/brochureId=${brochureId}`;
+        const methodRoute = `/deleteBrochureGood/goodId=${goodId}&brochureId=${brochureId}`;
+        return await BaseService.sendGetHttpRequest(BACKEND_CONTROLLER_ROUTE, methodRoute);
+    }
+
+    /**
+     * Отправляет запрос на получение всех возможных товаров.
+     */
+    public static async getGoods() {
+        const methodRoute = `/getGoods`;
         return await BaseService.sendGetHttpRequest(BACKEND_CONTROLLER_ROUTE, methodRoute);
     }
 }

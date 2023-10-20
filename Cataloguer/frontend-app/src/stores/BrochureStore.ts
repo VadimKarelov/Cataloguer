@@ -3,6 +3,7 @@ import {BrochureProps, DistributionProps, GoodProps, StatusArrayProps} from "../
 import {random} from "../Utils";
 import DistributionService from "../services/DistributionService";
 import {ageGroups, genders, goodsNames, towns} from "./HandbookExamples";
+import GoodsService from "../services/GoodsService";
 
 /**
  * Путь к данным каталога в session storage.
@@ -57,10 +58,16 @@ class BrochureStore {
     public currentBrochure: BrochureProps | null;
 
     /**
+     * Все возможные товары.
+     */
+    public allGoods: any[];
+
+    /**
      * Конструктор.
      */
     constructor() {
         this.brochures = [];
+        this.allGoods = [];
         this.currentBrochure = null;
         this.isBrochureSelected = false;
         this.isBrochureLoading = false;
@@ -80,6 +87,24 @@ class BrochureStore {
 
         this.getAgeGroups = this.getAgeGroups.bind(this);
         this.updateDistributionLists = this.updateDistributionLists.bind(this);
+
+        this.updateGoodsList = this.updateGoodsList.bind(this);
+    }
+
+    /**
+     * Обновляет список товаров для создания каталога.
+     */
+    public updateGoodsList() {
+        GoodsService.getGoods().then(
+            ((response: {data: any}) => {
+                console.log(response)
+                const isFine = response.data instanceof Array;
+                if (!isFine) return;
+                console.log(response.data)
+                this.allGoods = response.data;
+            }),
+            (err) => console.log(err)
+        )
     }
 
     /**
