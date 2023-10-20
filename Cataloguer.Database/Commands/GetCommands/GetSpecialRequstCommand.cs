@@ -1,11 +1,14 @@
-﻿using Cataloguer.Database.Commands.Base;
+﻿using Cataloguer.Database.Base;
+using Cataloguer.Database.Commands.Base;
 using Cataloguer.Database.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace Cataloguer.Database.Commands.GetCommands
 {
-    public class GetSpecialRequstCommand : AbstractCommand
+    public class GetSpecialRequestCommand : AbstractCommand
     {
+        public GetSpecialRequestCommand(DataBaseConfiguration config) : base(config) { }
+
         public IEnumerable<Good> GetGoodsFromBrochure(int brochureId)
         {
             return Context.BrochurePositions

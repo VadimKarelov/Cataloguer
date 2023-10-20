@@ -19,19 +19,19 @@ namespace Cataloguer.Database.Base
         public DbSet<Status> Statuses { get; set; }
         public DbSet<Town> Towns { get; set; }
 
-        public CataloguerApplicationContext()
+        private string _connectionString;
+
+        public CataloguerApplicationContext(DataBaseConfiguration config)
         {
+            _connectionString = config.ConnectionsString;
+
             Database.EnsureCreated();
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             //todo вынести в конфиг
-            optionsBuilder.UseNpgsql("User ID=postgres;" +
-                "Password=postgres;" +
-                "Host=localhost;" +
-                "Port=5432;" +
-                "Database=CataloguerDataBasePostgres;");
+            optionsBuilder.UseNpgsql(_connectionString);
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

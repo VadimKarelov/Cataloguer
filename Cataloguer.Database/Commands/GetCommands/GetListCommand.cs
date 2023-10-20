@@ -1,10 +1,13 @@
-﻿using Cataloguer.Database.Commands.Base;
+﻿using Cataloguer.Database.Base;
+using Cataloguer.Database.Commands.Base;
 using Cataloguer.Database.Models;
 
 namespace Cataloguer.Database.Commands.GetCommands
 {
     public class GetListCommand<T> : AbstractCommand where T : class
     {
+        public GetListCommand(DataBaseConfiguration config) : base(config) { }
+
         public IEnumerable<T> GetValues()
         {
             var typename = typeof(T).ToString();
