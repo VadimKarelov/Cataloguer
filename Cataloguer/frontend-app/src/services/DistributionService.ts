@@ -1,14 +1,5 @@
 import BaseService from "./BaseService";
-
-/**
- * Адрес backend.
- */
-const BACKEND_ROUTE: Readonly<string> = process.env.BACKEND_ROUTE ?? "";
-
-/**
- * Основной путь обращения к контроллеру.
- */
-const BACKEND_CONTROLLER_ROUTE: Readonly<string> = `${BACKEND_ROUTE}/api/v1/distribution`;
+import {BACKEND_CONTROLLER_ROUTE} from "../constants/Routes";
 
 /**
  * Класс сервис для обращению к контроллеру рассылок.
@@ -47,7 +38,7 @@ class DistributionService extends BaseService {
      */
     public static async getAgeGroups() {
         const methodRoute = `/getAgeGroups`;
-        return await BaseService.sendGetHttpRequest(`${BACKEND_CONTROLLER_ROUTE}/api/v1/cataloguer`, methodRoute);
+        return await BaseService.sendGetHttpRequest(BACKEND_CONTROLLER_ROUTE, methodRoute);
     }
 }
 

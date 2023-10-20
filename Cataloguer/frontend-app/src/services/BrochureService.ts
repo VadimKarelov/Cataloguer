@@ -1,14 +1,5 @@
 import BaseService from "./BaseService";
-
-/**
- * Адрес backend.
- */
-const BACKEND_ROUTE: Readonly<string> = process.env.BACKEND_ROUTE ?? "";
-
-/**
- * Основной путь обращения к контроллеру.
- */
-const BACKEND_CONTROLLER_ROUTE: Readonly<string> = `${BACKEND_ROUTE}/api/v1/cataloguer`;
+import {BACKEND_CONTROLLER_ROUTE} from "../constants/Routes";
 
 /**
  * Сервис для отправки запросов к backend.
@@ -36,7 +27,7 @@ class BrochureService extends BaseService {
      * @param brochureId Идентифкиатор каталога.
      */
     public static async getBrochureDistributions(brochureId: number) {
-        const methodRoute = `/getDistributions/id=${brochureId}`;
+        const methodRoute = `/getBrochureDistributions/id=${brochureId}`;
         return await BaseService.sendGetHttpRequest(BACKEND_CONTROLLER_ROUTE, methodRoute);
     }
 
