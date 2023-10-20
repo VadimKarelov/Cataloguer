@@ -3,7 +3,7 @@ import React from "react";
 import {inject, observer} from "mobx-react";
 import {BaseStoreInjector, BrochureBaseInfoProps, customProp} from "../../types/BrochureTypes";
 import "../../styles/Tabs/BrochureTab.css";
-import {NO_DATA_TEXT} from "../../Messages";
+import {NO_DATA_TEXT} from "../../constants/Messages";
 
 /**
  * Метаданные к разделу.

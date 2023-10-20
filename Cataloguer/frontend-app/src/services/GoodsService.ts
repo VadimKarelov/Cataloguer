@@ -1,14 +1,5 @@
 import BaseService from "./BaseService";
-
-/**
- * Адрес backend.
- */
-const BACKEND_ROUTE: Readonly<string> = process.env.BACKEND_ROUTE ?? "";
-
-/**
- * Основной путь обращения к контроллеру.
- */
-const BACKEND_CONTROLLER_ROUTE: Readonly<string> = `${BACKEND_ROUTE}/api/v1/goods`;
+import {BACKEND_CONTROLLER_ROUTE} from "../constants/Routes";
 
 /**
  * Класс сервис для обращению к контроллеру товаров каталога.

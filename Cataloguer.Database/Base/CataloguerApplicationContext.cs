@@ -87,7 +87,7 @@ namespace Cataloguer.Database.Base
         {
             Random random = new Random();
 
-            using StreamReader reader = new StreamReader("\\Resources\\goroda.txt");
+            using StreamReader reader = new StreamReader(@"..\Cataloguer.Database\Resources\goroda.txt");
             return reader.ReadToEnd()
                 .Split()
                 .Where(x => !string.IsNullOrEmpty(x) && !x.Contains("Оспаривается"))
@@ -99,7 +99,7 @@ namespace Cataloguer.Database.Base
         {
             Random random = new Random();
 
-            using StreamReader reader = new StreamReader("\\Resources\\goods.txt");
+            using StreamReader reader = new StreamReader(@"..\Cataloguer.Database\Resources\goods.txt");
             return reader.ReadToEnd()
                 .Split()
                 .Where(x => !string.IsNullOrEmpty(x))
