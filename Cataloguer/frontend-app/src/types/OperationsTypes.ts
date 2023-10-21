@@ -13,12 +13,14 @@ interface ButtonProps {
 /**
  * Свойства модального окна.
  * @param okText Текст на кнопке ок.
+ * @param onOkClick Событие при нажитии кнопки ок.
  * @param cancelText Текст на кнопке отмена.
  * @param title Заголовок модального окна.
  * @param children Дочерние компоненты.
  */
 interface ModalProps {
     okText?: string,
+    onOkClick?: () => Promise<void>,
     cancelText?: string,
     title: React.ReactNode,
     children: React.JSX.Element,

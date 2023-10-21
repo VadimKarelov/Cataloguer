@@ -1,9 +1,10 @@
 import BaseButton from "../BaseButtonComponent";
 import React from "react";
-import {Button, DatePicker, Form, Input, Popconfirm, Space, Table} from "antd";
+import {DatePicker, Form, Input} from "antd";
 import {BaseStoreInjector} from "../../../types/BrochureTypes";
 import {inject, observer} from "mobx-react";
-import CreateDistributionButtonComponent from "../DistributionOperations/CreateDistributionButtonComponent";
+import GoodsTableComponent from "./EditableTable/GoodsTableComponent";
+import moment from "moment";
 
 /**
  * Перечисления типов в метаданных для компонента CreateBrochureButtonComponent.
@@ -23,6 +24,9 @@ export interface MetadataProps {
     id: string,
     name: string,
     type: MetadataTypes,
+    isRequired: boolean,
+    min?: number,
+    max?: number,
 }
 
 /**
@@ -41,38 +45,12 @@ const modes = new Map([
     [ButtonModes.EDIT, "Изменить"],
 ]);
 
-const columns = [
-    {
-        title: "Название",
-        dataIndex: "name",
-        key: "goods_table_name",
-        // width: 315
-    },
-    {
-        title: "Цена",
-        dataIndex: "cost",
-        key: "goods_table_cost",
-        // width: 128
-    },
-];
-
-// rowSelection object indicates the need for row selection
-const rowSelection = {
-    onChange: (selectedRowKeys: React.Key[], selectedRows: any[]) => {
-        console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
-    },
-    getCheckboxProps: (record: any) => ({
-        disabled: record.name === 'Disabled User', // Column configuration not to be checked
-        name: record.name,
-    }),
-};
-
 /**
  * Свойства компонента CreateBrochureButtonComponent.
  * @param mode Режим работы кнопок компонента.
  */
 interface CreateBrochureButtonComponentProps extends BaseStoreInjector {
-    mode: ButtonModes
+    mode: ButtonModes,
 }
 
 /**
@@ -83,9 +61,9 @@ const CreateBrochureButtonComponent: React.FC<CreateBrochureButtonComponentProps
      * Метаданные модалки редактирования каталога.
      */
     const editFormMetadata: Readonly<MetadataProps[]> = [
-        { id: "brochure_name", name: "Название", type: MetadataTypes.STR_FIELD},
-        { id: "brochure_create_date", name: "Период выпуска каталога", type: MetadataTypes.DATE_FIELD},
-        { id: "brochure_edition", name: "Тираж", type: MetadataTypes.STR_FIELD},
+        { id: "brochure_name", name: "Название", type: MetadataTypes.STR_FIELD, isRequired: true, min: 1, max: 30},
+        { id: "brochure_date", name: "Период выпуска каталога", type: MetadataTypes.DATE_FIELD, isRequired: true},
+        { id: "brochure_edition", name: "Тираж", type: MetadataTypes.NMBR_FIELD, isRequired: true, min: 1, max: Number.MAX_VALUE},
     ];
 
     /**
@@ -93,7 +71,7 @@ const CreateBrochureButtonComponent: React.FC<CreateBrochureButtonComponentProps
      */
     const createFormMetadata: Readonly<MetadataProps[]> = [
         ...editFormMetadata,
-        { id: "brochure_goods", name: "Перечень товаров", type: MetadataTypes.TBL_FIELD},
+        { id: "brochure_positions", name: "Перечень товаров", type: MetadataTypes.TBL_FIELD, isRequired: false},
     ];
 
     /**
@@ -102,10 +80,9 @@ const CreateBrochureButtonComponent: React.FC<CreateBrochureButtonComponentProps
     const currentMode = modes.get(props.mode) ?? "";
 
     /**
-     * Все возможные товары.
+     * Указатель на форму.
      */
-    const allGoods = props.brochureStore?.allGoods ?? [];
-
+    const [form] = Form.useForm();
 
     /**
      * Возвращает компонет элемента формы.
@@ -113,15 +90,51 @@ const CreateBrochureButtonComponent: React.FC<CreateBrochureButtonComponentProps
      */
     const getFormItemComponent = (formItem: MetadataProps) => {
         switch (formItem.type) {
-            case MetadataTypes.NMBR_FIELD:
+            case MetadataTypes.NMBR_FIELD: return (<Input type={"number"}/>);
             case MetadataTypes.STR_FIELD: return (<Input/>);
             case MetadataTypes.DATE_FIELD: return (<DatePicker/>);
-            case MetadataTypes.TBL_FIELD: return (<Table columns={columns} rowSelection={{
-                type: 'checkbox',
-                ...rowSelection,
-            }}/>);
+            case MetadataTypes.TBL_FIELD: return (<GoodsTableComponent/>);
             default: return null;
         }
+    };
+
+    /**
+     * Возвращает результаты проверки полей.
+     * @param _ Служебное поле.
+     * @param value Значение поля.
+     * @param itemMetadata Метаданные для поля.
+     */
+    const getValidator = (_: any, value: any, itemMetadata: MetadataProps) => {
+        if (!value && itemMetadata.isRequired) return Promise.reject();
+
+        let isFine = true;
+        switch (itemMetadata.type) {
+            case MetadataTypes.NMBR_FIELD: {
+                if (isNaN(parseFloat(value))) return Promise.reject();
+
+                const num = parseFloat(value);
+                if (itemMetadata.min) {
+                    isFine = num >= itemMetadata.min;
+                }
+
+                if (itemMetadata.max) {
+                    isFine = num <= itemMetadata.max;
+                }
+            } break;
+            case MetadataTypes.STR_FIELD: {
+                const str: string = value;
+                const length = str.length;
+                if (itemMetadata.min) {
+                    isFine = length >= itemMetadata.min;
+                }
+
+                if (itemMetadata.max) {
+                    isFine = length <= itemMetadata.max;
+                }
+            } break;
+        }
+
+        return isFine ? Promise.resolve() : Promise.reject();
     };
 
     /**
@@ -130,10 +143,19 @@ const CreateBrochureButtonComponent: React.FC<CreateBrochureButtonComponentProps
     const getForm = (): React.JSX.Element => {
         const metadata = props.mode === ButtonModes.EDIT ? editFormMetadata : createFormMetadata;
         return (
-            <Form layout={"vertical"} colon={false}>
+            <Form form={form} name={"brochure_create_form"} layout={"vertical"} colon={false}>
                 {metadata.map(formItem => {
+                    const formItemName: Readonly<string> = formItem.id.slice(formItem.id.indexOf('_') + 1);
                     return (
-                        <Form.Item key={formItem.id} label={formItem.name}>
+                        <Form.Item
+                            key={formItem.id}
+                            label={formItem.name}
+                            name={formItemName}
+                            rules={[{
+                                required: formItem.isRequired,
+                                validator: (_, value) => getValidator(_, value, formItem),
+                            }]}
+                        >
                             {getFormItemComponent(formItem)}
                         </Form.Item>
                     );
@@ -143,19 +165,48 @@ const CreateBrochureButtonComponent: React.FC<CreateBrochureButtonComponentProps
     };
 
     /**
+     * Обрабатывает нажатие кнопки сохранить.
+     */
+    const onOkClick = (): Promise<void> => {
+        return form.validateFields()
+                                .then(
+                                    (values) => {
+                                        values.date = moment(values?.date).format();
+                                        values.edition = parseFloat(values.edition);
+                                        props.brochureStore?.handleCreateBrochure(values);
+                                        form.resetFields();
+                                        return Promise.resolve();
+                                    },
+                                    (info) => {
+                                        console.log('Validate Failed:', info);
+                                        return Promise.reject();
+                                    }
+                                );
+    };
+
+    /**
      * Свойства модального окна.
      */
     const modalProps = {
         title: props.mode === ButtonModes.EDIT ? "Редактировать каталог" : "Создать каталог",
+        form: form,
         okText: "Сохранить",
         cancelText: "Отменить",
+        onOkClick: onOkClick,
         children: getForm(),
     };
 
+    /**
+     * Срабатывает при нажатии кнопки.
+     * Используется в качестве callback функции в родительском компоненте.
+     */
     const onClick = () => {
         props.brochureStore?.updateGoodsList();
     };
 
+    /**
+     * Свойства кнопки для родительского компонента.
+     */
     const buttonProps = {
         buttonText: currentMode,
         onClick: onClick

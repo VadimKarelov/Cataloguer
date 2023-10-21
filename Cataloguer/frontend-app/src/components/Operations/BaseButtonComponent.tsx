@@ -25,11 +25,25 @@ const BaseButtonComponent: React.FC<BaseButtonComponentProps> = (props) => {
      * Срабатывает при нажатии на кнопку.
      * Пока только открывает модальное окно.
      */
-    const onButtonClick = () => {
+    const onButtonClick = (): void => {
         setIsOpen(true);
         const callback = props?.buttonProps?.onClick
         if (callback) {
             callback();
+        }
+    };
+
+    /**
+     * Срабатывает при попытки нажать кнопку Ок.
+     * Для создания каталога - кнопка сохранить.
+     */
+    const onFinish = (): void => {
+        if (modalProps.onOkClick) {
+            const shouldCloseHandler = modalProps.onOkClick();
+            shouldCloseHandler.then(
+                () => setIsOpen(false),
+                () => setIsOpen(true),
+            );
         }
     };
 
@@ -40,6 +54,7 @@ const BaseButtonComponent: React.FC<BaseButtonComponentProps> = (props) => {
                 onCancel={() => setIsOpen(false)}
                 title={modalProps.title}
                 okText={modalProps.okText}
+                onOk={onFinish}
                 cancelText={modalProps.cancelText}
             >
                 {modalProps.children}

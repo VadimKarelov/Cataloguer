@@ -1,5 +1,6 @@
 import BaseService from "./BaseService";
 import {BACKEND_CONTROLLER_ROUTE} from "../constants/Routes";
+import {CreateBrochureHandlerProps} from "../types/BrochureTypes";
 
 /**
  * Сервис для отправки запросов к backend.
@@ -35,7 +36,7 @@ class BrochureService extends BaseService {
      * Отправляет запрос на создание каталога.
      * @param params Параметры каталога.
      */
-    public static async createBrochure(params: object) {
+    public static async createBrochure(params: CreateBrochureHandlerProps) {
         const methodRoute = `/createBrochure`;
         return await BaseService.sendPostHttpRequest(BACKEND_CONTROLLER_ROUTE, methodRoute, params);
     }
