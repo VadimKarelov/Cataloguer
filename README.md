@@ -7,7 +7,7 @@
 
 ### Схемы
 
-![Image](Cataloguer/Resources/ЛР2.png)
+![Image](Labs/ЛР2.png)
 
 ### Правила
 
