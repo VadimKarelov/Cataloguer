@@ -64,7 +64,7 @@ namespace Cataloguer.Server
             app.MapGet(_baseRoute + "/getBrochurePositions", () => new GetListCommand<BrochurePosition>(config).GetValues());
             app.MapGet(_baseRoute + "/getDistributions", () => new GetListCommand<Distribution>(config).GetValues());
             app.MapGet(_baseRoute + "/getGenders", () => new GetListCommand<Gender>(config).GetValues());
-            app.MapGet(_baseRoute + "/getGoods", () => new GetListCommand<Good>(config).GetValues());
+            app.MapGet(_baseRoute + "/getGoods", () => new GetSpecialRequestCommand(config).GetGoodsWithAveragePriceFromHsitory());
             app.MapGet(_baseRoute + "/getSellHistory", () => new GetListCommand<SellHistory>(config).GetValues());
             app.MapGet(_baseRoute + "/getStatuses", () => new GetListCommand<Status>(config).GetValues());
             app.MapGet(_baseRoute + "/getTowns", () => new GetListCommand<Town>(config).GetValues());
