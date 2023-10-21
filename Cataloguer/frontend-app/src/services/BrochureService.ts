@@ -1,6 +1,6 @@
 import BaseService from "./BaseService";
 import {BACKEND_CONTROLLER_ROUTE} from "../constants/Routes";
-import {CreateBrochureHandlerProps} from "../types/BrochureTypes";
+import {CreateBrochureHandlerProps, EditBrochureHandlerProps} from "../types/BrochureTypes";
 
 /**
  * Сервис для отправки запросов к backend.
@@ -46,7 +46,7 @@ class BrochureService extends BaseService {
      * @param id Идентификатор каталога.
      * @param params Параметры каталога.
      */
-    public static async updateBrochure(id: number, params: object) {
+    public static async updateBrochure(id: number, params: EditBrochureHandlerProps) {
         const methodRoute = `/updateBrochure/id=${id}`;
         return await BaseService.sendPostHttpRequest(BACKEND_CONTROLLER_ROUTE, methodRoute, params);
     }

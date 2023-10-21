@@ -1,7 +1,7 @@
 import BaseButton from "../BaseButtonComponent";
 import React from "react";
 import {DatePicker, Form, Input} from "antd";
-import {BaseStoreInjector} from "../../../types/BrochureTypes";
+import {BaseStoreInjector, EditBrochureHandlerProps} from "../../../types/BrochureTypes";
 import {inject, observer} from "mobx-react";
 import GoodsTableComponent from "./EditableTable/GoodsTableComponent";
 import moment from "moment";
@@ -92,7 +92,7 @@ const CreateBrochureButtonComponent: React.FC<CreateBrochureButtonComponentProps
         switch (formItem.type) {
             case MetadataTypes.NMBR_FIELD: return (<Input type={"number"}/>);
             case MetadataTypes.STR_FIELD: return (<Input/>);
-            case MetadataTypes.DATE_FIELD: return (<DatePicker/>);
+            case MetadataTypes.DATE_FIELD: return (<DatePicker format={"DD.MM.YYYY"}/>);
             case MetadataTypes.TBL_FIELD: return (<GoodsTableComponent/>);
             default: return null;
         }
@@ -142,8 +142,9 @@ const CreateBrochureButtonComponent: React.FC<CreateBrochureButtonComponentProps
      */
     const getForm = (): React.JSX.Element => {
         const metadata = props.mode === ButtonModes.EDIT ? editFormMetadata : createFormMetadata;
+        const formId = `brochure_${props.mode === ButtonModes.EDIT ? "edit" : "create"}_form`;
         return (
-            <Form form={form} name={"brochure_create_form"} layout={"vertical"} colon={false}>
+            <Form id={formId} form={form} name={formId} layout={"vertical"} colon={false}>
                 {metadata.map(formItem => {
                     const formItemName: Readonly<string> = formItem.id.slice(formItem.id.indexOf('_') + 1);
                     return (
@@ -165,16 +166,35 @@ const CreateBrochureButtonComponent: React.FC<CreateBrochureButtonComponentProps
     };
 
     /**
+     * Обработчик создания/редактирования каталога.
+     * @param values Значения полей.
+     */
+    const handleDbAction = (values: any) => {
+        values.date = moment(values?.date).format();
+        values.edition = parseFloat(values.edition);
+
+        if (props.mode === ButtonModes.CREATE) {
+            props.brochureStore?.handleCreateBrochure(values);
+        } else {
+            const brochureEditProps: EditBrochureHandlerProps = {
+                name: values.name,
+                date: values.date,
+                edition: values.edition
+            };
+            props.brochureStore?.handleEditBrochure(brochureEditProps);
+        }
+
+        form.resetFields();
+    };
+
+    /**
      * Обрабатывает нажатие кнопки сохранить.
      */
     const onOkClick = (): Promise<void> => {
         return form.validateFields()
                                 .then(
                                     (values) => {
-                                        values.date = moment(values?.date).format();
-                                        values.edition = parseFloat(values.edition);
-                                        props.brochureStore?.handleCreateBrochure(values);
-                                        form.resetFields();
+                                        handleDbAction(values);
                                         return Promise.resolve();
                                     },
                                     (info) => {
@@ -188,7 +208,7 @@ const CreateBrochureButtonComponent: React.FC<CreateBrochureButtonComponentProps
      * Свойства модального окна.
      */
     const modalProps = {
-        title: props.mode === ButtonModes.EDIT ? "Редактировать каталог" : "Создать каталог",
+        title: `${props.mode === ButtonModes.EDIT ? "Редактировать" : "Создать"} каталог`,
         form: form,
         okText: "Сохранить",
         cancelText: "Отменить",
@@ -205,11 +225,17 @@ const CreateBrochureButtonComponent: React.FC<CreateBrochureButtonComponentProps
     };
 
     /**
+     * Выбранный каталог.
+     */
+    const currentBrochure = props.brochureStore?.currentBrochure ?? null;
+
+    /**
      * Свойства кнопки для родительского компонента.
      */
     const buttonProps = {
         buttonText: currentMode,
-        onClick: onClick
+        onClick: onClick,
+        isDisabled: currentBrochure === null && props.mode === ButtonModes.EDIT,
     };
 
     return (

@@ -59,7 +59,7 @@ const BaseButtonComponent: React.FC<BaseButtonComponentProps> = (props) => {
             >
                 {modalProps.children}
             </Modal>
-            <Button onClick={onButtonClick}>
+            <Button disabled={buttonProps.isDisabled} onClick={onButtonClick}>
                 {buttonProps.buttonText}
             </Button>
         </>

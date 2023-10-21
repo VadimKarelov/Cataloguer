@@ -115,15 +115,26 @@ interface GoodsExtendedProps extends GoodsProps {
 }
 
 /**
- * Свойства отправляемого в БД каталога.
+ * Свойства отправляемого в БД каталога (редактирование).
  * @param name Название.
+ * @param date Дата выпуска каталога.
+ * @param edition Тираж.
+ */
+interface EditBrochureHandlerProps {
+    name: string,
+    date: string,
+    edition: number,
+}
+
+/**
+ * Свойства отправляемого в БД каталога (создание).
+ * @param name Название.
+ * @param date Дата выпуска каталога.
  * @param edition Тираж.
  * @param positions Число позиций (товаров).
  */
-interface CreateBrochureHandlerProps {
-    name: string,
-    edition: number,
-    positions: GoodDBProps[]
+interface CreateBrochureHandlerProps extends EditBrochureHandlerProps {
+    positions: GoodDBProps[],
 }
 
 export type {
@@ -137,5 +148,6 @@ export type {
     GoodDBProps,
     GoodsProps,
     GoodsExtendedProps,
+    EditBrochureHandlerProps,
     CreateBrochureHandlerProps,
 }

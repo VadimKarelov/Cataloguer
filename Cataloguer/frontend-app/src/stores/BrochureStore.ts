@@ -1,7 +1,7 @@
 import { observable, action, makeAutoObservable } from "mobx"
 import {
     BrochureProps, CreateBrochureHandlerProps,
-    DistributionProps, GoodDBProps,
+    DistributionProps, EditBrochureHandlerProps, GoodDBProps,
     GoodProps,
     GoodsExtendedProps,
     GoodsProps,
@@ -77,6 +77,11 @@ class BrochureStore {
     private checkedGoods: GoodDBProps[];
 
     /**
+     * Загружаются ли товары.
+     */
+    public isLoadingGoods: boolean;
+
+    /**
      * Конструктор.
      */
     constructor() {
@@ -87,6 +92,7 @@ class BrochureStore {
         this.isBrochureSelected = false;
         this.isBrochureLoading = false;
         this.isBrochureMenuLoading = false;
+        this.isLoadingGoods = false;
 
         makeAutoObservable(this);
 
@@ -104,6 +110,21 @@ class BrochureStore {
         this.updateDistributionLists = this.updateDistributionLists.bind(this);
 
         this.updateGoodsList = this.updateGoodsList.bind(this);
+    }
+
+    /**
+     * Обрабатывает создание каталога.
+     * @param brochure Каталог.
+     */
+    public async handleEditBrochure(brochure: EditBrochureHandlerProps) {
+        const id = this.currentBrochure?.id ?? -1;
+        if (id === -1) return;
+
+        console.log("Отправляем на backend: ", brochure);
+
+        await BrochureService.updateBrochure(id, brochure).then((response: {data: any}) => {
+            console.log(response.data)
+        });
     }
 
     /**
@@ -134,6 +155,7 @@ class BrochureStore {
      * Обновляет список товаров для создания каталога.
      */
     public updateGoodsList() {
+        this.isLoadingGoods = true;
         GoodsService.getGoods().then(
             ((response: {data: any}) => {
                 const isFine = response.data instanceof Array;
@@ -142,7 +164,7 @@ class BrochureStore {
                 this.allGoods = response.data;
             }),
             (err) => console.log(err)
-        )
+        ).finally(() => this.isLoadingGoods = false);
     }
 
     /**

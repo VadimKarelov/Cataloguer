@@ -127,6 +127,7 @@ const GoodsTableComponent: React.FC<GoodsTableComponentProps> = inject("brochure
 
     return (
         <Table
+            loading={props?.brochureStore?.isLoadingGoods}
             columns={cols}
             rowSelection={{
                 type: "checkbox",
