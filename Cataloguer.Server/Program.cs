@@ -14,7 +14,7 @@ namespace Cataloguer.Server
         public static void Main(string[] args)
         {
             Log.Logger = new LoggerConfiguration()
-                .WriteTo.File(new JsonFormatter(), "Cataloguer.log")
+                .WriteTo.File(new JsonFormatter(), "Logs/Cataloguer.log")
                 .MinimumLevel.Verbose()
                 .CreateLogger();
 
