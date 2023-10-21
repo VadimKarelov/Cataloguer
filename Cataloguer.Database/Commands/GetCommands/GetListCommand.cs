@@ -1,6 +1,7 @@
 ﻿using Cataloguer.Database.Base;
 using Cataloguer.Database.Commands.Base;
 using Cataloguer.Database.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Cataloguer.Database.Commands.GetCommands
 {
@@ -14,15 +15,15 @@ namespace Cataloguer.Database.Commands.GetCommands
 
             switch (typename.Remove(0, typename.LastIndexOf(".") + 1))
             {
-                case nameof(AgeGroup): return Context.AgeGroups.Cast<T>().ToArray();
-                case nameof(Brochure): return Context.Brochures.Cast<T>().ToArray();
-                case nameof(BrochurePosition): return Context.BrochurePositions.Cast<T>().ToArray();
-                case nameof(Distribution): return Context.Distributions.Cast<T>().ToArray();
-                case nameof(Gender): return Context.Genders.Cast<T>().ToArray();
-                case nameof(Good): return Context.Goods.Cast<T>().ToArray();
-                case nameof(SellHistory): return Context.SellHistory.Cast<T>().ToArray();
-                case nameof(Status): return Context.Statuses.Cast<T>().ToArray();
-                case nameof(Town): return Context.Towns.Cast<T>().ToArray();
+                case nameof(AgeGroup): return Context.AgeGroups.AsNoTracking().Cast<T>().ToArray();
+                case nameof(Brochure): return Context.Brochures.AsNoTracking().Cast<T>().ToArray();
+                case nameof(BrochurePosition): return Context.BrochurePositions.AsNoTracking().Cast<T>().ToArray();
+                case nameof(Distribution): return Context.Distributions.AsNoTracking().Cast<T>().ToArray();
+                case nameof(Gender): return Context.Genders.AsNoTracking().Cast<T>().ToArray();
+                case nameof(Good): return Context.Goods.AsNoTracking().Cast<T>().ToArray();
+                case nameof(SellHistory): return Context.SellHistory.AsNoTracking().Cast<T>().ToArray();
+                case nameof(Status): return Context.Statuses.AsNoTracking().Cast<T>().ToArray();
+                case nameof(Town): return Context.Towns.AsNoTracking().Cast<T>().ToArray();
                 default: throw new ArgumentException($"Указанного типа ({typename}) не существует в базе данных!");
             }
         }
@@ -33,15 +34,15 @@ namespace Cataloguer.Database.Commands.GetCommands
 
             switch (typename.Remove(0, typename.LastIndexOf(".") + 1))
             {
-                case nameof(AgeGroup): return Context.AgeGroups.Where(x => predicate(x as T)).Cast<T>().ToArray();
-                case nameof(Brochure): return Context.Brochures.Where(x => predicate(x as T)).Cast<T>().ToArray();
-                case nameof(BrochurePosition): return Context.BrochurePositions.Where(x => predicate(x as T)).Cast<T>().ToArray();
-                case nameof(Distribution): return Context.Distributions.Where(x => predicate(x as T)).Cast<T>().ToArray();
-                case nameof(Gender): return Context.Genders.Where(x => predicate(x as T)).Cast<T>().ToArray();
-                case nameof(Good): return Context.Goods.Where(x => predicate(x as T)).Cast<T>().ToArray();
-                case nameof(SellHistory): return Context.SellHistory.Where(x => predicate(x as T)).Cast<T>().ToArray();
-                case nameof(Status): return Context.Statuses.Where(x => predicate(x as T)).Cast<T>().ToArray();
-                case nameof(Town): return Context.Towns.Where(x => predicate(x as T)).Cast<T>().ToArray();
+                case nameof(AgeGroup): return Context.AgeGroups.AsNoTracking().Where(x => predicate(x as T)).Cast<T>().ToArray();
+                case nameof(Brochure): return Context.Brochures.AsNoTracking().Where(x => predicate(x as T)).Cast<T>().ToArray();
+                case nameof(BrochurePosition): return Context.BrochurePositions.AsNoTracking().Where(x => predicate(x as T)).Cast<T>().ToArray();
+                case nameof(Distribution): return Context.Distributions.AsNoTracking().Where(x => predicate(x as T)).Cast<T>().ToArray();
+                case nameof(Gender): return Context.Genders.AsNoTracking().Where(x => predicate(x as T)).Cast<T>().ToArray();
+                case nameof(Good): return Context.Goods.AsNoTracking().Where(x => predicate(x as T)).Cast<T>().ToArray();
+                case nameof(SellHistory): return Context.SellHistory.AsNoTracking().Where(x => predicate(x as T)).Cast<T>().ToArray();
+                case nameof(Status): return Context.Statuses.AsNoTracking().Where(x => predicate(x as T)).Cast<T>().ToArray();
+                case nameof(Town): return Context.Towns.AsNoTracking().Where(x => predicate(x as T)).Cast<T>().ToArray();
                 default: throw new ArgumentException($"Указанного типа ({typename}) не существует в базе данных!");
             }
         }
