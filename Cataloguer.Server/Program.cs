@@ -2,6 +2,8 @@ using Cataloguer.Database.Base;
 using Cataloguer.Database.Commands.GetCommands;
 using Cataloguer.Database.Models;
 using Microsoft.AspNetCore.Cors;
+using Serilog;
+using Serilog.Formatting.Json;
 
 namespace Cataloguer.Server
 {
@@ -11,42 +13,61 @@ namespace Cataloguer.Server
 
         public static void Main(string[] args)
         {
-            var builder = WebApplication.CreateBuilder(args);
+            Log.Logger = new LoggerConfiguration()
+                .WriteTo.File(new JsonFormatter(), "Cataloguer.log")
+                .MinimumLevel.Verbose()
+                .CreateLogger();
 
-            builder.Services.AddCors(options =>
+            try
             {
-                options.AddDefaultPolicy(builder =>
+                var builder = WebApplication.CreateBuilder(args);
+
+                builder.Services.AddCors(options =>
                 {
-                    builder.AllowAnyOrigin()
-                        .AllowAnyMethod()
-                        .AllowAnyHeader()
-                        .AllowCredentials();
+                    options.AddDefaultPolicy(builder =>
+                    {
+                        builder.AllowAnyOrigin()
+                            .AllowAnyMethod()
+                            .AllowAnyHeader()
+                            .AllowCredentials();
+                    });
                 });
-            });
 
-            builder.Configuration.AddJsonFile("appsettings.json");
+                builder.Configuration.AddJsonFile("appsettings.json");
 
-            _baseRoute = builder.Configuration["BaseRoute"];
+                _baseRoute = builder.Configuration["BaseRoute"];
 
-            builder.WebHost.UseUrls(builder.Configuration["BackendConnectionString"]);
+                builder.WebHost.UseUrls(builder.Configuration["BackendConnectionString"]);
 
-            var app = builder.Build();
+                builder.Host.UseSerilog();
 
-            app.UseCorsMiddleware();
+                var app = builder.Build();
 
-            DataBaseConfiguration dbConfig = new DataBaseConfiguration()
+                app.UseCorsMiddleware()
+                    .UseSerilogRequestLogging();
+
+                DataBaseConfiguration dbConfig = new DataBaseConfiguration()
+                {
+                    ConnectionsString = builder.Configuration["DataBaseConnectionString"]
+                };
+
+                DefaultRoutesRegistration(app);
+                ListWithoutParametersRegistration(app, dbConfig);
+                GetSingleObjectRegistration(app, dbConfig);
+                GetSpecialRegistration(app, dbConfig);
+
+                AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
+                app.Run();
+            }
+            catch (Exception ex)
             {
-                ConnectionsString = builder.Configuration["DataBaseConnectionString"]
-            };
-
-            DefaultRoutesRegistration(app);
-            ListWithoutParametersRegistration(app, dbConfig);
-            GetSingleObjectRegistration(app, dbConfig);
-            GetSpecialRegistration(app, dbConfig);
-
-            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
-
-            app.Run();
+                Log.Fatal(ex, "boom");
+            }
+            finally
+            {
+                Log.CloseAndFlush();
+            }
         }
 
         [EnableCors()]

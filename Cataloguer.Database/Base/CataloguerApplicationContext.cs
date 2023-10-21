@@ -1,5 +1,7 @@
 ﻿using Cataloguer.Database.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Serilog;
 using System.Diagnostics;
 
 namespace Cataloguer.Database.Base
@@ -30,8 +32,8 @@ namespace Cataloguer.Database.Base
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            //todo вынести в конфиг
             optionsBuilder.UseNpgsql(_connectionString);
+            optionsBuilder.LogTo(Log.Logger.Information, LogLevel.Information);
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -139,7 +141,7 @@ namespace Cataloguer.Database.Base
 
         private T DoWithNotification<T>(Func<T> func, string funcName)
         {
-            Console.WriteLine($"Начало выполнения метода: {func.Method.Name}");
+            Log.Debug($"Начало выполнения метода: {func.Method.Name}");
 
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
@@ -148,7 +150,7 @@ namespace Cataloguer.Database.Base
 
             stopwatch.Stop();
 
-            Console.WriteLine($"Выполнен метод: {funcName} за {stopwatch.Elapsed.TotalSeconds} секунд");
+            Log.Debug($"Выполнен метод: {funcName} за {stopwatch.Elapsed.TotalSeconds} секунд");
 
             return res;
         }

@@ -14,4 +14,8 @@
     <Folder Include="RequestHandlers\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="serilog.aspnetcore" Version="7.0.0" />
+  </ItemGroup>
+
 </Project>
