@@ -1,6 +1,9 @@
 import BaseButton from "../BaseButtonComponent";
 import React from "react";
-import {DatePicker, Form, Input, Table} from "antd";
+import {Button, DatePicker, Form, Input, Popconfirm, Space, Table} from "antd";
+import {BaseStoreInjector} from "../../../types/BrochureTypes";
+import {inject, observer} from "mobx-react";
+import CreateDistributionButtonComponent from "../DistributionOperations/CreateDistributionButtonComponent";
 
 /**
  * Перечисления типов в метаданных для компонента CreateBrochureButtonComponent.
@@ -38,18 +41,44 @@ const modes = new Map([
     [ButtonModes.EDIT, "Изменить"],
 ]);
 
+const columns = [
+    {
+        title: "Название",
+        dataIndex: "name",
+        key: "goods_table_name",
+        // width: 315
+    },
+    {
+        title: "Цена",
+        dataIndex: "cost",
+        key: "goods_table_cost",
+        // width: 128
+    },
+];
+
+// rowSelection object indicates the need for row selection
+const rowSelection = {
+    onChange: (selectedRowKeys: React.Key[], selectedRows: any[]) => {
+        console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
+    },
+    getCheckboxProps: (record: any) => ({
+        disabled: record.name === 'Disabled User', // Column configuration not to be checked
+        name: record.name,
+    }),
+};
+
 /**
  * Свойства компонента CreateBrochureButtonComponent.
  * @param mode Режим работы кнопок компонента.
  */
-interface CreateBrochureButtonComponentProps {
+interface CreateBrochureButtonComponentProps extends BaseStoreInjector {
     mode: ButtonModes
 }
 
 /**
  * Компонент кнопки Создать/Изменить, открывающий свою модалку.
  */
-const CreateBrochureButtonComponent: React.FC<CreateBrochureButtonComponentProps> = (props) => {
+const CreateBrochureButtonComponent: React.FC<CreateBrochureButtonComponentProps> = inject("brochureStore")(observer((props) => {
     /**
      * Метаданные модалки редактирования каталога.
      */
@@ -73,6 +102,12 @@ const CreateBrochureButtonComponent: React.FC<CreateBrochureButtonComponentProps
     const currentMode = modes.get(props.mode) ?? "";
 
     /**
+     * Все возможные товары.
+     */
+    const allGoods = props.brochureStore?.allGoods ?? [];
+
+
+    /**
      * Возвращает компонет элемента формы.
      * @param formItem Элемент формы.
      */
@@ -81,7 +116,10 @@ const CreateBrochureButtonComponent: React.FC<CreateBrochureButtonComponentProps
             case MetadataTypes.NMBR_FIELD:
             case MetadataTypes.STR_FIELD: return (<Input/>);
             case MetadataTypes.DATE_FIELD: return (<DatePicker/>);
-            case MetadataTypes.TBL_FIELD: return (<Table/>);
+            case MetadataTypes.TBL_FIELD: return (<Table columns={columns} rowSelection={{
+                type: 'checkbox',
+                ...rowSelection,
+            }}/>);
             default: return null;
         }
     };
@@ -114,12 +152,21 @@ const CreateBrochureButtonComponent: React.FC<CreateBrochureButtonComponentProps
         children: getForm(),
     };
 
+    const onClick = () => {
+        props.brochureStore?.updateGoodsList();
+    };
+
+    const buttonProps = {
+        buttonText: currentMode,
+        onClick: onClick
+    };
+
     return (
         <BaseButton
-            buttonProps={{buttonText: currentMode}}
+            buttonProps={buttonProps}
             modalProps={modalProps}
         />
     );
-};
+}));
 
 export default CreateBrochureButtonComponent;
