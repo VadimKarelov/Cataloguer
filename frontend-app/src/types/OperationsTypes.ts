@@ -4,21 +4,25 @@ import React from "react";
  * Свойства модального окна.
  * @param buttonText Текст кнопки.
  * @param onClick Калбек функция при нажатии на кнопку.
+ * @param isDisabled Не активна кнопка или нет.
  */
 interface ButtonProps {
     buttonText: string,
     onClick?: () => void,
+    isDisabled?: boolean,
 }
 
 /**
  * Свойства модального окна.
  * @param okText Текст на кнопке ок.
+ * @param onOkClick Событие при нажитии кнопки ок.
  * @param cancelText Текст на кнопке отмена.
  * @param title Заголовок модального окна.
  * @param children Дочерние компоненты.
  */
 interface ModalProps {
     okText?: string,
+    onOkClick?: () => Promise<void>,
     cancelText?: string,
     title: React.ReactNode,
     children: React.JSX.Element,

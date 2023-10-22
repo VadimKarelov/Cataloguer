@@ -52,12 +52,12 @@ const BrochureDescriptionComponent: React.FC<BrochureDescriptionComponentProps> 
     return (
         brochure !== null ?
         (
-            <Form form={form} colon={false} layout={"vertical"} className={"brochure-form-style"}>
+            <Form id={"brochure_description"} form={form} colon={false} layout={"vertical"} className={"brochure-form-style"}>
                 {sortedMetaData.map(field => {
                     const value = parsableBrochure[field.name];
                     const label = (<div className={"brochure-form-item-label-style"}>{field.displayName}</div>);
                     return (
-                        <Form.Item label={label}>
+                        <Form.Item id={`brochure_description_${field.name}`} label={label}>
                             <Typography.Text className={"brochure-form-item-text-style"}>
                                 {value ?? NO_DATA_TEXT}
                             </Typography.Text>

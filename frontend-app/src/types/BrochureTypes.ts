@@ -1,4 +1,5 @@
 import BrochureStore, {Status} from "../stores/BrochureStore";
+import React from "react";
 
 /**
  * Свойства товара.
@@ -83,6 +84,59 @@ interface StatusArrayProps {
     value: string
 }
 
+/**
+ * Свойства товара для запроса в БД.
+ * @param id Идентификатор товара.
+ * @param price Цена товара.
+ */
+interface GoodDBProps {
+    id: number,
+    price: number,
+}
+
+/**
+ * Свойства товаров при создании каталога.
+ * @param id Идентификатор.
+ * @param name Наименование.
+ * @param price Цена.
+ */
+interface GoodsProps extends GoodDBProps {
+    name: string,
+}
+
+/**
+ * Расширенные для компонента таблица свойства.
+ * @param key Ключ строки.
+ * @param isChecked Является ли выбранной текущая строчка.
+ */
+interface GoodsExtendedProps extends GoodsProps {
+    key: React.Key,
+    isChecked: boolean
+}
+
+/**
+ * Свойства отправляемого в БД каталога (редактирование).
+ * @param name Название.
+ * @param date Дата выпуска каталога.
+ * @param edition Тираж.
+ */
+interface EditBrochureHandlerProps {
+    name: string,
+    date: string,
+    edition: number,
+}
+
+/**
+ * Свойства отправляемого в БД каталога (создание).
+ * @param name Название.
+ * @param date Дата выпуска каталога.
+ * @param edition Тираж.
+ * @param positions Число позиций (товаров).
+ */
+interface CreateBrochureHandlerProps extends EditBrochureHandlerProps {
+    positions: GoodDBProps[],
+}
+
 export type {
     GoodProps,
     DistributionProps,
@@ -91,4 +145,9 @@ export type {
     BaseStoreInjector,
     BrochureBaseInfoProps,
     StatusArrayProps,
+    GoodDBProps,
+    GoodsProps,
+    GoodsExtendedProps,
+    EditBrochureHandlerProps,
+    CreateBrochureHandlerProps,
 }

@@ -20,10 +20,10 @@ const CreateDistributionButtonComponent: React.FC<CreateDistributionButtonCompon
      * Коллекция метаданных.
      */
     const metadata: Readonly<MetadataProps[]> = [
-        { id: "distribution_gender", name: "Пол", type: MetadataTypes.LIST_FIELD},
-        { id: "distribution_town", name: "Населённый пункт", type: MetadataTypes.LIST_FIELD},
-        { id: "distribution_ageGroup", name: "Возрастная группа", type: MetadataTypes.LIST_FIELD},
-        { id: "distribution_brochure_count", name: "Количество каталогов", type: MetadataTypes.NMBR_FIELD},
+        { id: "distribution_gender", name: "Пол", type: MetadataTypes.LIST_FIELD, isRequired: true},
+        { id: "distribution_town", name: "Населённый пункт", type: MetadataTypes.LIST_FIELD, isRequired: true},
+        { id: "distribution_ageGroup", name: "Возрастная группа", type: MetadataTypes.LIST_FIELD, isRequired: true},
+        { id: "distribution_brochure_count", name: "Количество каталогов", type: MetadataTypes.NMBR_FIELD, isRequired: true},
     ];
 
     /**

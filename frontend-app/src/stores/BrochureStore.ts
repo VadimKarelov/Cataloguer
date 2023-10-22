@@ -1,9 +1,17 @@
 import { observable, action, makeAutoObservable } from "mobx"
-import {BrochureProps, DistributionProps, GoodProps, StatusArrayProps} from "../types/BrochureTypes";
+import {
+    BrochureProps, CreateBrochureHandlerProps,
+    DistributionProps, EditBrochureHandlerProps, GoodDBProps,
+    GoodProps,
+    GoodsExtendedProps,
+    GoodsProps,
+    StatusArrayProps
+} from "../types/BrochureTypes";
 import {random} from "../Utils";
 import DistributionService from "../services/DistributionService";
 import {ageGroups, genders, goodsNames, towns} from "./HandbookExamples";
 import GoodsService from "../services/GoodsService";
+import BrochureService from "../services/BrochureService";
 
 /**
  * Путь к данным каталога в session storage.
@@ -59,8 +67,19 @@ class BrochureStore {
 
     /**
      * Все возможные товары.
+     * Необходимы в форме создания каталога.
      */
-    public allGoods: any[];
+    public allGoods: GoodsProps[];
+
+    /**
+     * Отмеченные товары.
+     */
+    private checkedGoods: GoodDBProps[];
+
+    /**
+     * Загружаются ли товары.
+     */
+    public isLoadingGoods: boolean;
 
     /**
      * Конструктор.
@@ -68,10 +87,12 @@ class BrochureStore {
     constructor() {
         this.brochures = [];
         this.allGoods = [];
+        this.checkedGoods = [];
         this.currentBrochure = null;
         this.isBrochureSelected = false;
         this.isBrochureLoading = false;
         this.isBrochureMenuLoading = false;
+        this.isLoadingGoods = false;
 
         makeAutoObservable(this);
 
@@ -92,19 +113,58 @@ class BrochureStore {
     }
 
     /**
+     * Обрабатывает создание каталога.
+     * @param brochure Каталог.
+     */
+    public async handleEditBrochure(brochure: EditBrochureHandlerProps) {
+        const id = this.currentBrochure?.id ?? -1;
+        if (id === -1) return;
+
+        console.log("Отправляем на backend: ", brochure);
+
+        await BrochureService.updateBrochure(id, brochure).then((response: {data: any}) => {
+            console.log(response.data)
+        });
+    }
+
+    /**
+     * Обрабатывает создание каталога.
+     * @param brochure Каталог.
+     */
+    public async handleCreateBrochure(brochure: CreateBrochureHandlerProps) {
+        brochure.positions = [...this.checkedGoods.map(good => ({...good}))];
+
+        console.log("Отправляем на backend: ", brochure);
+
+        await BrochureService.createBrochure(brochure).then((response: {data: any}) => {
+            console.log(response.data)
+        });
+    }
+
+    /**
+     * Сохраняет отмеченные строки.
+     * @param goods Товары.
+     */
+    public setCheckedGoods(goods: GoodsExtendedProps[]) {
+        this.checkedGoods = goods
+            .filter(good => good.isChecked)
+            .map((good) => ({id: good.id, price: parseFloat(good.price.toString())}));
+    }
+
+    /**
      * Обновляет список товаров для создания каталога.
      */
     public updateGoodsList() {
+        this.isLoadingGoods = true;
         GoodsService.getGoods().then(
             ((response: {data: any}) => {
-                console.log(response)
                 const isFine = response.data instanceof Array;
                 if (!isFine) return;
-                console.log(response.data)
+
                 this.allGoods = response.data;
             }),
             (err) => console.log(err)
-        )
+        ).finally(() => this.isLoadingGoods = false);
     }
 
     /**
