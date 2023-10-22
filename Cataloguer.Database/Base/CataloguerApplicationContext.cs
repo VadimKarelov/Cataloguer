@@ -1,5 +1,7 @@
 ﻿using Cataloguer.Database.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using Serilog;
 using System.Diagnostics;
 
 namespace Cataloguer.Database.Base
@@ -19,19 +21,25 @@ namespace Cataloguer.Database.Base
         public DbSet<Status> Statuses { get; set; }
         public DbSet<Town> Towns { get; set; }
 
-        public CataloguerApplicationContext()
+        private string _connectionString;
+
+        private static bool _isInitialised = false;
+        private static readonly int _sellHistoryCount = 10000;
+
+        public CataloguerApplicationContext(DataBaseConfiguration config)
         {
+            _connectionString = config.ConnectionsString;
+
             Database.EnsureCreated();
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            //todo вынести в конфиг
-            optionsBuilder.UseNpgsql("User ID=postgres;" +
-                "Password=postgres;" +
-                "Host=localhost;" +
-                "Port=5432;" +
-                "Database=CataloguerDataBasePostgres;");
+            optionsBuilder.UseNpgsql(_connectionString);
+            optionsBuilder.LogTo(Log.Logger.Information, LogLevel.Information);
+            optionsBuilder.LogTo(Log.Logger.Debug, LogLevel.Debug);
+            optionsBuilder.LogTo(Log.Logger.Error, LogLevel.Error);
+            optionsBuilder.LogTo(Log.Logger.Fatal, LogLevel.Critical);
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -62,24 +70,36 @@ namespace Cataloguer.Database.Base
             modelBuilder.Entity<SellHistory>().HasKey(x => x.Id);
         }
 
+        /// <summary>
+        /// Обязательно вызвать после создания Context
+        /// </summary>
         public void Init()
         {
-            if (!Towns.Any())
+            if (!_isInitialised)
             {
-                Towns.AddRange(ReadTownsFromFile());
-                this.SaveChanges();
-            }
+                {
+                    var fromFile = ReadTownsFromFile();
+                    var toRemove = Towns.AsEnumerable().Except(fromFile);
+                    var toAdd = fromFile.AsEnumerable().Except(Towns);
+                    Towns.RemoveRange(toRemove);
+                    Towns.AddRange(toAdd);
+                }
 
-            if (!Goods.Any())
-            {
-                Goods.AddRange(DoWithNotification(ReadGoodsFromFile, "Чтение списка продуктов"));
-                this.SaveChanges();
-            }
+                {
+                    var fromFile = DoWithNotification(ReadGoodsFromFile, "Чтение товаров");
+                    var toRemove = Goods.AsEnumerable().Except(fromFile);
+                    var toAdd = fromFile.AsEnumerable().Except(Goods);
+                    Goods.RemoveRange(toRemove);
+                    Goods.AddRange(toAdd);
+                }
 
-            if (!SellHistory.Any())
-            {
-                SellHistory.AddRange(DoWithNotification(GenerateSellHistory, "Создание истории покупок"));
                 this.SaveChanges();
+
+                SellHistory.AddRange(DoWithNotification(() => GenerateSellHistory(Math.Max(0, _sellHistoryCount - SellHistory.Count())), "Создание истории покупок"));
+
+                this.SaveChanges();
+
+                _isInitialised = true;
             }
         }
 
@@ -89,8 +109,9 @@ namespace Cataloguer.Database.Base
 
             using StreamReader reader = new StreamReader(@"..\Cataloguer.Database\Resources\goroda.txt");
             return reader.ReadToEnd()
-                .Split()
+                .Split('\n')
                 .Where(x => !string.IsNullOrEmpty(x) && !x.Contains("Оспаривается"))
+                .Select(x => x.Replace("\r", ""))
                 .Select(x => new Town() { Name = x, Population = random.Next(5000, 20000000) })
                 .ToArray();
         }
@@ -101,28 +122,27 @@ namespace Cataloguer.Database.Base
 
             using StreamReader reader = new StreamReader(@"..\Cataloguer.Database\Resources\goods.txt");
             return reader.ReadToEnd()
-                .Split()
+                .Split('\n')
                 .Where(x => !string.IsNullOrEmpty(x))
                 .Distinct()
+                .Select(x => x.Replace("\r", ""))
                 .Select(x => new Good() { Name = x })
                 .ToArray();
         }
 
-        private SellHistory[] GenerateSellHistory()
+        private List<SellHistory> GenerateSellHistory(int count)
         {
-            const int size = 1000;
-
             Random random = new Random();
 
-            var result = new SellHistory[size];
+            var result = new List<SellHistory>();
 
             var availableGoods = Goods.ToArray();
             var availableTowns = Towns.ToArray();
             var today = DateTime.Now.ToOADate();
 
-            for (int i = 0; i < size; i++)
+            for (int i = count; i > 0; i--)
             {
-                result[i] = new SellHistory()
+                var entity = new SellHistory()
                 {
                     Good = availableGoods[random.Next(0, availableGoods.Length)],
                     Town = availableTowns[random.Next(0, availableTowns.Length)],
@@ -130,8 +150,10 @@ namespace Cataloguer.Database.Base
                     SellDate = DateTime.FromOADate(today - random.NextDouble() * 100),
                     GoodCount = random.Next(1, 20)
                 };
-                result[i].Price = SellHistory
-                    .FirstOrDefault(x => x.Good == result[i].Good)?.Price ?? 200 + random.Next(-100, 100);
+                entity.Price = SellHistory
+                    .FirstOrDefault(x => x.Good == entity.Good)?.Price ?? 200 + random.Next(-100, 100);
+
+                result.Add(entity);
             }
 
             return result;
@@ -139,7 +161,7 @@ namespace Cataloguer.Database.Base
 
         private T DoWithNotification<T>(Func<T> func, string funcName)
         {
-            Console.WriteLine($"Начало выполнения метода: {func.Method.Name}");
+            Log.Debug($"Начало выполнения метода: {func.Method.Name}");
 
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
@@ -148,7 +170,7 @@ namespace Cataloguer.Database.Base
 
             stopwatch.Stop();
 
-            Console.WriteLine($"Выполнен метод: {funcName} за {stopwatch.Elapsed.TotalSeconds} секунд");
+            Log.Debug($"Выполнен метод: {funcName} за {stopwatch.Elapsed.TotalSeconds} секунд");
 
             return res;
         }

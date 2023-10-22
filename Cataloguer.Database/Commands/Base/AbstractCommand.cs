@@ -6,9 +6,9 @@ namespace Cataloguer.Database.Commands.Base
     {
         private protected CataloguerApplicationContext Context { get; set; }
 
-        public AbstractCommand()
+        public AbstractCommand(DataBaseConfiguration config)
         {
-            Context = new CataloguerApplicationContext();
+            Context = new CataloguerApplicationContext(config);
             Context.Init();
         }
     }
