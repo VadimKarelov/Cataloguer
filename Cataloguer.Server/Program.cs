@@ -4,6 +4,7 @@ using Cataloguer.Database.Commands.GetCommands;
 using Cataloguer.Database.Models;
 using Cataloguer.Server.ContextHandlers;
 using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Serilog;
 using Serilog.Formatting.Json;
 
@@ -39,7 +40,11 @@ namespace Cataloguer.Server
 
                 _baseRoute = builder.Configuration["BaseRoute"];
 
-                builder.WebHost.UseUrls(builder.Configuration["BackendConnectionString"]);
+                builder.WebHost.UseUrls(builder.Configuration["BackendConnectionString"])
+                    .UseKestrel(options =>
+                    {
+                        options.AllowSynchronousIO = true;
+                    });
 
                 builder.Host.UseSerilog();
 
@@ -71,6 +76,21 @@ namespace Cataloguer.Server
             {
                 Log.CloseAndFlush();
             }
+        }
+
+        public void ConfigureServices(IServiceCollection services)
+        {
+            // If using Kestrel:
+            services.Configure<KestrelServerOptions>(options =>
+            {
+                options.AllowSynchronousIO = true;
+            });
+
+            // If using IIS:
+            services.Configure<IISServerOptions>(options =>
+            {
+                options.AllowSynchronousIO = true;
+            });
         }
 
         [EnableCors()]
