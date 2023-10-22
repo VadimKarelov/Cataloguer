@@ -8,7 +8,10 @@ namespace Cataloguer.Database.Commands.AddOrUpdateCommand
     {
         public AddOrUpdateBrochureCommand(DataBaseConfiguration config) : base(config) { }
 
-        public void AddOrUpdate(Brochure brochure)
+        /// <summary>
+        /// Возвращает id созданной/обновленной сущности
+        /// </summary>
+        public int AddOrUpdate(Brochure brochure)
         {
             Brochure? entity = Context.Brochures.FirstOrDefault(x => x.Id == brochure.Id)
                 ?? Context.Brochures.Add(brochure).Entity;
@@ -23,6 +26,8 @@ namespace Cataloguer.Database.Commands.AddOrUpdateCommand
 
             Context.Update(entity);
             Context.SaveChanges();
+
+            return entity.Id;
         }
     }
 }

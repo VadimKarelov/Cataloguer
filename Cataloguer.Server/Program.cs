@@ -1,6 +1,8 @@
 using Cataloguer.Database.Base;
+using Cataloguer.Database.Commands.AddOrUpdateCommand;
 using Cataloguer.Database.Commands.GetCommands;
 using Cataloguer.Database.Models;
+using Cataloguer.Server.ContextHandlers;
 using Microsoft.AspNetCore.Cors;
 using Serilog;
 using Serilog.Formatting.Json;
@@ -55,6 +57,7 @@ namespace Cataloguer.Server
                 ListWithoutParametersRegistration(app, dbConfig);
                 GetSingleObjectRegistration(app, dbConfig);
                 GetSpecialRegistration(app, dbConfig);
+                AddRegistration(app, dbConfig);
 
                 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
@@ -85,7 +88,7 @@ namespace Cataloguer.Server
             app.MapGet(_baseRoute + "/getBrochurePositions", () => new GetListCommand<BrochurePosition>(config).GetValues());
             app.MapGet(_baseRoute + "/getDistributions", () => new GetListCommand<Distribution>(config).GetValues());
             app.MapGet(_baseRoute + "/getGenders", () => new GetListCommand<Gender>(config).GetValues());
-            app.MapGet(_baseRoute + "/getGoods", () => new GetSpecialRequestCommand(config).GetGoodsWithAveragePriceFromHsitory());
+            app.MapGet(_baseRoute + "/getGoods", () => new GetSpecialRequestCommand(config).GetGoodsWithAveragePriceFromHistory());
             app.MapGet(_baseRoute + "/getSellHistory", () => new GetListCommand<SellHistory>(config).GetValues());
             app.MapGet(_baseRoute + "/getStatuses", () => new GetListCommand<Status>(config).GetValues());
             app.MapGet(_baseRoute + "/getTowns", () => new GetListCommand<Town>(config).GetValues());
@@ -113,6 +116,12 @@ namespace Cataloguer.Server
 
             app.Map(_baseRoute + "/getBrochureDistributions/id={brochureId}",
                 (int brochureId) => new GetSpecialRequestCommand(config).GetDistributionsFromBrochure(brochureId));
+        }
+
+        [EnableCors()]
+        private static void AddRegistration(WebApplication app, DataBaseConfiguration config)
+        {
+            app.Map(_baseRoute + "/addBrochure", (HttpContext context) => ContextHandler.AddBrochure(context, config));
         }
     }
 }

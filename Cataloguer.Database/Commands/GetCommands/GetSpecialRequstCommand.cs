@@ -28,7 +28,7 @@ namespace Cataloguer.Database.Commands.GetCommands
                 .ToArray();
         }
 
-        public IEnumerable<FrontendGood> GetGoodsWithAveragePriceFromHsitory()
+        public IEnumerable<FrontendGood> GetGoodsWithAveragePriceFromHistory()
         {
             var sellHistory = Context.SellHistory
                 .AsNoTracking()
