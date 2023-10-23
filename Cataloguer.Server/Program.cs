@@ -18,6 +18,7 @@ namespace Cataloguer.Server
             Log.Logger = new LoggerConfiguration()
                 .WriteTo.File(new JsonFormatter(), "Logs/Cataloguer.log")
                 .MinimumLevel.Debug()
+                .WriteTo.Console()
                 .CreateLogger();
 
             try
@@ -140,7 +141,7 @@ namespace Cataloguer.Server
         [EnableCors()]
         private static void AddRegistration(WebApplication app, DataBaseConfiguration config)
         {
-            app.Map(_baseRoute + "/addBrochure", (HttpContext context) => ContextHandler.AddBrochure(context, config));
+            app.Map(_baseRoute + "/createBrochure", (HttpContext context) => ContextHandler.AddBrochure(context, config));
         }
     }
 }
