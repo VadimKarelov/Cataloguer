@@ -56,5 +56,21 @@ namespace Cataloguer.Database.Commands.GetCommands
 
             return result;
         }
+
+        public IEnumerable<SellHistory> GetGoodsFromSellHistory(Brochure brochure)
+        {
+            var goodsFromBrochure = Context.BrochurePositions
+                .AsNoTracking()
+                .Where(x => x.BrochureId == brochure.Id)
+                .Select(x => x.Good)
+                .ToList();
+
+            return Context.SellHistory
+                .AsNoTracking()
+                .Include(x => x.Good)
+                .Where(x => goodsFromBrochure.Contains(x.Good))
+                .Include(x => x.Town)
+                .Include( x=> x.Gender);
+        }
     }
 }
