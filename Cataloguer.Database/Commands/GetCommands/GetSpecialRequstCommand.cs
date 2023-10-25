@@ -49,7 +49,7 @@ namespace Cataloguer.Database.Commands.GetCommands
                 decimal avgPrice = 0;
 
                 if (purchases.Any())
-                    avgPrice = purchases.Average(x => x.Price);
+                    avgPrice = Math.Round(purchases.Average(x => x.Price), 2);
 
                 result.Add(new FrontendGood(good) { Price = avgPrice });
             }
