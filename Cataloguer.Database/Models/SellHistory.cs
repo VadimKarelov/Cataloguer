@@ -28,6 +28,12 @@ namespace Cataloguer.Database.Models
         [JsonPropertyName("age")]
         public short Age { get; set; }
 
+        [Column("gender_id")]
+        [JsonPropertyName("genderId")]
+        public int GenderId { get; set; }
+        [JsonIgnore]
+        public Gender? Gender { get; set; }
+
         [Column("sell_date")]
         [JsonPropertyName("sellDate")]
         public DateTime SellDate { get; set; }
