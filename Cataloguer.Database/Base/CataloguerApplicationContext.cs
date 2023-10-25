@@ -77,18 +77,34 @@ namespace Cataloguer.Database.Base
         {
             if (!_isInitialised)
             {
+                Random random = new Random();
+
                 {
                     var fromFile = ReadTownsFromFile();
-                    var toRemove = Towns.AsEnumerable().Except(fromFile);
-                    var toAdd = fromFile.AsEnumerable().Except(Towns);
+
+                    var toRemove = Towns.AsNoTracking()
+                        .Where(x => !fromFile.Contains(x.Name));
+
+                    var toAdd = fromFile.Except(Towns.Select(x => x.Name))
+                        .Select(x => new Town() 
+                        { 
+                            Name = x, 
+                            Population = random.Next(5000, 20000000) 
+                        });
+
                     Towns.RemoveRange(toRemove);
                     Towns.AddRange(toAdd);
                 }
 
                 {
                     var fromFile = DoWithNotification(ReadGoodsFromFile, "Чтение товаров");
-                    var toRemove = Goods.AsEnumerable().Except(fromFile);
-                    var toAdd = fromFile.AsEnumerable().Except(Goods);
+
+                    var toRemove = Goods.AsNoTracking()
+                        .Where(x => !fromFile.Contains(x.Name));
+
+                    var toAdd = fromFile.Except(Goods.Select(x => x.Name))
+                        .Select(x => new Good() { Name = x });
+
                     Goods.RemoveRange(toRemove);
                     Goods.AddRange(toAdd);
                 }
@@ -103,30 +119,24 @@ namespace Cataloguer.Database.Base
             }
         }
 
-        private Town[] ReadTownsFromFile()
+        private string[] ReadTownsFromFile()
         {
-            Random random = new Random();
-
             using StreamReader reader = new StreamReader(@"..\Cataloguer.Database\Resources\goroda.txt");
             return reader.ReadToEnd()
                 .Split('\n')
                 .Where(x => !string.IsNullOrEmpty(x) && !x.Contains("Оспаривается"))
                 .Select(x => x.Replace("\r", ""))
-                .Select(x => new Town() { Name = x, Population = random.Next(5000, 20000000) })
                 .ToArray();
         }
 
-        private Good[] ReadGoodsFromFile()
+        private string[] ReadGoodsFromFile()
         {
-            Random random = new Random();
-
             using StreamReader reader = new StreamReader(@"..\Cataloguer.Database\Resources\goods.txt");
             return reader.ReadToEnd()
                 .Split('\n')
                 .Where(x => !string.IsNullOrEmpty(x))
                 .Distinct()
                 .Select(x => x.Replace("\r", ""))
-                .Select(x => new Good() { Name = x })
                 .ToArray();
         }
 
