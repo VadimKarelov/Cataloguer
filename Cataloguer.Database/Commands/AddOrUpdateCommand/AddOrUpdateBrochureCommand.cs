@@ -19,7 +19,7 @@ namespace Cataloguer.Database.Commands.AddOrUpdateCommand
             entity.StatusId = brochure.StatusId;
             entity.Name = brochure.Name;
             entity.Date = brochure.Date;
-            entity.Edition = Context.Distributions.Sum(x => x.BrochureCount);
+            entity.Edition = brochure.Edition;
             entity.PositionCount = Context.BrochurePositions
                 .Where(x => x.BrochureId == entity.Id)
                 .Count();
