@@ -40,6 +40,22 @@ class DistributionService extends BaseService {
         const methodRoute = `/getAgeGroups`;
         return await BaseService.sendGetHttpRequest(BACKEND_CONTROLLER_ROUTE, methodRoute);
     }
+
+    /**
+     * Возвращает список возрастных групп.
+     */
+    public static async getGenders() {
+        const methodRoute = `/getGenders`;
+        return await BaseService.sendGetHttpRequest(BACKEND_CONTROLLER_ROUTE, methodRoute);
+    }
+
+    /**
+     * Возвращает список возрастных групп.
+     */
+    public static async getTowns() {
+        const methodRoute = `/getTowns`;
+        return await BaseService.sendGetHttpRequest(BACKEND_CONTROLLER_ROUTE, methodRoute);
+    }
 }
 
 export default DistributionService;

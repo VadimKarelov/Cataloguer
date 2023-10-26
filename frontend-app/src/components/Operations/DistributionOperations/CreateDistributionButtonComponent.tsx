@@ -4,18 +4,20 @@ import {MetadataProps, MetadataTypes} from "../BrochureOperations/CreateBrochure
 import {Form, Input, Select} from "antd";
 import {inject, observer} from "mobx-react";
 import {BaseStoreInjector, customProp, DistributionProps} from "../../../types/BrochureTypes";
+import {DistributionStore} from "../../../stores/DistributionStore";
 
 /**
  * Свойства компонента содания рассылки.
  */
 interface CreateDistributionButtonComponentProps extends BaseStoreInjector {
-    row?: DistributionProps
+    row?: DistributionProps,
+    distributionStore?: DistributionStore,
 }
 
 /**
  * Компонент кнопки создания рассылки.
  */
-const CreateDistributionButtonComponent: React.FC<CreateDistributionButtonComponentProps> = inject("brochureStore")(observer((props) => {
+const CreateDistributionButtonComponent: React.FC<CreateDistributionButtonComponentProps> = inject("brochureStore", "distributionStore")(observer((props) => {
     /**
      * Коллекция метаданных.
      */
@@ -75,7 +77,7 @@ const CreateDistributionButtonComponent: React.FC<CreateDistributionButtonCompon
      * Обрабатывает нажатие кнопки.
      */
     const onButtonClick = () => {
-        props.brochureStore?.updateDistributionLists();
+        props.distributionStore?.updateDistributionLists();
     };
 
     /**

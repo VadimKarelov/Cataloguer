@@ -26,7 +26,7 @@ const CheckEfficiencyButtonComponent: React.FC<CheckEfficiencyButtonComponentPro
         title: "Проверить каталог",
         okText: "Проверить",
         cancelText: "Отменить",
-        children: (<Typography.Text>Вы действительно хотите проверить эффективность каталога?</Typography.Text>),
+        children: (<Typography.Text>{`Вы действительно хотите проверить эффективность каталога ${currentBrochure?.name}?`}</Typography.Text>),
     };
 
     /**
