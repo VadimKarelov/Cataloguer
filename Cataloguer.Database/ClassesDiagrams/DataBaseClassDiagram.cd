@@ -15,7 +15,7 @@
     </TypeIdentifier>
   </Class>
   <Class Name="Cataloguer.Database.Commands.Base.AbstractCommand">
-    <Position X="5.75" Y="0.5" Width="1.5" />
+    <Position X="5.75" Y="0.5" Width="2" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Commands\Base\AbstractCommand.cs</FileName>
