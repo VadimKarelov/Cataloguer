@@ -30,7 +30,8 @@ namespace Cataloguer.Database.Base
         {
             _connectionString = config.ConnectionsString;
 
-            Database.EnsureCreated();
+            if (!_isInitialised)
+                Database.EnsureCreated();
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
