@@ -1,14 +1,11 @@
-﻿using Cataloguer.Database.Base;
-using Cataloguer.Database.Models.Interfaces;
-using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace Cataloguer.Database.Models
 {
     [Table("brochure")]
-    public class Brochure : ICataloguerModel<Brochure>
+    public class Brochure
     {
         [Key]
         [Column("id")]
@@ -42,43 +39,5 @@ namespace Cataloguer.Database.Models
         [Column("position_count")]
         [JsonPropertyName("positionCount")]
         public int PositionCount { get; set; }
-
-        Brochure? ICataloguerModel<Brochure>.Get(CataloguerApplicationContext context, int id, bool includeFields)
-        {
-            return !includeFields ?
-                context.Brochures
-                    .AsNoTracking()
-                    .FirstOrDefault(x => x.Id == id) :
-                context.Brochures
-                    .AsNoTracking()
-                    .Include(x => x.Status)
-                    .FirstOrDefault(x => x.Id == id);
-        }
-
-        IEnumerable<Brochure?>? ICataloguerModel<Brochure>.GetAll(CataloguerApplicationContext context, bool includeFields)
-        {
-            return !includeFields ?
-                context.Brochures
-                    .AsNoTracking()
-                    .ToArray() :
-                context.Brochures
-                    .AsNoTracking()
-                    .Include(x => x.Status)
-                    .ToArray();
-        }
-
-        IEnumerable<Brochure?>? ICataloguerModel<Brochure>.GetAll(CataloguerApplicationContext context, Func<Brochure, bool> predicate, bool includeFields)
-        {
-            return !includeFields ?
-                context.Brochures
-                    .AsNoTracking()
-                    .Where(predicate)
-                    .ToArray() :
-                context.Brochures
-                    .AsNoTracking()
-                    .Include(x => x.Status)
-                    .Where(predicate)
-                    .ToArray();
-        }
     }
 }

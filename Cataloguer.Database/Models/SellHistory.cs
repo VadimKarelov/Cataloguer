@@ -1,15 +1,11 @@
-﻿using Cataloguer.Database.Base;
-using Cataloguer.Database.Models.Interfaces;
-using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
 using System.Text.Json.Serialization;
 
 namespace Cataloguer.Database.Models
 {
     [Table("sell_history")]
-    public class SellHistory : ICataloguerModel<SellHistory>
+    public class SellHistory
     {
         [Key]
         [Column("id")]
@@ -52,49 +48,5 @@ namespace Cataloguer.Database.Models
         [Column("price")]
         [JsonPropertyName("price")]
         public decimal Price { get; set; }
-
-        SellHistory? ICataloguerModel<SellHistory>.Get(CataloguerApplicationContext context, int id, bool includeFields)
-        {
-            return !includeFields ?
-                context.SellHistory
-                    .AsNoTracking()
-                    .FirstOrDefault(x => x.Id == id) :
-                context.SellHistory
-                    .AsNoTracking()
-                    .Include(x => x.Town)
-                    .Include(x => x.Gender)
-                    .Include(x => x.Good)
-                    .FirstOrDefault(x => x.Id == id);
-        }
-
-        IEnumerable<SellHistory?>? ICataloguerModel<SellHistory>.GetAll(CataloguerApplicationContext context, bool includeFields)
-        {
-            return !includeFields ?
-                context.SellHistory
-                    .AsNoTracking()
-                    .ToArray() :
-                context.SellHistory
-                    .AsNoTracking()
-                    .Include(x => x.Town)
-                    .Include(x => x.Gender)
-                    .Include(x => x.Good)
-                    .ToArray();
-        }
-
-        IEnumerable<SellHistory?>? ICataloguerModel<SellHistory>.GetAll(CataloguerApplicationContext context, Func<SellHistory, bool> predicate, bool includeFields)
-        {
-            return !includeFields ?
-                context.SellHistory
-                    .AsNoTracking()
-                    .Where(predicate)
-                    .ToArray() :
-                context.SellHistory
-                    .AsNoTracking()
-                    .Include(x => x.Town)
-                    .Include(x => x.Gender)
-                    .Include(x => x.Good)
-                    .Where(predicate)
-                    .ToArray();
-        }
     }
 }
