@@ -1,5 +1,5 @@
 ﻿using Cataloguer.Database.Base;
-using Cataloguer.Database.Commands.AddOrUpdateCommand;
+using Cataloguer.Database.Commands;
 using Cataloguer.Database.Models;
 using Cataloguer.Server.ArrivingModels;
 using Serilog;
@@ -54,9 +54,9 @@ namespace Cataloguer.Server.ContextHandlers
                     Edition = brochure.Edition,
                 };
 
-                int id = new AddOrUpdateBrochureCommand(config).AddOrUpdate(entity);
+                int id = new AddOrUpdateCommand(config).AddOrUpdate(entity);
 
-                new AddBrochurePositionsCommand(config).AddPositions(id, brochure.Positions);
+                new AddOrUpdateCommand(config).AddPositions(id, brochure.Positions);
 
                 return id.ToString();
             }

@@ -1,12 +1,12 @@
 ﻿using Cataloguer.Database.Base;
-using Cataloguer.Database.Commands.AddOrUpdateCommand;
+using Cataloguer.Database.Commands;
 using Cataloguer.Database.Commands.GetCommands;
 using Cataloguer.Database.Models;
 using Serilog;
 
-namespace Cataloguer.Server.BrochureAnalyser
+namespace Cataloguer.Server.Modules
 {
-    public static class BrochureAnalyser
+    public static class BrochureAnalyzer
     {
         /// <returns>Возвращает идентификатор статуса проверки. Вернет -1, если произошла ошибка.</returns>
         public static int ComputeBrochureEfficiency(DataBaseConfiguration config, Brochure brochure)
@@ -18,15 +18,15 @@ namespace Cataloguer.Server.BrochureAnalyser
                  * продавался ли конкретной возрастной группе,
                  * продавался ли конкретному полу.
                  * В конце суммируем все показатели по рассылке и вычисляем среднее.
-                 * Находим среднее арифметичское по всем рассылкам. И присваиваем статус.
+                 * Находим среднее арифметическое по всем рассылкам. И присваиваем статус.
                 */
 
                 // история продажи товаров из конкретного каталога
                 var sellHistory = new GetSpecialRequestCommand(config)
                     .GetGoodsFromSellHistory(brochure);
 
-                var distributions = new GetListCommand<Distribution>(config)
-                    .GetValues(x => x.BrochureId == brochure.Id);
+                var distributions = new GetCommand(config)
+                    .GetListDistribution(x => x.BrochureId == brochure.Id);
 
                 var goodsInBrochure = sellHistory.Select(x => x.Good)
                     .Distinct();
@@ -51,13 +51,13 @@ namespace Cataloguer.Server.BrochureAnalyser
                     distributionsEfficiency.Add((double)soldGoodsNumber / goodsInBrochure.Count());
                 }
 
-                var statuses = new GetListCommand<Status>(config).GetValues();
+                var statuses = new GetCommand(config).GetListStatus();
 
                 brochure.Status = distributionsEfficiency.Average() >= 0.5 ?
                     statuses.FirstOrDefault(x => x.Name == "Эффективный") :
                     statuses.FirstOrDefault(x => x.Name == "Не эффективный");
 
-                new AddOrUpdateBrochureCommand(config).AddOrUpdate(brochure);
+                new AddOrUpdateCommand(config).AddOrUpdate(brochure);
 
                 return brochure.StatusId;
             }
