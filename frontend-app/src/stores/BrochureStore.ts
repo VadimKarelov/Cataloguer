@@ -1,4 +1,4 @@
-import { observable, action, makeAutoObservable } from "mobx"
+import { observable, action, makeAutoObservable } from "mobx";
 import {
     BrochureProps, CreateBrochureHandlerProps,
     DistributionProps, EditBrochureHandlerProps, GoodDBProps,
@@ -12,6 +12,7 @@ import DistributionService from "../services/DistributionService";
 import {ageGroups, genders, goodsNames, towns} from "./HandbookExamples";
 import GoodsService from "../services/GoodsService";
 import BrochureService from "../services/BrochureService";
+import moment from "moment";
 
 /**
  * Путь к данным каталога в session storage.
@@ -106,9 +107,6 @@ class BrochureStore {
         this.getSavedBrochureMenu = this.getSavedBrochureMenu.bind(this);
         this.reset = this.reset.bind(this);
 
-        this.getAgeGroups = this.getAgeGroups.bind(this);
-        this.updateDistributionLists = this.updateDistributionLists.bind(this);
-
         this.updateGoodsList = this.updateGoodsList.bind(this);
     }
 
@@ -116,14 +114,14 @@ class BrochureStore {
      * Обрабатывает создание каталога.
      * @param brochure Каталог.
      */
-    public async handleEditBrochure(brochure: EditBrochureHandlerProps) {
+    @action public async handleEditBrochure(brochure: EditBrochureHandlerProps) {
         const id = this.currentBrochure?.id ?? -1;
         if (id === -1) return;
 
         console.log("Отправляем на backend: ", brochure);
 
         await BrochureService.updateBrochure(id, brochure).then((response: {data: any}) => {
-            console.log(response.data)
+            console.log("Получаем с backend: ", response.data)
         });
     }
 
@@ -131,13 +129,13 @@ class BrochureStore {
      * Обрабатывает создание каталога.
      * @param brochure Каталог.
      */
-    public async handleCreateBrochure(brochure: CreateBrochureHandlerProps) {
+    @action public async handleCreateBrochure(brochure: CreateBrochureHandlerProps) {
         brochure.positions = [...this.checkedGoods.map(good => ({...good}))];
 
         console.log("Отправляем на backend: ", brochure);
 
         await BrochureService.createBrochure(brochure).then((response: {data: any}) => {
-            console.log(response.data)
+            console.log("Получаем с backend id каталога: ", response.data)
         });
     }
 
@@ -145,7 +143,7 @@ class BrochureStore {
      * Сохраняет отмеченные строки.
      * @param goods Товары.
      */
-    public setCheckedGoods(goods: GoodsExtendedProps[]) {
+    @action public setCheckedGoods(goods: GoodsExtendedProps[]) {
         this.checkedGoods = goods
             .filter(good => good.isChecked)
             .map((good) => ({id: good.id, price: parseFloat(good.price.toString())}));
@@ -154,7 +152,10 @@ class BrochureStore {
     /**
      * Обновляет список товаров для создания каталога.
      */
-    public updateGoodsList() {
+    @action public updateGoodsList() {
+        this.allGoods = [];
+        this.checkedGoods = [];
+
         this.isLoadingGoods = true;
         GoodsService.getGoods().then(
             ((response: {data: any}) => {
@@ -170,28 +171,9 @@ class BrochureStore {
     /**
      * Очищает данные о каталоге.
      */
-    public reset(): void {
+    @action public reset(): void {
         this.currentBrochure = null;
         sessionStorage.removeItem(BROCHURE_SS_PATH);
-    }
-
-    /**
-     * Возвращает возрастные группы.
-     */
-    private async getAgeGroups() {
-        return await DistributionService.getAgeGroups();
-    }
-
-    /**
-     * Обновляет список возврастных группы.
-     */
-    public updateDistributionLists(): void {
-        this.getAgeGroups().then(
-            (resp => {
-               console.log(resp)
-            }),
-            (err) => console.log(err)
-        );
     }
 
     /**
@@ -238,7 +220,7 @@ class BrochureStore {
         const brochureCount = 100;
         for (let i = 0; i < brochureCount; ++i) {
             const tempCount = random(1, 5000);
-            const tempCreationDate = new Date().toDateString();
+            const tempCreationDate = moment(new Date()).toDate().toDateString();
             const tempGoods = this.getRandomGoods();
             const tempDistributions = this.getRandomDistributions();
             const status = BROCHURE_STATUSES[random(0, BROCHURE_STATUSES.length - 1)].value;
@@ -279,7 +261,7 @@ class BrochureStore {
      * Срабатывает после выбора каталога в меню.
      * @param brochureId - идентификатор каталога.
      */
-    public onBrochureClick(brochureId: number): void {
+    @action public onBrochureClick(brochureId: number): void {
         if (isNaN(brochureId)) return;
 
         this.isBrochureSelected = true;
@@ -301,7 +283,7 @@ class BrochureStore {
     /**
      * Загружает каталоги.
      */
-    public loadBrochures() {
+    @action public loadBrochures() {
         this.isBrochureMenuLoading = true;
 
         //some load logic
@@ -309,7 +291,7 @@ class BrochureStore {
 
         setTimeout(() => {
             this.isBrochureMenuLoading = false;
-        }, 1000);
+        }, 500);
     }
 }
 

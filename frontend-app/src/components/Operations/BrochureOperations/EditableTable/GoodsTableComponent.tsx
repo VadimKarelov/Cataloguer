@@ -14,14 +14,14 @@ const columns = [
         title: "Название",
         dataIndex: "name",
         key: "goods_table_name",
-        width: 200,
+        width: 170,
         editable: false,
     },
     {
         title: "Цена",
         dataIndex: "price",
         key: "goods_table_cost",
-        width: 150,
+        width: 170,
         editable: true,
     },
 ];
@@ -63,12 +63,12 @@ const GoodsTableComponent: React.FC<GoodsTableComponentProps> = inject("brochure
      */
     const rowSelection = {
         onChange: (selectedRowKeys: React.Key[], selectedRows: GoodsExtendedProps[]) => {
-            setGoods(
-                goods.map(currentGood => {
-                    currentGood.isChecked = selectedRowKeys.some(selectedRowKey => selectedRowKey === `good_${currentGood.id}`);
-                    return currentGood;
-                })
-            );
+            const selectedGoods = goods.map(currentGood => {
+                currentGood.isChecked = selectedRowKeys.some(selectedRowKey => selectedRowKey === `good_${currentGood.id}`);
+                return currentGood;
+            });
+            props.brochureStore?.setCheckedGoods(selectedGoods);
+            setGoods(selectedGoods);
         },
         getCheckboxProps: (record: any) => ({
             key: record.key,

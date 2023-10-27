@@ -27,6 +27,8 @@ export interface MetadataProps {
     isRequired: boolean,
     min?: number,
     max?: number,
+    defaultValue?: string,
+    helpText?: string,
 }
 
 /**
@@ -62,8 +64,8 @@ const CreateBrochureButtonComponent: React.FC<CreateBrochureButtonComponentProps
      */
     const editFormMetadata: Readonly<MetadataProps[]> = [
         { id: "brochure_name", name: "Название", type: MetadataTypes.STR_FIELD, isRequired: true, min: 1, max: 30},
-        { id: "brochure_date", name: "Период выпуска каталога", type: MetadataTypes.DATE_FIELD, isRequired: true},
-        { id: "brochure_edition", name: "Тираж", type: MetadataTypes.NMBR_FIELD, isRequired: true, min: 1, max: Number.MAX_VALUE},
+        { id: "brochure_date", name: "Период выпуска каталога", type: MetadataTypes.DATE_FIELD, isRequired: true, defaultValue: new Date().toDateString()},
+        { id: "brochure_edition", name: "Тираж", type: MetadataTypes.NMBR_FIELD, isRequired: true, min: 1, max: Number.MAX_VALUE, defaultValue: "1"},
     ];
 
     /**
@@ -147,11 +149,13 @@ const CreateBrochureButtonComponent: React.FC<CreateBrochureButtonComponentProps
             <Form id={formId} form={form} name={formId} layout={"vertical"} colon={false}>
                 {metadata.map(formItem => {
                     const formItemName: Readonly<string> = formItem.id.slice(formItem.id.indexOf('_') + 1);
+                    const defaultValue = formItemName === "date" ? moment(formItem.defaultValue) : formItem.defaultValue;
                     return (
                         <Form.Item
                             key={formItem.id}
                             label={formItem.name}
                             name={formItemName}
+                            initialValue={defaultValue}
                             rules={[{
                                 required: formItem.isRequired,
                                 validator: (_, value) => getValidator(_, value, formItem),
@@ -217,11 +221,26 @@ const CreateBrochureButtonComponent: React.FC<CreateBrochureButtonComponentProps
     };
 
     /**
+     * Заполняет поля данными текалога.
+     */
+    const fillFieldsOnEdit = (): void => {
+        if (currentBrochure === null) return;
+
+        form.setFieldsValue({
+            id: currentBrochure.id,
+            name: currentBrochure.name,
+            date: moment(currentBrochure.creationDate),
+            edition: currentBrochure?.edition,
+        });
+    };
+
+    /**
      * Срабатывает при нажатии кнопки.
      * Используется в качестве callback функции в родительском компоненте.
      */
     const onClick = () => {
         props.brochureStore?.updateGoodsList();
+        props.mode === ButtonModes.EDIT && fillFieldsOnEdit();
     };
 
     /**

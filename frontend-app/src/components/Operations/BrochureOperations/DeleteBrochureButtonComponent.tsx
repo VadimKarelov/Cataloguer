@@ -26,7 +26,7 @@ const DeleteBrochureButtonComponent: React.FC<DeleteBrochureButtonComponentProps
         title: "Удалить каталог",
         okText: "Удалить",
         cancelText: "Отменить",
-        children: (<Typography.Text>Вы действительно хотите удалить каталог?</Typography.Text>),
+        children: (<Typography.Text>{`Вы действительно хотите удалить каталог ${currentBrochure?.name}?`}</Typography.Text>),
     };
 
     /**
