@@ -26,17 +26,18 @@ class BaseService {
      */
     protected static async sendPostHttpRequest(baseRoute: Readonly<string>, subRoute: Readonly<string>, params: object) {
         const route: Readonly<string> = `${baseRoute}${subRoute}`;
-        const formData = new FormData();
+        // const formData = new FormData();
 
         // возможно косячная штука
-        Object.keys(params).forEach(key => {
-            const parsableObject: customProp = params;
-            const value = parsableObject[key];
-            if (value) {
-                formData.append(key, value);
-            }
-        });
-        return await axios.post(route, formData);
+        // Object.keys(params).forEach(key => {
+        //     const parsableObject: customProp = params;
+        //     const value = parsableObject[key];
+        //     if (value) {
+        //         formData.append(key, value);
+        //     }
+        // });
+        // return await axios.post(route, formData);
+        return await axios.post(route, JSON.stringify(params));
     }
 }
 

@@ -37,7 +37,7 @@ class BrochureService extends BaseService {
      * @param params Параметры каталога.
      */
     public static async createBrochure(params: CreateBrochureHandlerProps) {
-        const methodRoute = `/addBrochure`;
+        const methodRoute = `/createBrochure`;
         return await BaseService.sendPostHttpRequest(BACKEND_CONTROLLER_ROUTE, methodRoute, params);
     }
 

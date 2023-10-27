@@ -22,11 +22,34 @@ const CreateDistributionButtonComponent: React.FC<CreateDistributionButtonCompon
      * Коллекция метаданных.
      */
     const metadata: Readonly<MetadataProps[]> = [
-        { id: "distribution_gender", name: "Пол", type: MetadataTypes.LIST_FIELD, isRequired: true},
-        { id: "distribution_town", name: "Населённый пункт", type: MetadataTypes.LIST_FIELD, isRequired: true},
-        { id: "distribution_ageGroup", name: "Возрастная группа", type: MetadataTypes.LIST_FIELD, isRequired: true},
-        { id: "distribution_brochure_count", name: "Количество каталогов", type: MetadataTypes.NMBR_FIELD, isRequired: true},
+        { id: "distribution_genders", name: "Пол", type: MetadataTypes.LIST_FIELD, isRequired: true},
+        { id: "distribution_towns", name: "Населённый пункт", type: MetadataTypes.LIST_FIELD, isRequired: true},
+        { id: "distribution_ageGroups", name: "Возрастная группа", type: MetadataTypes.LIST_FIELD, isRequired: true},
+        { id: "distribution_brochure_count", name: "Количество каталогов", type: MetadataTypes.NMBR_FIELD, isRequired: true, min: 1, defaultValue: '1'},
     ];
+
+    /**
+     * Указатель на форму.
+     */
+    const [form] = Form.useForm();
+
+    /**
+     * Возвращает набор элементов для списка select.
+     * @param formItem
+     */
+    const getSelectOptions = (formItem: MetadataProps) => {
+        const formId = formItem.id;
+        const formName = formId.slice(formId.lastIndexOf('_') + 1);
+        let arr: any[] = [];
+
+        switch (formName) {
+            case "genders": arr = props.distributionStore?.getGenders() ?? []; break;
+            case "ageGroups": arr = props.distributionStore?.getAgeGroups() ?? []; break;
+            case "towns": arr = props.distributionStore?.getTowns() ?? []; break;
+        }
+
+        return (arr.map(item => (<Select.Option key={`${formName}_${item.id}`}>{item.name}</Select.Option>)));
+    };
 
     /**
      * Возвращает компонет элемента формы.
@@ -36,7 +59,7 @@ const CreateDistributionButtonComponent: React.FC<CreateDistributionButtonCompon
         switch (formItem.type) {
             case MetadataTypes.NMBR_FIELD:
             case MetadataTypes.STR_FIELD: return (<Input/>);
-            case MetadataTypes.LIST_FIELD: return (<Select/>);
+            case MetadataTypes.LIST_FIELD: return (<Select>{getSelectOptions(formItem)}</Select>);
             default: return null;
         }
     };

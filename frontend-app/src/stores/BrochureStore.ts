@@ -8,7 +8,6 @@ import {
     StatusArrayProps
 } from "../types/BrochureTypes";
 import {random} from "../Utils";
-import DistributionService from "../services/DistributionService";
 import {ageGroups, genders, goodsNames, towns} from "./HandbookExamples";
 import GoodsService from "../services/GoodsService";
 import BrochureService from "../services/BrochureService";

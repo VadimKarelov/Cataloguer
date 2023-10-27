@@ -19,6 +19,14 @@ export enum MetadataTypes {
 
 /**
  * Свойства метаданных для компонента CreateBrochureButtonComponent.
+ * @param id Идентификатор поля.
+ * @param name Наименование поля.
+ * @param type Тип поля.
+ * @param isRequired Обязательное поле или нет.
+ * @param min Минимальное значение.
+ * @param max Максимальное значение.
+ * @param defaultValue Значение по умолчанию.
+ * @param helpText Текст подсказки.
  */
 export interface MetadataProps {
     id: string,
