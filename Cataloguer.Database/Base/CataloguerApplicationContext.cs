@@ -30,7 +30,8 @@ namespace Cataloguer.Database.Base
         {
             _connectionString = config.ConnectionsString;
 
-            Database.EnsureCreated();
+            if (!_isInitialised)
+                Database.EnsureCreated();
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -86,10 +87,10 @@ namespace Cataloguer.Database.Base
                         .Where(x => !fromFile.Contains(x.Name));
 
                     var toAdd = fromFile.Except(Towns.Select(x => x.Name))
-                        .Select(x => new Town() 
-                        { 
-                            Name = x, 
-                            Population = random.Next(5000, 20000000) 
+                        .Select(x => new Town()
+                        {
+                            Name = x,
+                            Population = random.Next(5000, 20000000)
                         });
 
                     Towns.RemoveRange(toRemove);
@@ -121,27 +122,55 @@ namespace Cataloguer.Database.Base
 
         private string[] ReadTownsFromFile()
         {
-            using StreamReader reader = new StreamReader(@"..\Cataloguer.Database\Resources\goroda.txt");
-            return reader.ReadToEnd()
-                .Split('\n')
-                .Where(x => !string.IsNullOrEmpty(x) && !x.Contains("Оспаривается"))
-                .Select(x => x.Replace("\r", ""))
-                .Where(x => !string.IsNullOrEmpty(x))
-                .Distinct()
-                .ToArray();
+            // при запуске из VS и exe файла разные пути до файлов
+            string[] paths = { @"Resources\goroda.txt", @"..\Cataloguer.Database\Resources\goroda.txt" };
+
+            foreach (var path in paths)
+            {
+                try
+                {
+                    using StreamReader reader = new StreamReader(path);
+                    return reader.ReadToEnd()
+                        .Split('\n')
+                        .Where(x => !string.IsNullOrEmpty(x) && !x.Contains("Оспаривается"))
+                        .Select(x => x.Replace("\r", ""))
+                        .Where(x => !string.IsNullOrEmpty(x))
+                        .Distinct()
+                        .ToArray();
+                }
+                catch { }
+            }
+
+            Log.Error("Не удалось считать файл с городами!");
+
+            return Array.Empty<string>();
         }
 
         private string[] ReadGoodsFromFile()
         {
-            using StreamReader reader = new StreamReader(@"..\Cataloguer.Database\Resources\goods.txt");
-            return reader.ReadToEnd()
-                .Split('\n')
-                .Where(x => !string.IsNullOrEmpty(x))
-                .Distinct()
-                .Select(x => x.Replace("\r", ""))
-                .Where(x => !string.IsNullOrEmpty(x))
-                .Distinct()
-                .ToArray();
+            // при запуске из VS и exe файла разные пути до файлов
+            string[] paths = { @"Resources\goods.txt", @"..\Cataloguer.Database\Resources\goods.txt" };
+
+            foreach (var path in paths)
+            {
+                try
+                {
+                    using StreamReader reader = new StreamReader(path);
+                    return reader.ReadToEnd()
+                        .Split('\n')
+                        .Where(x => !string.IsNullOrEmpty(x))
+                        .Distinct()
+                        .Select(x => x.Replace("\r", ""))
+                        .Where(x => !string.IsNullOrEmpty(x))
+                        .Distinct()
+                        .ToArray();
+                }
+                catch { }
+            }
+
+            Log.Error("Не удалось считать файл с продуктами!");
+
+            return Array.Empty<string>();
         }
 
         private List<SellHistory> GenerateSellHistory(int count)

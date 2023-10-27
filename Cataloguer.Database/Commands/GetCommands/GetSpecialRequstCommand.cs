@@ -70,7 +70,7 @@ namespace Cataloguer.Database.Commands.GetCommands
                 .Include(x => x.Good)
                 .Where(x => goodsFromBrochure.Contains(x.Good))
                 .Include(x => x.Town)
-                .Include( x=> x.Gender);
+                .Include(x => x.Gender);
         }
     }
 }

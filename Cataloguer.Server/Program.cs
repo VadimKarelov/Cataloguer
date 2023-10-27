@@ -1,11 +1,10 @@
 using Cataloguer.Database.Base;
 using Cataloguer.Database.Commands.GetCommands;
-using Cataloguer.Database.Models;
 using Cataloguer.Server.ContextHandlers;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Serilog;
-using Serilog.Formatting.Json;
+using Serilog.Formatting.Compact;
 
 namespace Cataloguer.Server
 {
@@ -16,7 +15,7 @@ namespace Cataloguer.Server
         public static void Main(string[] args)
         {
             Log.Logger = new LoggerConfiguration()
-                .WriteTo.File(new JsonFormatter(), "Logs/Cataloguer.log")
+                .WriteTo.File(new CompactJsonFormatter(), "Logs/Cataloguer.log")
                 .MinimumLevel.Debug()
                 .WriteTo.Console()
                 .CreateLogger();
@@ -103,29 +102,29 @@ namespace Cataloguer.Server
         [EnableCors()]
         private static void ListWithoutParametersRegistration(WebApplication app, DataBaseConfiguration config)
         {
-            app.MapGet(_baseRoute + "/getAgeGroups", () => new GetListCommand<AgeGroup>(config).GetValues());
-            app.MapGet(_baseRoute + "/getBrochures", () => new GetListCommand<Brochure>(config).GetValues());
-            app.MapGet(_baseRoute + "/getBrochurePositions", () => new GetListCommand<BrochurePosition>(config).GetValues());
-            app.MapGet(_baseRoute + "/getDistributions", () => new GetListCommand<Distribution>(config).GetValues());
-            app.MapGet(_baseRoute + "/getGenders", () => new GetListCommand<Gender>(config).GetValues());
+            app.MapGet(_baseRoute + "/getAgeGroups", () => new GetCommand(config).GetListAgeGroup());
+            app.MapGet(_baseRoute + "/getBrochures", () => new GetCommand(config).GetListBrochure());
+            app.MapGet(_baseRoute + "/getBrochurePositions", () => new GetCommand(config).GetListBrochurePositions());
+            app.MapGet(_baseRoute + "/getDistributions", () => new GetCommand(config).GetListDistribution());
+            app.MapGet(_baseRoute + "/getGenders", () => new GetCommand(config).GetListGender());
             app.MapGet(_baseRoute + "/getGoods", () => new GetSpecialRequestCommand(config).GetGoodsWithAveragePriceFromHistory());
-            app.MapGet(_baseRoute + "/getSellHistory", () => new GetListCommand<SellHistory>(config).GetValues());
-            app.MapGet(_baseRoute + "/getStatuses", () => new GetListCommand<Status>(config).GetValues());
-            app.MapGet(_baseRoute + "/getTowns", () => new GetListCommand<Town>(config).GetValues());
+            app.MapGet(_baseRoute + "/getSellHistory", () => new GetCommand(config).GetListSellHistory());
+            app.MapGet(_baseRoute + "/getStatuses", () => new GetCommand(config).GetListStatus());
+            app.MapGet(_baseRoute + "/getTowns", () => new GetCommand(config).GetListTown());
         }
 
         [EnableCors()]
         private static void GetSingleObjectRegistration(WebApplication app, DataBaseConfiguration config)
         {
-            app.Map(_baseRoute + "/getAgeGroup/id={id}", (int id) => new GetCommand<AgeGroup>(config).GetValueById(id));
-            app.Map(_baseRoute + "/getBrochure/id={id}", (int id) => new GetCommand<Brochure>(config).GetValueById(id));
-            app.Map(_baseRoute + "/getBrochurePosition/id={id}", (int id) => new GetCommand<BrochurePosition>(config).GetValueById(id));
-            app.Map(_baseRoute + "/getDistribution/id={id}", (int id) => new GetCommand<Distribution>(config).GetValueById(id));
-            app.Map(_baseRoute + "/getGender/id={id}", (int id) => new GetCommand<Gender>(config).GetValueById(id));
-            app.Map(_baseRoute + "/getGood/id={id}", (int id) => new GetCommand<Good>(config).GetValueById(id));
-            app.Map(_baseRoute + "/getSellHistory/id={id}", (int id) => new GetCommand<SellHistory>(config).GetValueById(id));
-            app.Map(_baseRoute + "/getStatus/id={id}", (int id) => new GetCommand<Status>(config).GetValueById(id));
-            app.Map(_baseRoute + "/getTown/id={id}", (int id) => new GetCommand<Town>(config).GetValueById(id));
+            app.Map(_baseRoute + "/getAgeGroup/id={id}", (int id) => new GetCommand(config).GetAgeGroup(id));
+            app.Map(_baseRoute + "/getBrochure/id={id}", (int id) => new GetCommand(config).GetBrochure(id));
+            app.Map(_baseRoute + "/getBrochurePosition/id={id}", (int id) => new GetCommand(config).GetBrochurePosition(id));
+            app.Map(_baseRoute + "/getDistribution/id={id}", (int id) => new GetCommand(config).GetDistribution(id));
+            app.Map(_baseRoute + "/getGender/id={id}", (int id) => new GetCommand(config).GetGender(id));
+            app.Map(_baseRoute + "/getGood/id={id}", (int id) => new GetCommand(config).GetGood(id));
+            app.Map(_baseRoute + "/getSellHistory/id={id}", (int id) => new GetCommand(config).GetSellHistory(id));
+            app.Map(_baseRoute + "/getStatus/id={id}", (int id) => new GetCommand(config).GetStatus(id));
+            app.Map(_baseRoute + "/getTown/id={id}", (int id) => new GetCommand(config).GetTown(id));
         }
 
         [EnableCors()]
