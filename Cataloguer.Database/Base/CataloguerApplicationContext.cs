@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using System.Diagnostics;
-using System.IO;
 
 namespace Cataloguer.Database.Base
 {
@@ -88,10 +87,10 @@ namespace Cataloguer.Database.Base
                         .Where(x => !fromFile.Contains(x.Name));
 
                     var toAdd = fromFile.Except(Towns.Select(x => x.Name))
-                        .Select(x => new Town() 
-                        { 
-                            Name = x, 
-                            Population = random.Next(5000, 20000000) 
+                        .Select(x => new Town()
+                        {
+                            Name = x,
+                            Population = random.Next(5000, 20000000)
                         });
 
                     Towns.RemoveRange(toRemove);

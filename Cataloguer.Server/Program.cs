@@ -1,11 +1,10 @@
 using Cataloguer.Database.Base;
 using Cataloguer.Database.Commands.GetCommands;
-using Cataloguer.Database.Models;
 using Cataloguer.Server.ContextHandlers;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Serilog;
-using Serilog.Formatting.Json;
+using Serilog.Formatting.Compact;
 
 namespace Cataloguer.Server
 {
@@ -16,7 +15,7 @@ namespace Cataloguer.Server
         public static void Main(string[] args)
         {
             Log.Logger = new LoggerConfiguration()
-                .WriteTo.File(new JsonFormatter(), "Logs/Cataloguer.log")
+                .WriteTo.File(new CompactJsonFormatter(), "Logs/Cataloguer.log")
                 .MinimumLevel.Debug()
                 .WriteTo.Console()
                 .CreateLogger();
