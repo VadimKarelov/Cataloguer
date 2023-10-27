@@ -126,6 +126,8 @@ namespace Cataloguer.Database.Base
                 .Split('\n')
                 .Where(x => !string.IsNullOrEmpty(x) && !x.Contains("Оспаривается"))
                 .Select(x => x.Replace("\r", ""))
+                .Where(x => !string.IsNullOrEmpty(x))
+                .Distinct()
                 .ToArray();
         }
 
@@ -137,6 +139,8 @@ namespace Cataloguer.Database.Base
                 .Where(x => !string.IsNullOrEmpty(x))
                 .Distinct()
                 .Select(x => x.Replace("\r", ""))
+                .Where(x => !string.IsNullOrEmpty(x))
+                .Distinct()
                 .ToArray();
         }
 
