@@ -148,6 +148,7 @@ namespace Cataloguer.Database.Base
 
             var availableGoods = Goods.ToArray();
             var availableTowns = Towns.ToArray();
+            var availableGenders = Genders.ToArray();
             var today = DateTime.Now.ToOADate();
 
             for (int i = count; i > 0; i--)
@@ -158,7 +159,8 @@ namespace Cataloguer.Database.Base
                     Town = availableTowns[random.Next(0, availableTowns.Length)],
                     Age = (short)random.Next(7, 90),
                     SellDate = DateTime.FromOADate(today - random.NextDouble() * 100),
-                    GoodCount = random.Next(1, 20)
+                    GoodCount = random.Next(1, 20),
+                    Gender = availableGenders[random.Next(0, availableGenders.Length)],
                 };
                 entity.Price = SellHistory
                     .FirstOrDefault(x => x.Good == entity.Good)?.Price ?? 200 + random.Next(-100, 100);
