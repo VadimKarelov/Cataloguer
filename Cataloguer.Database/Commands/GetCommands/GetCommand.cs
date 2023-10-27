@@ -33,7 +33,7 @@ namespace Cataloguer.Database.Commands.GetCommands
                     .FirstOrDefault(x => x.Id == id);
         }
 
-        public IEnumerable<Brochure> GetListBrochure(Func<Brochure, bool>? predicate, bool includeFields = false)
+        public IEnumerable<Brochure> GetListBrochure(Func<Brochure, bool>? predicate = null, bool includeFields = false)
         {
             var request = Context.Brochures.AsNoTracking();
 
@@ -58,7 +58,7 @@ namespace Cataloguer.Database.Commands.GetCommands
                     .FirstOrDefault(x => x.Id == id);
         }
 
-        public IEnumerable<BrochurePosition> GetListBrochurePositions(Func<BrochurePosition, bool>? predicate, bool includeFields = false)
+        public IEnumerable<BrochurePosition> GetListBrochurePositions(Func<BrochurePosition, bool>? predicate = null, bool includeFields = false)
         {
             var request = Context.BrochurePositions.AsNoTracking();
 
@@ -86,7 +86,7 @@ namespace Cataloguer.Database.Commands.GetCommands
                     .FirstOrDefault(x => x.Id == id);
         }
 
-        public IEnumerable<Distribution> GetListDistribution(Func<Distribution, bool>? predicate, bool includeFields = false)
+        public IEnumerable<Distribution> GetListDistribution(Func<Distribution, bool>? predicate = null, bool includeFields = false)
         {
             var request = Context.Distributions.AsNoTracking();
 
@@ -138,7 +138,7 @@ namespace Cataloguer.Database.Commands.GetCommands
                     .FirstOrDefault(x => x.Id == id);
         }
 
-        public IEnumerable<SellHistory> GetListSellHistory(Func<SellHistory, bool>? predicate, bool includeFields = false)
+        public IEnumerable<SellHistory> GetListSellHistory(Func<SellHistory, bool>? predicate = null, bool includeFields = false)
         {
             var request = Context.SellHistory.AsNoTracking();
 
