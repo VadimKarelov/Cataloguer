@@ -87,7 +87,7 @@ const DistributionDescriptionComponent: React.FC<DistributionDescriptionComponen
                     <Table
                         className={"distributions-table-style"}
                         size={"middle"}
-                        scroll={{y: "calc(100vh - 250px)", x: "max-content"}}
+                        scroll={{y: "calc(100vh - 278px)", x: "max-content"}}
                         columns={columns}
                         dataSource={rows}
                         pagination={false}

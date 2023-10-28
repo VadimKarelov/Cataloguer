@@ -5,13 +5,13 @@
 }
 
 .distributions-tab-content-style {
-    height: calc(100vh - 230px);
+    height: calc(100vh - 258px);
     background-color: white;
 }
 
 .distributions-table-style {
     margin: 30px 0 0 50px;
-    height: calc(100vh - 190px);
+    height: calc(100vh - 218px);
     width: calc(100vw - 450px);
     flex: min-content;
     min-width: 400px;

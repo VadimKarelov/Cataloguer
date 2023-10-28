@@ -136,7 +136,7 @@ const GoodsTableComponent: React.FC<GoodsTableComponentProps> = inject("brochure
             components={components}
             rowClassName={() => "editable-row"}
             dataSource={goods}
-            pagination={{pageSize: 5}}
+            pagination={{pageSize: 5, showSizeChanger: false}}
             size={"small"}
         />
     );

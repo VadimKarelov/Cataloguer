@@ -280,13 +280,26 @@ class BrochureStore {
     }
 
     /**
+     * Обновляет список каталогов.
+     * @private
+     */
+    @action private async updateBrochureList() {
+        const brochureAxiosResponse = await BrochureService.getAllBrochures();
+        console.log(brochureAxiosResponse)
+        if (!(brochureAxiosResponse.data instanceof Array)) return;
+
+        console.log(brochureAxiosResponse.data)
+        this.brochures = brochureAxiosResponse.data;
+    }
+
+    /**
      * Загружает каталоги.
      */
     @action public loadBrochures() {
         this.isBrochureMenuLoading = true;
 
-        //some load logic
-        this.initBrochures();
+        const shouldUseOnlyDbData: Readonly<string> = process.env.REACT_APP_SHOULD_USE_ONLY_DB_DATA;
+        shouldUseOnlyDbData === "false" ? this.initBrochures() : this.updateBrochureList();
 
         setTimeout(() => {
             this.isBrochureMenuLoading = false;

@@ -25,7 +25,7 @@ const CreateDistributionButtonComponent: React.FC<CreateDistributionButtonCompon
         { id: "distribution_genders", name: "Пол", type: MetadataTypes.LIST_FIELD, isRequired: true},
         { id: "distribution_towns", name: "Населённый пункт", type: MetadataTypes.LIST_FIELD, isRequired: true},
         { id: "distribution_ageGroups", name: "Возрастная группа", type: MetadataTypes.LIST_FIELD, isRequired: true},
-        { id: "distribution_brochure_count", name: "Количество каталогов", type: MetadataTypes.NMBR_FIELD, isRequired: true, min: 1, defaultValue: '1'},
+        { id: "distribution_brochureCount", name: "Количество каталогов", type: MetadataTypes.NMBR_FIELD, isRequired: true, min: 1, defaultValue: '1'},
     ];
 
     /**
@@ -48,7 +48,7 @@ const CreateDistributionButtonComponent: React.FC<CreateDistributionButtonCompon
             case "towns": arr = props.distributionStore?.getTowns() ?? []; break;
         }
 
-        return (arr.map(item => (<Select.Option key={`${formName}_${item.id}`}>{item.name}</Select.Option>)));
+        return arr.map(item => (<Select.Option key={`${formName}_${item.id}`}>{item.name}</Select.Option>));
     };
 
     /**
@@ -59,7 +59,7 @@ const CreateDistributionButtonComponent: React.FC<CreateDistributionButtonCompon
         switch (formItem.type) {
             case MetadataTypes.NMBR_FIELD:
             case MetadataTypes.STR_FIELD: return (<Input/>);
-            case MetadataTypes.LIST_FIELD: return (<Select>{getSelectOptions(formItem)}</Select>);
+            case MetadataTypes.LIST_FIELD: return (<Select placeholder={`Выбрать '${formItem.name.toLowerCase()}'`}>{getSelectOptions(formItem)}</Select>);
             default: return null;
         }
     };
@@ -68,26 +68,26 @@ const CreateDistributionButtonComponent: React.FC<CreateDistributionButtonCompon
      * Возвращает значение для инициализации поля формы.
      * @param key Название поля.
      */
-    const getInitValue = (key: string) => {
-        const isEditButton = !!props.row;
-        if (!isEditButton) return null;
-
-        const finalKey = key.slice(key.lastIndexOf('_') + 1)
-        const parsable: customProp = props.row ?? {};
-        return parsable[finalKey] ?? null;
-    };
+    // const getInitValue = (key: string) => {
+    //     const isEditButton = !!props.row;
+    //     if (!isEditButton) return null;
+    //
+    //     const finalKey = key.slice(key.lastIndexOf('_') + 1)
+    //     const parsable: customProp = props.row ?? {};
+    //     return parsable[finalKey] ?? null;
+    // };
 
     /**
      * Возвращает компонент формы.
      */
     const getForm = (): React.JSX.Element => {
         return (
-            <Form layout={"vertical"} colon={false}>
+            <Form form={form} id={`distribution_${!props.row ? "create" : "edit"}`} layout={"vertical"} colon={false}>
                 {metadata.map(formItem => {
                     const formId = formItem.id;
                     const formName = formId.slice(formId.lastIndexOf('_') + 1);
                     return (
-                        <Form.Item key={formItem.id} label={formItem.name} name={formName} initialValue={getInitValue(formItem.id)}>
+                        <Form.Item key={formItem.id} label={formItem.name} name={formName} initialValue={formItem.defaultValue} /*initialValue={getInitValue(formItem.id)}*/>
                             {getFormItemComponent(formItem)}
                         </Form.Item>
                     );
@@ -99,8 +99,20 @@ const CreateDistributionButtonComponent: React.FC<CreateDistributionButtonCompon
     /**
      * Обрабатывает нажатие кнопки.
      */
-    const onButtonClick = () => {
-        props.distributionStore?.updateDistributionLists();
+    const onButtonClick = (): void => {
+        props.distributionStore?.updateDistributionLists()
+                                    .finally(() => {
+                                        if (!props.row) return;
+
+                                        const {ageGroup, gender, town, count} = props.row;
+
+                                        form.setFieldsValue({
+                                            ageGroups: ageGroup,
+                                            genders: gender,
+                                            towns: town,
+                                            brochureCount: count,
+                                        });
+                                    });
     };
 
     /**

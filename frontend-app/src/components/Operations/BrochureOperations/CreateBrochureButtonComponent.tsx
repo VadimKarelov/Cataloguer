@@ -71,9 +71,9 @@ const CreateBrochureButtonComponent: React.FC<CreateBrochureButtonComponentProps
      * Метаданные модалки редактирования каталога.
      */
     const editFormMetadata: Readonly<MetadataProps[]> = [
-        { id: "brochure_name", name: "Название", type: MetadataTypes.STR_FIELD, isRequired: true, min: 1, max: 30},
+        { id: "brochure_name", name: "Название", type: MetadataTypes.STR_FIELD, isRequired: true, min: 1, max: 30, helpText: "Значение по длине не более 30 символлов"},
         { id: "brochure_date", name: "Период выпуска каталога", type: MetadataTypes.DATE_FIELD, isRequired: true, defaultValue: new Date().toDateString()},
-        { id: "brochure_edition", name: "Тираж", type: MetadataTypes.NMBR_FIELD, isRequired: true, min: 1, max: Number.MAX_VALUE, defaultValue: "1"},
+        { id: "brochure_edition", name: "Тираж", type: MetadataTypes.NMBR_FIELD, isRequired: true, min: 1, max: 10_000, defaultValue: "1", helpText: "Значение не более 10 000"},
     ];
 
     /**
@@ -164,6 +164,7 @@ const CreateBrochureButtonComponent: React.FC<CreateBrochureButtonComponentProps
                             label={formItem.name}
                             name={formItemName}
                             initialValue={defaultValue}
+                            help={formItem.helpText}
                             rules={[{
                                 required: formItem.isRequired,
                                 validator: (_, value) => getValidator(_, value, formItem),

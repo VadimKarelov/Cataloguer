@@ -2,13 +2,13 @@
 .brochure-form-style {
     margin: 10px 0 0 25px;
     overflow: auto;
-    height: calc(100vh - 140px) !important;
+    height: calc(100vh - 173px) !important;
     width: calc(100vw - 425px) !important;
 }
 
 .brochure-form-item-label-style {
     margin: 10px 0 0 25px;
-    color: gray;
+    color: rgb(128, 128, 128);
     font-weight: 500;
 }
 

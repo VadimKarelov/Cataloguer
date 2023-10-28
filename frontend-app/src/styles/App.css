@@ -1,4 +1,8 @@
 
+.white-background-style {
+    background-color: white;
+}
+
 .main-window-layout {
     height: auto;
 }

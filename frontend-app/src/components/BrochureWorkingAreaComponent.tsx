@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {Layout, Tabs} from "antd";
+import {Layout, Tabs, Typography} from "antd";
 import type { TabsProps } from 'antd';
 import {Content, Header} from "antd/es/layout/layout";
 import "../styles/BrochureWorkingArea.css"
@@ -109,9 +109,22 @@ const BrochureWorkingAreaComponent: React.FC<BrochureWorkingAreaComponentProps> 
         }
     };
 
+    /**
+     * Возвращает базовую информацию для строки над табами.
+     */
+    const getBrochureBaseInfo = (): string => {
+        if (brochure === null) return "";
+
+        const {name, edition, status} = brochure;
+        return `${name} \\ ${edition} \\ ${status}`;
+    };
+
     return (
-        <Layout>
+        <Layout className={"white-background-style"}>
             <Header className={"brochure-area-header-style"}>
+                <Typography.Paragraph className={"paragraph-header-style"}>
+                    {getBrochureBaseInfo()}
+                </Typography.Paragraph>
                 <Tabs activeKey={currentTabKey} onTabClick={onTabChange} items={tabs.map(tab => tab)}/>
             </Header>
             <Content className={"brochure-area-content-style"}>

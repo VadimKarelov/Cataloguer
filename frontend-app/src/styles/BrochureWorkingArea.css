@@ -1,10 +1,15 @@
 
 .brochure-area-header-style {
-    height: 40px;
+    height: 68px;
     background-color: white;
 }
 
+.paragraph-header-style {
+    margin-bottom: 0 !important;
+    margin-top: 5px !important;
+}
+
 .brochure-area-content-style {
-    height: calc(100vh - 130px);
+    height: calc(100vh - 163px);
     background-color: white;
 }

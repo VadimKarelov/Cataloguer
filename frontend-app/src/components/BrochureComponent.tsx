@@ -23,11 +23,11 @@ const BrochureComponent: React.FC<BrochureComponentProps> = inject("brochureStor
     const currentBrochure = props.brochureStore?.currentBrochure ?? null;
 
     return (
-        <Layout>
+        <Layout className={"white-background-style"}>
             <Sider width={350} className={"sider-style"}>
                 <BrochureMenuComponent/>
             </Sider>
-            <Content className={"brochure-content-style"}>
+            <Content className={"brochure-content-style white-background-style"}>
                 <Spin size={"large"} spinning={props.brochureStore?.isBrochureMenuLoading || props.brochureStore?.isBrochureLoading}>
                     {
                         (currentBrochure !== null) ?

@@ -51,9 +51,12 @@ const GoodsDescriptionComponent: React.FC<GoodsDescriptionComponentProps> = inje
             key: "goods_table_operation",
             width: 110,
             render: () => (
-                <Popconfirm title={`Удалить товар?`} okText={"Удалить"} cancelText={"Отменить"} /*onConfirm={() => handleDelete(record.key)}*/>
-                    <Button>Удалить</Button>
-                </Popconfirm>
+                <Space>
+                    <Button>Изменить</Button>
+                    <Popconfirm title={`Удалить товар?`} okText={"Удалить"} cancelText={"Отменить"} /*onConfirm={() => handleDelete(record.key)}*/>
+                        <Button>Удалить</Button>
+                    </Popconfirm>
+                </Space>
             ),
         },
     ];
@@ -64,14 +67,13 @@ const GoodsDescriptionComponent: React.FC<GoodsDescriptionComponentProps> = inje
                 <Header className={"goods-tab-header-style"}>
                     <Space>
                         <Button>Добавить</Button>
-                        <Button>Изменить</Button>
                     </Space>
                 </Header>
                 <Content className={"goods-tab-content-style"}>
                     <Table
                         className={"goods-table-style"}
                         size={"middle"}
-                        scroll={{y: "calc(100vh - 250px)", x: "max-content"}}
+                        scroll={{y: "calc(100vh - 283px)", x: "max-content"}}
                         columns={columns}
                         dataSource={rows}
                         pagination={false}

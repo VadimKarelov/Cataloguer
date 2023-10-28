@@ -14,7 +14,7 @@ import CheckEfficiencyButtonComponent from "./Operations/BrochureOperations/Chec
  */
 const App = () => {
     return (
-        <Layout>
+        <Layout className={"white-background-style"}>
             <Header className={"main-window-header"}>
                 <Typography.Title className={"header-title"}>
                     Формирование эффективного каталога товаров
@@ -31,8 +31,8 @@ const App = () => {
                         </Space>
                     </div>
                 </Header>
-                <Layout>
-                    <Content className={"main-window-content"}>
+                <Layout className={"white-background-style"}>
+                    <Content className={"main-window-content white-background-style"}>
                         <BrochureComponent/>
                     </Content>
                 </Layout>

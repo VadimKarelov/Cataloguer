@@ -97,7 +97,7 @@ export class DistributionStore {
      * Обновляет список возврастных группы.
      */
     @action public async updateDistributionLists() {
-        await Promise.all([
+        return await Promise.all([
             this.getDbAgeGroups(),
             this.getDbGenders(),
             this.getDbTowns(),

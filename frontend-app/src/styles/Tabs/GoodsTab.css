@@ -5,13 +5,13 @@
 }
 
 .goods-tab-content-style {
-    height: calc(100vh - 230px);
+    height: calc(100vh - 263px);
     background-color: white;
 }
 
 .goods-table-style {
     margin: 30px 0 0 50px;
-    height: calc(100vh - 190px);
+    height: calc(100vh - 223px);
     width: calc(100vw - 450px);
     flex: min-content;
     min-width: 400px;
