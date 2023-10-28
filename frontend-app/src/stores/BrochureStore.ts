@@ -14,6 +14,11 @@ import BrochureService from "../services/BrochureService";
 import moment from "moment";
 
 /**
+ * Следует ли использовать данные из БД.
+ */
+const shouldUseOnlyDbData: Readonly<string> = process.env.REACT_APP_SHOULD_USE_ONLY_DB_DATA ?? "false";
+
+/**
  * Путь к данным каталога в session storage.
  */
 const BROCHURE_SS_PATH: Readonly<string> = "ss_brochure";
@@ -106,7 +111,13 @@ class BrochureStore {
         this.getSavedBrochureMenu = this.getSavedBrochureMenu.bind(this);
         this.reset = this.reset.bind(this);
 
+        this.setCheckedGoods = this.setCheckedGoods.bind(this);
         this.updateGoodsList = this.updateGoodsList.bind(this);
+
+        this.handleEditBrochure = this.handleEditBrochure.bind(this);
+        this.handleCreateBrochure = this.handleCreateBrochure.bind(this);
+        this.getBrochureById = this.getBrochureById.bind(this);
+        this.updateBrochureList = this.updateBrochureList.bind(this);
     }
 
     /**
@@ -125,6 +136,14 @@ class BrochureStore {
     }
 
     /**
+     * Вызывает запрос на получения данных о каталоге по идентификатору.
+     * @param id Идентификатор каталога.
+     */
+    @action public async getBrochureById(id: number) {
+        return await BrochureService.getBrochureById(id);
+    }
+
+    /**
      * Обрабатывает создание каталога.
      * @param brochure Каталог.
      */
@@ -133,8 +152,36 @@ class BrochureStore {
 
         console.log("Отправляем на backend: ", brochure);
 
-        await BrochureService.createBrochure(brochure).then((response: {data: any}) => {
-            console.log("Получаем с backend id каталога: ", response.data)
+        this.isBrochureLoading = true;
+        this.isBrochureMenuLoading = true;
+        await BrochureService.createBrochure(brochure).then(async (response: {data: any}) => {
+            const id = response.data;
+
+            console.log("Получаем с backend id каталога: ", id)
+
+            if (!(typeof id === "number")) return;
+
+            await Promise.all([
+                BrochureService.getAllBrochures(),
+                BrochureService.getBrochureById(id),
+            ])
+                .then((responses) => {
+                    const brochuresAxiosResponse = responses[0];
+                    const brochureAxiosResponse = responses[1];
+
+                    if (brochuresAxiosResponse && brochuresAxiosResponse.data instanceof Array) {
+                        this.brochures = brochuresAxiosResponse.data;
+                    }
+
+                    if (brochureAxiosResponse) {
+                        this.onBrochureClick(id);
+                        // this.currentBrochure = brochureAxiosResponse.data;
+                    }
+                })
+                .finally(() => {
+                    this.isBrochureLoading = false;
+                    this.isBrochureMenuLoading = false;
+                });
         });
     }
 
@@ -224,7 +271,7 @@ class BrochureStore {
             const tempDistributions = this.getRandomDistributions();
             const status = BROCHURE_STATUSES[random(0, BROCHURE_STATUSES.length - 1)].value;
             tempBrochures.push(
-                { id: i, name: `Каталог ${i}`, edition: tempCount, creationDate: tempCreationDate, goods: tempGoods, distributions: tempDistributions, status: status }
+                { id: i, name: `Каталог ${i}`, edition: tempCount, date: tempCreationDate, goods: tempGoods, distributions: tempDistributions, status: status }
             );
         }
         this.brochures = tempBrochures;
@@ -233,7 +280,7 @@ class BrochureStore {
     /**
      * Возвращает меню с открытыми каталогами из session storage.
      */
-    public getSavedBrochureMenu(): string[] {
+    @action public getSavedBrochureMenu(): string[] {
         const brochure = this.getSavedBrochure();
         return brochure ? [`brochure_${brochure.id}`] : [];
     }
@@ -241,7 +288,7 @@ class BrochureStore {
     /**
      * Возвращает сохранённый каталог в сессии браузера.
      */
-    public getSavedBrochure(): BrochureProps | null {
+    @action public getSavedBrochure(): BrochureProps | null {
         const json = sessionStorage.getItem(BROCHURE_SS_PATH);
         if (json === null || json === "undefined") return null;
         return JSON.parse(json);
@@ -251,32 +298,38 @@ class BrochureStore {
      * Сохраняет каталог  в session storage.
      * @param brochure - каталог.
      */
-    private saveBrochureToSessionStorage(brochure: BrochureProps | null): void {
+    @action private saveBrochureToSessionStorage(brochure: BrochureProps | null): void {
         sessionStorage.setItem(BROCHURE_SS_PATH, JSON.stringify(brochure));
     }
-
 
     /**
      * Срабатывает после выбора каталога в меню.
      * @param brochureId - идентификатор каталога.
      */
-    @action public onBrochureClick(brochureId: number): void {
-        if (isNaN(brochureId)) return;
+    @action public async onBrochureClick(brochureId: number) {
+        if (isNaN(brochureId) || brochureId === -1) return;
 
         this.isBrochureSelected = true;
         this.isBrochureLoading = true;
 
-        // some brochure load logic
-        const foundBrochure = brochureId !== -1 ?
-            (this.brochures.find(brochure => brochure.id === brochureId) ?? null)
-            : null;
+        let foundBrochure = null;
+
+        // if (brochureId !== -1) {
+            if (shouldUseOnlyDbData === "false") {
+                foundBrochure = this.brochures.find(brochure => brochure.id === brochureId) ?? null;
+            } else {
+                await this.getBrochureById(brochureId).then((response: {data: any}) => {
+                    foundBrochure = response.data;
+                });
+            }
+        // }
 
         this.currentBrochure = foundBrochure;
         this.saveBrochureToSessionStorage(foundBrochure);
 
         setTimeout(() => {
             this.isBrochureLoading = false;
-        }, 500);
+        }, 250);
     }
 
     /**
@@ -284,12 +337,10 @@ class BrochureStore {
      * @private
      */
     @action private async updateBrochureList() {
-        const brochureAxiosResponse = await BrochureService.getAllBrochures();
-        console.log(brochureAxiosResponse)
-        if (!(brochureAxiosResponse.data instanceof Array)) return;
+        const {data} = await BrochureService.getAllBrochures();
+        if (!(data instanceof Array)) return;
 
-        console.log(brochureAxiosResponse.data)
-        this.brochures = brochureAxiosResponse.data;
+        this.brochures = data;
     }
 
     /**
@@ -298,7 +349,6 @@ class BrochureStore {
     @action public loadBrochures() {
         this.isBrochureMenuLoading = true;
 
-        const shouldUseOnlyDbData: Readonly<string> = process.env.REACT_APP_SHOULD_USE_ONLY_DB_DATA;
         shouldUseOnlyDbData === "false" ? this.initBrochures() : this.updateBrochureList();
 
         setTimeout(() => {

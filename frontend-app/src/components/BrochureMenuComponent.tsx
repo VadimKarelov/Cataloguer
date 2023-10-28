@@ -65,7 +65,7 @@ const BrochureMenuComponent: React.FC<BrochureMenuComponentProps> = inject("broc
         setBrochureItems(
             brochures.map(brochure => {
                 return ({
-                    label: getMenuItemSpan(`Каталог ${brochure.id}`, brochure.status),
+                    label: getMenuItemSpan(brochure.name ?? `Каталог ${brochure.id}`, brochure.status),
                     key: `brochure_${brochure.id}`,
                 });
             })
@@ -87,14 +87,21 @@ const BrochureMenuComponent: React.FC<BrochureMenuComponentProps> = inject("broc
     /**
      * Выбранные элементы меню.
      */
-    const selectedMenuItems: Readonly<string[]> = props.brochureStore?.getSavedBrochureMenu() ?? [];
+    const [currentlySelectedMenuItems, setCurrentlySelectedMenuItems] = useState<string[]>([]);
+
+    /**
+     * Хук, обновляющий выбранный элемент в меню.
+     */
+    useEffect(() => {
+        setCurrentlySelectedMenuItems(props.brochureStore?.getSavedBrochureMenu() ?? []);
+    }, [props.brochureStore?.currentBrochure]);
 
     return (
         <Spin spinning={props.brochureStore?.isBrochureMenuLoading}>
             <Menu
                 className={"brochure-menu-style"}
                 mode={"inline"}
-                defaultSelectedKeys={selectedMenuItems.map(item => item)}
+                selectedKeys={currentlySelectedMenuItems}
                 items={brochureItems}
                 onClick={onSelectBrochure}
             />

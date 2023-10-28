@@ -68,11 +68,11 @@ const BrochureWorkingAreaComponent: React.FC<BrochureWorkingAreaComponentProps> 
      * При обновлении страницы подставляет выбранную вкладку.
      * При смене каталога устанавливает первую вкладку.
      */
-    useEffect(() =>
+    useEffect(() => {
         setBrochure(prevBrochure => {
             let key: string = TabKeys.BROCHURE_TAB;
 
-            const prevId = brochure !== null ? brochure.id : -1;
+            const prevId = prevBrochure !== null ? prevBrochure.id : -1;
             const currentBrochure = props.brochureStore?.currentBrochure ?? null;
 
             if (currentBrochure) {
@@ -81,12 +81,12 @@ const BrochureWorkingAreaComponent: React.FC<BrochureWorkingAreaComponentProps> 
                     const oldTab = sessionStorage.getItem(SS_SAVED_TAB);
                     key = oldTab !== null ? oldTab : TabKeys.BROCHURE_TAB;
                 }
-
             }
 
             setCurrentTabKey(key);
             return currentBrochure;
-    }), [props.brochureStore?.currentBrochure?.id]);
+        });
+    }, [props.brochureStore?.currentBrochure?.id]);
 
     /**
      * Измемняет ключ текущей вкладки.

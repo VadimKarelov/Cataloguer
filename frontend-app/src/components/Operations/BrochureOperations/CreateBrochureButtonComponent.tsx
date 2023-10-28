@@ -210,8 +210,8 @@ const CreateBrochureButtonComponent: React.FC<CreateBrochureButtonComponentProps
                                         handleDbAction(values);
                                         return Promise.resolve();
                                     },
-                                    (info) => {
-                                        console.log('Validate Failed:', info);
+                                    (error) => {
+                                        console.log("Validate Failed:", error);
                                         return Promise.reject();
                                     }
                                 );
@@ -238,7 +238,7 @@ const CreateBrochureButtonComponent: React.FC<CreateBrochureButtonComponentProps
         form.setFieldsValue({
             id: currentBrochure.id,
             name: currentBrochure.name,
-            date: moment(currentBrochure.creationDate),
+            date: moment(currentBrochure.date),
             edition: currentBrochure?.edition,
         });
     };

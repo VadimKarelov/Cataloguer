@@ -12,7 +12,7 @@ import moment from "moment";
 const metaData: Readonly<BrochureBaseInfoProps[]> = [
     {name: "id", displayName: "Идентификатор", order: 1, isVisible: true},
     {name: "name", displayName: "Название", order: 2, isVisible: true},
-    {name: "creationDate", displayName: "Дата выпуска каталога", order: 3, isVisible: true},
+    {name: "date", displayName: "Дата выпуска каталога", order: 3, isVisible: true},
     {name: "edition", displayName: "Тираж", order: 4, isVisible: true},
     {name: "status", displayName: "Статус", order: 5, isVisible: true},
 ];
@@ -57,7 +57,7 @@ const BrochureDescriptionComponent: React.FC<BrochureDescriptionComponentProps> 
                 {sortedMetaData.map(field => {
                     const value = parsableBrochure[field.name];
                     const label = (<div className={"brochure-form-item-label-style"}>{field.displayName}</div>);
-                    const valueToShow = field.name === "creationDate" ? moment(value).format('DD.MM.YYYY HH:mm:ss') : value;
+                    const valueToShow = field.name === "date" ? moment(value).format('DD.MM.YYYY HH:mm:ss') : value;
                     return (
                         <Form.Item id={`brochure_description_${field.name}`} label={label}>
                             <Typography.Text className={"brochure-form-item-text-style"}>
@@ -69,7 +69,7 @@ const BrochureDescriptionComponent: React.FC<BrochureDescriptionComponentProps> 
             </Form>
         ) : (
             <Result
-                status="error"
+                status={"error"}
                 title={NO_DATA_TEXT}
             />
         )
