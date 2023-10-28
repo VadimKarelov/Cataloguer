@@ -1,7 +1,7 @@
 ﻿using Cataloguer.Database.Base;
 using Cataloguer.Database.Commands.Base;
 using Cataloguer.Database.Models;
-using Cataloguer.Server.FrontendModels;
+using Cataloguer.Database.Models.SpecialModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace Cataloguer.Database.Commands.GetCommands

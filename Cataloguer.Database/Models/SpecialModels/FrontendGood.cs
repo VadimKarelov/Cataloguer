@@ -1,7 +1,7 @@
 ﻿using Cataloguer.Database.Models;
 using System.Text.Json.Serialization;
 
-namespace Cataloguer.Server.FrontendModels
+namespace Cataloguer.Database.Models.SpecialModels
 {
     public class FrontendGood : Good
     {

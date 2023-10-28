@@ -1,7 +1,7 @@
 ﻿using Cataloguer.Database.Base;
 using Cataloguer.Database.Commands;
 using Cataloguer.Database.Models;
-using Cataloguer.Server.ArrivingModels;
+using Cataloguer.Database.Models.SpecialModels;
 using Serilog;
 using System.Buffers;
 using System.Text;

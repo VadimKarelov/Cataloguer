@@ -1,6 +1,7 @@
 ﻿using Cataloguer.Database.Base;
 using Cataloguer.Database.Commands.Base;
 using Cataloguer.Database.Models;
+using Cataloguer.Database.Models.SpecialModels;
 
 namespace Cataloguer.Database.Commands
 {
@@ -10,7 +11,7 @@ namespace Cataloguer.Database.Commands
 
         /// <param name="brochureId">Идентификатор каталога</param>
         /// <param name="goodsInBrochure">Список идентификаторов товаров с соответствующими ценами на них</param>
-        public void AddPositions(int brochureId, IEnumerable<(int GoodId, decimal Price)> goodsInBrochure)
+        public void AddPositions(int brochureId, IEnumerable<CreationPosition> goodsInBrochure)
         {
             Context.BrochurePositions
                 .AddRange(goodsInBrochure
@@ -29,8 +30,15 @@ namespace Cataloguer.Database.Commands
         /// </summary>
         public int AddOrUpdate(Brochure brochure)
         {
-            Brochure? entity = Context.Brochures.FirstOrDefault(x => x.Id == brochure.Id)
-                ?? Context.Brochures.Add(brochure).Entity;
+            Brochure? entity = Context.Brochures.FirstOrDefault(x => x.Id == brochure.Id);
+
+            bool isNew = false;
+
+            if (entity == null)
+            {
+                isNew = true;
+                entity = new();
+            }
 
             entity.StatusId = brochure.StatusId;
             entity.Name = brochure.Name;
@@ -40,7 +48,20 @@ namespace Cataloguer.Database.Commands
                 .Where(x => x.BrochureId == entity.Id)
                 .Count();
 
-            Context.Update(entity);
+            if (Context.Statuses.FirstOrDefault(x => x.Id == entity.StatusId) == null)
+            {
+                entity.StatusId = Context.Statuses.FirstOrDefault(x => x.Name == "Не проверено").Id;
+            }
+
+            if (isNew)
+            {
+                Context.Add(entity);
+            }
+            else
+            {
+                Context.Update(entity);
+            }
+
             Context.SaveChanges();
 
             return entity.Id;
