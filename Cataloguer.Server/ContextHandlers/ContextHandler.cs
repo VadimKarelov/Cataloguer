@@ -15,30 +15,7 @@ namespace Cataloguer.Server.ContextHandlers
         {
             try
             {
-                var requestBody = context.Request.Body;
-
-                // Build up the request body in a string builder.
-                StringBuilder builder = new StringBuilder();
-
-                // Rent a shared buffer to write the request body into.
-                byte[] buffer = ArrayPool<byte>.Shared.Rent(4096);
-
-                while (true)
-                {
-                    var bytesRemaining = requestBody.Read(buffer, offset: 0, buffer.Length);
-                    if (bytesRemaining == 0)
-                    {
-                        break;
-                    }
-
-                    // Append the encoded string into the string builder.
-                    var encodedString = Encoding.UTF8.GetString(buffer, 0, bytesRemaining);
-                    builder.Append(encodedString);
-                }
-
-                ArrayPool<byte>.Shared.Return(buffer);
-
-                var entireRequestBody = builder.ToString();
+                var entireRequestBody = GetBody(context);
 
                 var brochure = JsonSerializer.Deserialize<BrochureCreationModel>(entireRequestBody);
 
@@ -65,6 +42,58 @@ namespace Cataloguer.Server.ContextHandlers
                 Log.Error(ex, "Обработка запроса на добавление нового каталога.");
                 return "-1";
             }
+        }
+
+        public static string AddDistribution(HttpContext context, DataBaseConfiguration config)
+        {
+            try
+            { 
+                var entireRequestBody = GetBody(context);
+
+                var distribution = JsonSerializer.Deserialize<Distribution>(entireRequestBody);
+
+                if (distribution is null)
+                {
+                    throw new ArgumentNullException(nameof(distribution));
+                }
+
+                int id = new AddOrUpdateCommand(config).AddOrUpdate(distribution);
+
+                return id.ToString();
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Обработка запроса на добавление новой рассылки.");
+                return "-1";
+            }
+        }
+
+        private static string GetBody(HttpContext context)
+        {
+            var requestBody = context.Request.Body;
+
+            // Build up the request body in a string builder.
+            StringBuilder builder = new StringBuilder();
+
+            // Rent a shared buffer to write the request body into.
+            byte[] buffer = ArrayPool<byte>.Shared.Rent(4096);
+
+            while (true)
+            {
+                var bytesRemaining = requestBody.Read(buffer, offset: 0, buffer.Length);
+                if (bytesRemaining == 0)
+                {
+                    break;
+                }
+
+                // Append the encoded string into the string builder.
+                var encodedString = Encoding.UTF8.GetString(buffer, 0, bytesRemaining);
+                builder.Append(encodedString);
+            }
+
+            ArrayPool<byte>.Shared.Return(buffer);
+
+            return builder.ToString();
         }
     }
 }

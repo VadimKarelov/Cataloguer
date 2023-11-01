@@ -141,6 +141,7 @@ namespace Cataloguer.Server
         private static void AddRegistration(WebApplication app, DataBaseConfiguration config)
         {
             app.Map(_baseRoute + "/createBrochure", (HttpContext context) => ContextHandler.AddBrochure(context, config));
+            app.Map(_baseRoute + "/createDistribution", (HttpContext context) => ContextHandler.AddDistribution(context, config));
         }
     }
 }
