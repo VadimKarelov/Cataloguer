@@ -1,13 +1,13 @@
-import React from "react";
-import {Button, Layout, Popconfirm, Result, Space, Table} from "antd";
+import React, {useEffect} from "react";
+import {Button, Layout, Popconfirm, Space, Spin, Table} from "antd";
 import {Content, Header} from "antd/es/layout/layout";
-import {NO_DATA_TEXT} from "../../constants/Messages";
 import {BaseStoreInjector} from "../../types/BrochureTypes";
 import {inject, observer} from "mobx-react";
 import "../../styles/Tabs/DistributionsTab.css";
 import CreateDistributionButtonComponent from "../Operations/DistributionOperations/CreateDistributionButtonComponent";
 import {DistributionStore} from "../../stores/DistributionStore";
 import {SHOULD_USE_ONLY_DB_DATA} from "../../constants/Routes";
+import NoDataComponent from "../NoDataComponent";
 
 /**
  * Свойства компонента GoodsDescriptionComponent.
@@ -20,7 +20,7 @@ interface DistributionDescriptionComponentProps extends BaseStoreInjector {
 /**
  * Компонент описания рассылки.
  */
-const DistributionDescriptionComponent: React.FC<DistributionDescriptionComponentProps> = inject("brochureStore")(observer((props) => {
+const DistributionDescriptionComponent: React.FC<DistributionDescriptionComponentProps> = inject("brochureStore", "distributionStore")(observer((props) => {
     /**
      * Выбранный каталог.
      */
@@ -81,28 +81,43 @@ const DistributionDescriptionComponent: React.FC<DistributionDescriptionComponen
         },
     ];
 
+    /**
+     * Обновляет список рассылок.
+     */
+    const updateDistributions = () => {
+        const id = brochure?.id ?? -1;
+        if (id === -1) return;
+        props.distributionStore?.updateBrochureDistributions(id)
+    };
+
+    /**
+     * Вызывает метод обновления рассылок.
+     */
+    useEffect(updateDistributions, [props.brochureStore?.currentBrochure?.id]);
+
     return (
-        hasData ? (
+        brochure !== null ? (
             <Layout>
                 <Header className={"distributions-tab-header-style"}>
                     <CreateDistributionButtonComponent/>
                 </Header>
                 <Content className={"distributions-tab-content-style"}>
-                    <Table
-                        className={"distributions-table-style"}
-                        size={"middle"}
-                        scroll={{y: "calc(100vh - 278px)", x: "max-content"}}
-                        columns={columns}
-                        dataSource={rows}
-                        pagination={false}
-                    />
+                    <Spin spinning={props.distributionStore?.isLoadingDistributions} size={"large"}>
+                        {hasData ? (<Table
+                            className={"distributions-table-style"}
+                            size={"middle"}
+                            scroll={{y: "calc(100vh - 278px)", x: "max-content"}}
+                            columns={columns}
+                            dataSource={rows}
+                            pagination={false}
+                        />) : (
+                            <NoDataComponent/>
+                        )}
+                    </Spin>
                 </Content>
             </Layout>
         ) : (
-            <Result
-                status="error"
-                title={NO_DATA_TEXT}
-            />
+            <NoDataComponent/>
         )
     );
 }));

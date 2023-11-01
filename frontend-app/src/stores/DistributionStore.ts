@@ -38,6 +38,22 @@ interface GenderDbProps {
 }
 
 /**
+ * Свойства параметров запроса создания рассылки.
+ * @param brochureId Идентификатор каталога.
+ * @param ageGroupId Идентификатор возрастной группы.
+ * @param genderId Идентификатор пола.
+ * @param townId Идентификатор города.
+ * @param brochureCount Тираж рассылки.
+ */
+export interface CreateDistributionDbProps {
+    brochureId: number,
+    ageGroupId: number,
+    genderId: number,
+    townId: number,
+    brochureCount: number,
+}
+
+/**
  * Класс хранилище для рассылок.
  */
 export class DistributionStore {
@@ -65,6 +81,11 @@ export class DistributionStore {
     @observable public distributions: any[];
 
     /**
+     * Загружаются ли рассылки.
+     */
+    @observable public isLoadingDistributions: boolean;
+
+    /**
      * Конструктор.
      */
     constructor() {
@@ -72,6 +93,7 @@ export class DistributionStore {
         this.towns = [];
         this.ageGroups = [];
         this.distributions = [];
+        this.isLoadingDistributions = false;
 
         makeAutoObservable(this);
 
@@ -82,6 +104,46 @@ export class DistributionStore {
         this.getTowns = this.getTowns.bind(this);
         this.getAgeGroups = this.getAgeGroups.bind(this);
         this.updateDistributionLists = this.updateDistributionLists.bind(this);
+
+        this.getBrochureDistributions = this.getBrochureDistributions.bind(this);
+        this.updateBrochureDistributions = this.updateBrochureDistributions.bind(this);
+        this.handleCreateBrochureDistribution = this.handleCreateBrochureDistribution.bind(this);
+    }
+
+    /**
+     * Обрабатывает создание рассылки текущего каталога.
+     * @param params Параметры запроса.
+     */
+    @action public async handleCreateBrochureDistribution(params: CreateDistributionDbProps) {
+        this.isLoadingDistributions = true;
+        await DistributionService.createDistribution(params);
+        this.updateBrochureDistributions(params.brochureId);
+    }
+
+    /**
+     * Возвращает рассылки каталога по ИД каталога.
+     * @param brochureId Идентификатор каталога.
+     * @private
+     */
+    private async getBrochureDistributions(brochureId: number) {
+        return DistributionService.getBrochureDistributions(brochureId);
+    }
+
+    /**
+     * Обновляет список рассылок текущего каталога.
+     * @param brochureId Идентификатор каталога.
+     */
+    @action public async updateBrochureDistributions(brochureId: number) {
+        this.isLoadingDistributions = true;
+        const {data} = await this.getBrochureDistributions(brochureId);
+        if (!(data instanceof Array)) {
+            this.isLoadingDistributions = false;
+            return;
+        }
+        console.log(data)
+
+        this.distributions = data;
+        setTimeout(() => this.isLoadingDistributions = false, 300);
     }
 
     /**

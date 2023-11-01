@@ -4,7 +4,8 @@ import {MetadataProps, MetadataTypes} from "../BrochureOperations/CreateBrochure
 import {Form, Input, Select} from "antd";
 import {inject, observer} from "mobx-react";
 import {BaseStoreInjector, customProp, DistributionProps} from "../../../types/BrochureTypes";
-import {DistributionStore} from "../../../stores/DistributionStore";
+import {CreateDistributionDbProps, DistributionStore} from "../../../stores/DistributionStore";
+import {getValidator} from "../../../Utils";
 
 /**
  * Свойства компонента содания рассылки.
@@ -57,7 +58,7 @@ const CreateDistributionButtonComponent: React.FC<CreateDistributionButtonCompon
      */
     const getFormItemComponent = (formItem: MetadataProps) => {
         switch (formItem.type) {
-            case MetadataTypes.NMBR_FIELD:
+            case MetadataTypes.NMBR_FIELD: return (<Input type={"number"}/>);
             case MetadataTypes.STR_FIELD: return (<Input/>);
             case MetadataTypes.LIST_FIELD: return (<Select placeholder={`Выбрать '${formItem.name.toLowerCase()}'`}>{getSelectOptions(formItem)}</Select>);
             default: return null;
@@ -87,7 +88,16 @@ const CreateDistributionButtonComponent: React.FC<CreateDistributionButtonCompon
                     const formId = formItem.id;
                     const formName = formId.slice(formId.lastIndexOf('_') + 1);
                     return (
-                        <Form.Item key={formItem.id} label={formItem.name} name={formName} initialValue={formItem.defaultValue} /*initialValue={getInitValue(formItem.id)}*/>
+                        <Form.Item
+                            key={formItem.id}
+                            label={formItem.name}
+                            name={formName}
+                            initialValue={formItem.defaultValue} /*initialValue={getInitValue(formItem.id)}*/
+                            rules={[{
+                                required: formItem.isRequired,
+                                validator: (_, value) => getValidator(_, value, formItem),
+                            }]}
+                        >
                             {getFormItemComponent(formItem)}
                         </Form.Item>
                     );
@@ -116,6 +126,64 @@ const CreateDistributionButtonComponent: React.FC<CreateDistributionButtonCompon
     };
 
     /**
+     * Возвращают идентификатор поля.
+     * @param field Поле (ключ) с идентификатором.
+     */
+    const getId = (field: string): number => {
+        const parsedIdValue = field.slice(field.lastIndexOf('_') + 1);
+        return parseFloat(parsedIdValue);
+    };
+
+    /**
+     * Обработчик создания/редактирования расслки.
+     * @param values Значения полей.
+     */
+    const handleDbAction = (values: any) => {
+        const {ageGroups, genders, towns, brochureCount} = values;
+        const ageGroupId = getId(ageGroups);
+        const genderId = getId(genders);
+        const townId = getId(towns);
+
+        if (isNaN(ageGroupId) || isNaN(genderId) || isNaN(townId)) {
+            throw new Error("Проблема с парсингом id");
+        }
+
+        const brochureId = props.brochureStore?.currentBrochure?.id ?? -1;
+
+        if (brochureId === -1) {
+            throw new Error("Приколы с каталогом");
+        }
+
+        const finalObject: CreateDistributionDbProps = {
+            brochureId: brochureId,
+            ageGroupId: ageGroupId,
+            genderId: genderId,
+            townId: townId,
+            brochureCount: parseFloat(brochureCount)
+        };
+
+        props.distributionStore?.handleCreateBrochureDistribution(finalObject);
+        form.resetFields();
+    };
+
+    /**
+     * Обрабатывает нажатие кнопки сохранить.
+     */
+    const onOkClick = (): Promise<void> => {
+        return form.validateFields()
+            .then(
+                (values) => {
+                    handleDbAction(values);
+                    return Promise.resolve();
+                },
+                (error) => {
+                    console.log("Validate Failed:", error);
+                    return Promise.reject();
+                }
+            );
+    };
+
+    /**
      * Свойства модального окна.
      */
     const modalProps = {
@@ -123,6 +191,7 @@ const CreateDistributionButtonComponent: React.FC<CreateDistributionButtonCompon
         okText: `${!props.row ? "Сохранить" : "Редактировать"}`,
         cancelText: "Отменить",
         children: getForm(),
+        onOkClick: onOkClick,
     };
 
     /**

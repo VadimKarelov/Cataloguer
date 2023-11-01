@@ -1,12 +1,12 @@
-import {Button, Layout, Popconfirm, Result, Space, Spin, Table} from "antd";
+import {Button, Layout, Popconfirm, Space, Spin, Table} from "antd";
 import React, {useEffect} from "react";
 import {BaseStoreInjector} from "../../types/BrochureTypes";
 import {inject, observer} from "mobx-react";
 import "../../styles/Tabs/GoodsTab.css";
 import {Content, Header} from "antd/es/layout/layout";
-import {NO_DATA_TEXT} from "../../constants/Messages";
 import GoodsStore from "../../stores/GoodsStore";
 import {SHOULD_USE_ONLY_DB_DATA} from "../../constants/Routes";
+import NoDataComponent from "../NoDataComponent";
 
 /**
  * Свойства компонента GoodsDescriptionComponent.
@@ -77,17 +77,7 @@ const GoodsDescriptionComponent: React.FC<GoodsDescriptionComponentProps> = inje
     /**
      * Вызывает метод обновления товаров.
      */
-    useEffect(updateGoods, [props.goodsStore?.goods]);
-
-    /**
-     * Компонент с пустой страницей.
-     */
-    const NoDataComponent: React.FC = () => (
-        <Result
-            status={"error"}
-            title={NO_DATA_TEXT}
-        />
-    );
+    useEffect(updateGoods, [props.brochureStore?.currentBrochure?.id]);
 
     return (
         brochure !== null ? (

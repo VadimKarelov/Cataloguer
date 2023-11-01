@@ -56,6 +56,15 @@ class DistributionService extends BaseService {
         const methodRoute = `/getTowns`;
         return await BaseService.sendGetHttpRequest(BACKEND_CONTROLLER_ROUTE, methodRoute);
     }
+
+    /**
+     * Возвращает рассылки каталога из БД.
+     * @param brochureId Идентификатор каталога.
+     */
+    public static async getBrochureDistributions(brochureId: number) {
+        const methodRoute = `/getBrochureDistributions/id=${brochureId}`;
+        return await BaseService.sendGetHttpRequest(BACKEND_CONTROLLER_ROUTE, methodRoute);
+    }
 }
 
 export default DistributionService;

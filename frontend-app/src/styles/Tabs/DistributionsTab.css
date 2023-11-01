@@ -1,6 +1,6 @@
 
 .distributions-tab-header-style {
-    height: 30px;
+    height: 50px;
     background-color: white;
 }
 
@@ -10,7 +10,7 @@
 }
 
 .distributions-table-style {
-    margin: 30px 0 0 50px;
+    margin: 10px 0 0 50px;
     height: calc(100vh - 218px);
     width: calc(100vw - 450px);
     flex: min-content;

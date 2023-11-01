@@ -96,9 +96,7 @@ interface GoodDBProps {
 
 /**
  * Свойства товаров при создании каталога.
- * @param id Идентификатор.
  * @param name Наименование.
- * @param price Цена.
  */
 interface GoodsProps extends GoodDBProps {
     name: string,
@@ -128,9 +126,6 @@ interface EditBrochureHandlerProps {
 
 /**
  * Свойства отправляемого в БД каталога (создание).
- * @param name Название.
- * @param date Дата выпуска каталога.
- * @param edition Тираж.
  * @param positions Число позиций (товаров).
  */
 interface CreateBrochureHandlerProps extends EditBrochureHandlerProps {
