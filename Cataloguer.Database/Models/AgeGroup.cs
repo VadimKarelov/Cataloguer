@@ -16,7 +16,7 @@ namespace Cataloguer.Database.Models
         /// Содержит информацию о возрастной групппе, можно будет добавить set
         /// </summary>
         [Column("description")]
-        [JsonPropertyName("description")]
+        [JsonPropertyName("name")]
         public string Description { get; set; } = string.Empty;
 
         /// <summary>
