@@ -2,6 +2,7 @@
 using Cataloguer.Database.Commands.Base;
 using Cataloguer.Database.Models;
 using Cataloguer.Database.Models.SpecialModels;
+using Microsoft.EntityFrameworkCore;
 
 namespace Cataloguer.Database.Commands
 {
@@ -13,6 +14,13 @@ namespace Cataloguer.Database.Commands
         /// <param name="goodsInBrochure">Список идентификаторов товаров с соответствующими ценами на них</param>
         public void AddPositions(int brochureId, IEnumerable<CreationPosition> goodsInBrochure)
         {
+            var brochure = Context.Brochures
+                .AsNoTracking()
+                .FirstOrDefault(x => x.Id == brochureId);
+
+            if (brochure == null)
+                return;
+
             Context.BrochurePositions
                 .AddRange(goodsInBrochure
                     .Select(x => new BrochurePosition()
@@ -21,6 +29,11 @@ namespace Cataloguer.Database.Commands
                         Price = x.Price,
                         GoodId = x.GoodId,
                     }));
+
+            brochure.PositionCount = Context.BrochurePositions
+                .AsNoTracking()
+                .Where(x => x.BrochureId == brochureId)
+                .Count();
 
             Context.SaveChanges();
         }
@@ -72,8 +85,15 @@ namespace Cataloguer.Database.Commands
         /// </summary>
         public int AddOrUpdate(Distribution distribution)
         {
-            var entity = Context.Distributions.FirstOrDefault(x => x.Id == distribution.Id)
-                ?? Context.Distributions.Add(distribution).Entity;
+            var entity = Context.Distributions.FirstOrDefault(x => x.Id == distribution.Id);
+
+            bool isNew = false;
+
+            if (entity == null)
+            {
+                isNew = true;
+                entity = new();
+            }
 
             entity.BrochureId = distribution.BrochureId;
             entity.AgeGroupId = distribution.AgeGroupId;
@@ -81,7 +101,31 @@ namespace Cataloguer.Database.Commands
             entity.BrochureCount = distribution.BrochureCount;
             entity.TownId = distribution.TownId;
 
-            Context.Update(entity);
+            // проверка, что каталог существует
+            var brochure = Context.Brochures.FirstOrDefault();
+
+            if (brochure == null)
+                return -1;
+
+            // Подсчет тиража у текущего каталога
+            var distributionsCount = Context.Distributions
+                .AsNoTracking()
+                .Where(x => x.BrochureId == brochure.Id)
+                .Sum(x => x.BrochureCount) + entity.BrochureCount;
+
+            // Проверка, чтобы нельзя было создать тираж рассылки больше, чем задано в каталоге
+            if (distributionsCount > brochure.Edition)
+                return -1;
+
+            if (isNew)
+            {
+                Context.Add(entity);
+            }
+            else
+            {
+                Context.Update(entity);
+            }
+
             Context.SaveChanges();
 
             return entity.Id;

@@ -36,6 +36,9 @@ namespace Cataloguer.Database.Models
         [JsonIgnore]
         public Town? Town { get; set; }
 
+        /// <summary>
+        /// Тираж рассылки
+        /// </summary>
         [Column("brochure_count")]
         [JsonPropertyName("brochureCount")]
         public long BrochureCount { get; set; }
