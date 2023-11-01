@@ -1,21 +1,25 @@
-import {Button, Layout, Popconfirm, Result, Space, Table} from "antd";
-import React from "react";
+import {Button, Layout, Popconfirm, Result, Space, Spin, Table} from "antd";
+import React, {useEffect} from "react";
 import {BaseStoreInjector} from "../../types/BrochureTypes";
 import {inject, observer} from "mobx-react";
 import "../../styles/Tabs/GoodsTab.css";
 import {Content, Header} from "antd/es/layout/layout";
 import {NO_DATA_TEXT} from "../../constants/Messages";
+import GoodsStore from "../../stores/GoodsStore";
+import {SHOULD_USE_ONLY_DB_DATA} from "../../constants/Routes";
 
 /**
  * Свойства компонента GoodsDescriptionComponent.
+ * @param goodsStore Хранилище данных о товарах.
  */
 interface GoodsDescriptionComponentProps extends BaseStoreInjector {
+    goodsStore?: GoodsStore,
 }
 
 /**
  * Компонент описания каталога.
  */
-const GoodsDescriptionComponent: React.FC<GoodsDescriptionComponentProps> = inject("brochureStore")(observer((props) => {
+const GoodsDescriptionComponent: React.FC<GoodsDescriptionComponentProps> = inject("brochureStore", "goodsStore")(observer((props) => {
     /**
      * Выбранный каталог.
      */
@@ -24,7 +28,7 @@ const GoodsDescriptionComponent: React.FC<GoodsDescriptionComponentProps> = inje
     /**
      * Строки таблицы.
      */
-    const rows = brochure?.goods ?? [];
+    const rows = SHOULD_USE_ONLY_DB_DATA ? (props.goodsStore?.goods ?? []) : (brochure?.goods ?? []);
 
     /**
      * Есть данные или нет.
@@ -61,8 +65,32 @@ const GoodsDescriptionComponent: React.FC<GoodsDescriptionComponentProps> = inje
         },
     ];
 
+    /**
+     * Обновляет список товаров.
+     */
+    const updateGoods = (): void => {
+        const id = brochure?.id ?? -1;
+        if (id === -1) return;
+        props.goodsStore?.updateCurrentBrochureGoods(id);
+    };
+
+    /**
+     * Вызывает метод обновления товаров.
+     */
+    useEffect(updateGoods, [props.goodsStore?.goods]);
+
+    /**
+     * Компонент с пустой страницей.
+     */
+    const NoDataComponent: React.FC = () => (
+        <Result
+            status={"error"}
+            title={NO_DATA_TEXT}
+        />
+    );
+
     return (
-        hasData ? (
+        brochure !== null ? (
             <Layout>
                 <Header className={"goods-tab-header-style"}>
                     <Space>
@@ -70,21 +98,22 @@ const GoodsDescriptionComponent: React.FC<GoodsDescriptionComponentProps> = inje
                     </Space>
                 </Header>
                 <Content className={"goods-tab-content-style"}>
-                    <Table
-                        className={"goods-table-style"}
-                        size={"middle"}
-                        scroll={{y: "calc(100vh - 283px)", x: "max-content"}}
-                        columns={columns}
-                        dataSource={rows}
-                        pagination={false}
-                    />
+                    <Spin spinning={props.goodsStore?.isLoadingGoods} size={"large"}>
+                        {hasData ? (<Table
+                            className={"goods-table-style"}
+                            size={"middle"}
+                            scroll={{y: "calc(100vh - 283px)", x: "max-content"}}
+                            columns={columns}
+                            dataSource={rows}
+                            pagination={false}
+                        />) : (
+                            <NoDataComponent/>
+                        )}
+                    </Spin>
                 </Content>
             </Layout>
         ) : (
-            <Result
-                status="error"
-                title={NO_DATA_TEXT}
-            />
+            <NoDataComponent/>
         )
     );
 }));

@@ -51,8 +51,7 @@ const BrochureDescriptionComponent: React.FC<BrochureDescriptionComponentProps> 
     const [form] = Form.useForm();
 
     return (
-        brochure !== null ?
-        (
+        brochure !== null ? (
             <Form id={"brochure_description"} form={form} colon={false} layout={"vertical"} className={"brochure-form-style"}>
                 {sortedMetaData.map(field => {
                     const value = parsableBrochure[field.name];

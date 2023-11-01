@@ -12,11 +12,7 @@ import {ageGroups, genders, goodsNames, towns} from "./HandbookExamples";
 import GoodsService from "../services/GoodsService";
 import BrochureService from "../services/BrochureService";
 import moment from "moment";
-
-/**
- * Следует ли использовать данные из БД.
- */
-const shouldUseOnlyDbData: Readonly<string> = process.env.REACT_APP_SHOULD_USE_ONLY_DB_DATA ?? "false";
+import {SHOULD_USE_ONLY_DB_DATA} from "../constants/Routes";
 
 /**
  * Путь к данным каталога в session storage.
@@ -315,7 +311,7 @@ class BrochureStore {
         let foundBrochure = null;
 
         // if (brochureId !== -1) {
-            if (shouldUseOnlyDbData === "false") {
+            if (SHOULD_USE_ONLY_DB_DATA === "false") {
                 foundBrochure = this.brochures.find(brochure => brochure.id === brochureId) ?? null;
             } else {
                 await this.getBrochureById(brochureId).then((response: {data: any}) => {
@@ -349,11 +345,11 @@ class BrochureStore {
     @action public loadBrochures() {
         this.isBrochureMenuLoading = true;
 
-        shouldUseOnlyDbData === "false" ? this.initBrochures() : this.updateBrochureList();
+        SHOULD_USE_ONLY_DB_DATA === "false" ? this.initBrochures() : this.updateBrochureList();
 
         setTimeout(() => {
             this.isBrochureMenuLoading = false;
-        }, 500);
+        }, 300);
     }
 }
 

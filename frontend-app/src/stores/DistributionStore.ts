@@ -60,12 +60,18 @@ export class DistributionStore {
     @observable private ageGroups: AgeGroupDbProps[];
 
     /**
+     * Список рассылок.
+     */
+    @observable public distributions: any[];
+
+    /**
      * Конструктор.
      */
     constructor() {
         this.genders = [];
         this.towns = [];
         this.ageGroups = [];
+        this.distributions = [];
 
         makeAutoObservable(this);
 

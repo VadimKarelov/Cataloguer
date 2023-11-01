@@ -8,6 +8,7 @@ import ru_RU from 'antd/locale/ru_RU';
 import BrochureStore from "./stores/BrochureStore";
 import {Provider} from "mobx-react";
 import {DistributionStore} from "./stores/DistributionStore";
+import GoodsStore from "./stores/GoodsStore";
 
 /**
  * Корень приложения.
@@ -22,6 +23,7 @@ const root = ReactDOM.createRoot(
 const stores = {
     brochureStore: new BrochureStore(),
     distributionStore: new DistributionStore(),
+    goodsStore: new GoodsStore(),
 };
 
 /**

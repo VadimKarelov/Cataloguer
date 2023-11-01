@@ -6,11 +6,15 @@ import {BaseStoreInjector} from "../../types/BrochureTypes";
 import {inject, observer} from "mobx-react";
 import "../../styles/Tabs/DistributionsTab.css";
 import CreateDistributionButtonComponent from "../Operations/DistributionOperations/CreateDistributionButtonComponent";
+import {DistributionStore} from "../../stores/DistributionStore";
+import {SHOULD_USE_ONLY_DB_DATA} from "../../constants/Routes";
 
 /**
  * Свойства компонента GoodsDescriptionComponent.
+ * @param distributionStore Хранилище данных о рассылках.
  */
 interface DistributionDescriptionComponentProps extends BaseStoreInjector {
+    distributionStore?: DistributionStore,
 }
 
 /**
@@ -25,7 +29,7 @@ const DistributionDescriptionComponent: React.FC<DistributionDescriptionComponen
     /**
      * Строки таблицы.
      */
-    const rows = brochure?.distributions ?? [];
+    const rows = SHOULD_USE_ONLY_DB_DATA ? (props.distributionStore?.distributions ?? []) : (brochure?.distributions ?? []);
 
     /**
      * Есть данные или нет.
