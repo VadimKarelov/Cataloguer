@@ -210,7 +210,7 @@ namespace Cataloguer.Database.Base
 
         private T DoWithNotification<T>(Func<T> func, string funcName)
         {
-            Log.Debug($"Начало выполнения метода: {func.Method.Name}");
+            Log.Debug($"Начало выполнения метода: {funcName}");
 
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
