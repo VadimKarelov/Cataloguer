@@ -1,7 +1,6 @@
-﻿using Cataloguer.Database.Models;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json.Serialization;
 
-namespace Cataloguer.Database.Models.SpecialModels
+namespace Cataloguer.Database.Models.SpecialModels.OutputApiModels
 {
     public class FrontendGood : Good
     {
@@ -10,8 +9,8 @@ namespace Cataloguer.Database.Models.SpecialModels
 
         public FrontendGood(Good good)
         {
-            this.Id = good.Id;
-            this.Name = good.Name;
+            Id = good.Id;
+            Name = good.Name;
         }
     }
 }

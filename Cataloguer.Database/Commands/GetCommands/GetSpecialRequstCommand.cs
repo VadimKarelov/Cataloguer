@@ -1,7 +1,7 @@
 ﻿using Cataloguer.Database.Base;
 using Cataloguer.Database.Commands.Base;
 using Cataloguer.Database.Models;
-using Cataloguer.Database.Models.SpecialModels;
+using Cataloguer.Database.Models.SpecialModels.OutputApiModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace Cataloguer.Database.Commands.GetCommands
@@ -10,13 +10,14 @@ namespace Cataloguer.Database.Commands.GetCommands
     {
         public GetSpecialRequestCommand(DataBaseConfiguration config) : base(config) { }
 
-        public IEnumerable<Good> GetGoodsFromBrochure(int brochureId)
+        public IEnumerable<FrontendGood> GetGoodsFromBrochure(int brochureId)
         {
             return Context.BrochurePositions
                 .AsNoTracking()
                 .Where(x => x.BrochureId == brochureId)
                 .Include(x => x.Good)
-                .Select(x => x.Good!)
+                .Where(x => x.Good != null)
+                .Select(x => new FrontendGood(x.Good!) { Price = x.Price})
                 .ToArray();
         }
 

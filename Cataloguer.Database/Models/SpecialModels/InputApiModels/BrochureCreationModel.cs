@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Cataloguer.Database.Models.SpecialModels
+namespace Cataloguer.Database.Models.SpecialModels.InputApiModels
 {
     public class BrochureCreationModel
     {
