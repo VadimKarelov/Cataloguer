@@ -21,11 +21,22 @@ namespace Cataloguer.Database.Commands.GetCommands
                 .ToArray();
         }
 
-        public IEnumerable<Distribution> GetDistributionsFromBrochure(int brochureId)
+        public IEnumerable<FrontendDistribution> GetDistributionsFromBrochure(int brochureId)
         {
             return Context.Distributions
                 .AsNoTracking()
                 .Where(x => x.BrochureId == brochureId)
+                .Include(x => x.Brochure)
+                .Include(x => x.AgeGroup)
+                .Include(x => x.Gender)
+                .Include(x => x.Town)
+                .Select(x => new FrontendDistribution(x)
+                {
+                    BrochureName = x.Brochure.Name,
+                    AgeGroupName = x.AgeGroup.Description,
+                    GenderName = x.Gender.Name,
+                    TownName = x.Town.Name
+                })
                 .ToArray();
         }
 
