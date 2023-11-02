@@ -3,6 +3,7 @@ using Cataloguer.Database.Commands.Base;
 using Cataloguer.Database.Models;
 using Cataloguer.Database.Models.SpecialModels.InputApiModels;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
 
 namespace Cataloguer.Database.Commands
 {
@@ -14,6 +15,8 @@ namespace Cataloguer.Database.Commands
         /// <param name="goodsInBrochure">Список идентификаторов товаров с соответствующими ценами на них</param>
         public void AddPositions(int brochureId, IEnumerable<CreationPosition> goodsInBrochure)
         {
+            Log.Information($"Вызван запрос на добавление товаров в каталог с id={brochureId}. Количество товаров {goodsInBrochure.Count()}.");
+
             var brochure = Context.Brochures
                 .AsNoTracking()
                 .FirstOrDefault(x => x.Id == brochureId);
@@ -43,6 +46,8 @@ namespace Cataloguer.Database.Commands
         /// </summary>
         public int AddOrUpdate(Brochure brochure)
         {
+            Log.Information($"Вызван запрос на добавление или обновление каталога.");
+
             Brochure? entity = Context.Brochures.FirstOrDefault(x => x.Id == brochure.Id);
 
             bool isNew = false;
@@ -85,6 +90,8 @@ namespace Cataloguer.Database.Commands
         /// </summary>
         public int AddOrUpdate(Distribution distribution)
         {
+            Log.Information($"Вызван запрос на добавление или обновление рассылки.");
+
             var entity = Context.Distributions.FirstOrDefault(x => x.Id == distribution.Id);
 
             bool isNew = false;
