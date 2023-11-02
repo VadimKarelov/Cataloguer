@@ -68,6 +68,54 @@ namespace Cataloguer.Server.ContextHandlers
             }
         }
 
+        public static string AddGoodsToBrochure(HttpContext context, DataBaseConfiguration config, int brochureId)
+        {
+            try
+            {
+                var entireRequestBody = GetBody(context);
+
+                var goods = JsonSerializer.Deserialize<CreationPosition[]>(entireRequestBody);
+
+                if (goods is null)
+                {
+                    throw new ArgumentNullException(nameof(goods));
+                }
+
+                new AddOrUpdateCommand(config).AddPositions(brochureId, goods);
+
+                return "OK";
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Обработка запроса на добавление товаров в существующий каталог.");
+                return "-1";
+            }
+        }
+
+        public static string UpdateBrochure(HttpContext context, DataBaseConfiguration config)
+        {
+            try
+            {
+                var entireRequestBody = GetBody(context);
+
+                var brochure = JsonSerializer.Deserialize<Brochure>(entireRequestBody);
+
+                if (brochure is null)
+                {
+                    throw new ArgumentNullException(nameof(brochure));
+                }
+
+                int id = new AddOrUpdateCommand(config).AddOrUpdate(brochure);
+
+                return id.ToString();
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Обработка запроса на добавление нового каталога.");
+                return "-1";
+            }
+        }
+
         private static string GetBody(HttpContext context)
         {
             var requestBody = context.Request.Body;

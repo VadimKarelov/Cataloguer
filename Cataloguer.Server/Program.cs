@@ -59,6 +59,7 @@ namespace Cataloguer.Server
                 GetSingleObjectRegistration(app, dbConfig);
                 GetSpecialRegistration(app, dbConfig);
                 AddRegistration(app, dbConfig);
+                UpdateRegistration(app, dbConfig);
 
                 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
@@ -113,32 +114,40 @@ namespace Cataloguer.Server
         [EnableCors()]
         private static void GetSingleObjectRegistration(WebApplication app, DataBaseConfiguration config)
         {
-            app.Map(_baseRoute + "/getAgeGroup/id={id}", (int id) => new GetCommand(config).GetAgeGroup(id));
-            app.Map(_baseRoute + "/getBrochure/id={id}", (int id) => new GetCommand(config).GetBrochure(id));
-            app.Map(_baseRoute + "/getBrochurePosition/id={id}", (int id) => new GetCommand(config).GetBrochurePosition(id));
-            app.Map(_baseRoute + "/getDistribution/id={id}", (int id) => new GetCommand(config).GetDistribution(id));
-            app.Map(_baseRoute + "/getGender/id={id}", (int id) => new GetCommand(config).GetGender(id));
-            app.Map(_baseRoute + "/getGood/id={id}", (int id) => new GetCommand(config).GetGood(id));
-            app.Map(_baseRoute + "/getSellHistory/id={id}", (int id) => new GetCommand(config).GetSellHistory(id));
-            app.Map(_baseRoute + "/getStatus/id={id}", (int id) => new GetCommand(config).GetStatus(id));
-            app.Map(_baseRoute + "/getTown/id={id}", (int id) => new GetCommand(config).GetTown(id));
+            app.MapGet(_baseRoute + "/getAgeGroup/id={id}", (int id) => new GetCommand(config).GetAgeGroup(id));
+            app.MapGet(_baseRoute + "/getBrochure/id={id}", (int id) => new GetCommand(config).GetBrochure(id));
+            app.MapGet(_baseRoute + "/getBrochurePosition/id={id}", (int id) => new GetCommand(config).GetBrochurePosition(id));
+            app.MapGet(_baseRoute + "/getDistribution/id={id}", (int id) => new GetCommand(config).GetDistribution(id));
+            app.MapGet(_baseRoute + "/getGender/id={id}", (int id) => new GetCommand(config).GetGender(id));
+            app.MapGet(_baseRoute + "/getGood/id={id}", (int id) => new GetCommand(config).GetGood(id));
+            app.MapGet(_baseRoute + "/getSellHistory/id={id}", (int id) => new GetCommand(config).GetSellHistory(id));
+            app.MapGet(_baseRoute + "/getStatus/id={id}", (int id) => new GetCommand(config).GetStatus(id));
+            app.MapGet(_baseRoute + "/getTown/id={id}", (int id) => new GetCommand(config).GetTown(id));
         }
 
         [EnableCors()]
         private static void GetSpecialRegistration(WebApplication app, DataBaseConfiguration config)
         {
-            app.Map(_baseRoute + "/getBrochureGoods/id={brochureId}",
+            app.MapGet(_baseRoute + "/getBrochureGoods/id={brochureId}",
                 (int brochureId) => new GetSpecialRequestCommand(config).GetGoodsFromBrochure(brochureId));
 
-            app.Map(_baseRoute + "/getBrochureDistributions/id={brochureId}",
+            app.MapGet(_baseRoute + "/getBrochureDistributions/id={brochureId}",
                 (int brochureId) => new GetSpecialRequestCommand(config).GetDistributionsFromBrochure(brochureId));
         }
 
         [EnableCors()]
         private static void AddRegistration(WebApplication app, DataBaseConfiguration config)
         {
-            app.Map(_baseRoute + "/createBrochure", (HttpContext context) => ContextHandler.AddBrochure(context, config));
-            app.Map(_baseRoute + "/createDistribution", (HttpContext context) => ContextHandler.AddDistribution(context, config));
+            app.MapPost(_baseRoute + "/createBrochure", (HttpContext context) => ContextHandler.AddBrochure(context, config));
+            app.MapPost(_baseRoute + "/createDistribution", (HttpContext context) => ContextHandler.AddDistribution(context, config));
+
+            app.MapPost(_baseRoute + "/addGoodsToBrochure/id={brochureId}", (HttpContext context, int brochureId) => ContextHandler.AddGoodsToBrochure(context, config, brochureId));
+        }
+
+        [EnableCors()]
+        private static void UpdateRegistration(WebApplication app, DataBaseConfiguration config)
+        {
+            app.MapPost(_baseRoute + "/updateBrochure", (HttpContext context) => ContextHandler.UpdateBrochure(context, config));
         }
     }
 }
