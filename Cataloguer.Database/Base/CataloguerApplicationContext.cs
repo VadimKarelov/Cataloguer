@@ -37,8 +37,6 @@ namespace Cataloguer.Database.Base
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseNpgsql(_connectionString);
-            optionsBuilder.LogTo(Log.Logger.Information, LogLevel.Information);
-            optionsBuilder.LogTo(Log.Logger.Debug, LogLevel.Debug);
             optionsBuilder.LogTo(Log.Logger.Error, LogLevel.Error);
             optionsBuilder.LogTo(Log.Logger.Fatal, LogLevel.Critical);
         }

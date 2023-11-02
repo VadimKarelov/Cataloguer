@@ -45,12 +45,9 @@ namespace Cataloguer.Server
                         options.AllowSynchronousIO = true;
                     });
 
-                builder.Host.UseSerilog();
-
                 var app = builder.Build();
 
-                app.UseCorsMiddleware()
-                    .UseSerilogRequestLogging();
+                app.UseCorsMiddleware();
 
                 DataBaseConfiguration dbConfig = new DataBaseConfiguration()
                 {
