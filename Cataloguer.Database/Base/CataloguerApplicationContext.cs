@@ -83,31 +83,37 @@ namespace Cataloguer.Database.Base
                 {
                     var fromFile = ReadTownsFromFile();
 
-                    var toRemove = Towns.AsNoTracking()
-                        .Where(x => !fromFile.Contains(x.Name));
+                    if (fromFile.Any())
+                    {
+                        var toRemove = Towns.AsNoTracking()
+                            .Where(x => !fromFile.Contains(x.Name));
 
-                    var toAdd = fromFile.Except(Towns.Select(x => x.Name))
-                        .Select(x => new Town()
-                        {
-                            Name = x,
-                            Population = random.Next(5000, 20000000)
-                        });
+                        var toAdd = fromFile.Except(Towns.Select(x => x.Name))
+                            .Select(x => new Town()
+                            {
+                                Name = x,
+                                Population = random.Next(5000, 20000000)
+                            });
 
-                    Towns.RemoveRange(toRemove);
-                    Towns.AddRange(toAdd);
+                        Towns.RemoveRange(toRemove);
+                        Towns.AddRange(toAdd);
+                    }
                 }
 
                 {
                     var fromFile = DoWithNotification(ReadGoodsFromFile, "Чтение товаров");
 
-                    var toRemove = Goods.AsNoTracking()
-                        .Where(x => !fromFile.Contains(x.Name));
+                    if (fromFile.Any())
+                    {
+                        var toRemove = Goods.AsNoTracking()
+                            .Where(x => !fromFile.Contains(x.Name));
 
-                    var toAdd = fromFile.Except(Goods.Select(x => x.Name))
-                        .Select(x => new Good() { Name = x });
+                        var toAdd = fromFile.Except(Goods.Select(x => x.Name))
+                            .Select(x => new Good() { Name = x });
 
-                    Goods.RemoveRange(toRemove);
-                    Goods.AddRange(toAdd);
+                        Goods.RemoveRange(toRemove);
+                        Goods.AddRange(toAdd);
+                    }
                 }
 
                 this.SaveChanges();
