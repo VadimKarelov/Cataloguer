@@ -1,57 +1,13 @@
-import { observable, action, makeAutoObservable } from "mobx";
+import {action, makeAutoObservable, observable} from "mobx";
 import DistributionService from "../services/DistributionService";
-
-/**
- * Свойства возрастной группы из БД.
- * @param id Идентификатор.
- * @param description Описание.
- * @param minimalAge Минимальный возраст для группы.
- * @param maximalAge Максимальный возраст для группы.
- */
-interface AgeGroupDbProps {
-    id: number,
-    description: string,
-    minimalAge: number,
-    maximalAge: number,
-}
-
-/**
- * Свойства города из БД.
- * @param id Идентификатор.
- * @param name Наименование.
- * @param population Число жителей.
- */
-interface TownDbProps {
-    id: number,
-    name: string,
-    population: number,
-}
-
-/**
- * Свойства пола из БД.
- * @param id Идентификатор.
- * @param name Наименование.
- */
-interface GenderDbProps {
-    id: number,
-    name: string,
-}
-
-/**
- * Свойства параметров запроса создания рассылки.
- * @param brochureId Идентификатор каталога.
- * @param ageGroupId Идентификатор возрастной группы.
- * @param genderId Идентификатор пола.
- * @param townId Идентификатор города.
- * @param brochureCount Тираж рассылки.
- */
-export interface CreateDistributionDbProps {
-    brochureId: number,
-    ageGroupId: number,
-    genderId: number,
-    townId: number,
-    brochureCount: number,
-}
+import {
+    AgeGroupDbProps,
+    CreateDistributionDbProps,
+    DistributionDbProps,
+    EditDistributionDbProps,
+    GenderDbProps,
+    TownDbProps
+} from "../types/DistributionTypes";
 
 /**
  * Класс хранилище для рассылок.
@@ -78,7 +34,7 @@ export class DistributionStore {
     /**
      * Список рассылок.
      */
-    @observable public distributions: any[];
+    @observable public distributions: DistributionDbProps[];
 
     /**
      * Загружаются ли рассылки.
@@ -108,6 +64,23 @@ export class DistributionStore {
         this.getBrochureDistributions = this.getBrochureDistributions.bind(this);
         this.updateBrochureDistributions = this.updateBrochureDistributions.bind(this);
         this.handleCreateBrochureDistribution = this.handleCreateBrochureDistribution.bind(this);
+        this.handleEditBrochureDistribution = this.handleEditBrochureDistribution.bind(this);
+    }
+
+    /**
+     * Обрабатывает редактирование рассылки текущего каталога.
+     * @param params Параметры запроса.
+     */
+    @action  public async handleEditBrochureDistribution(params: EditDistributionDbProps) {
+        const id = params.id;
+        if (id === -1) return;
+
+        this.isLoadingDistributions = true;
+
+        console.log(params)
+
+        await DistributionService.updateDistribution(id, params);
+        this.updateBrochureDistributions(params.brochureId);
     }
 
     /**
@@ -140,7 +113,6 @@ export class DistributionStore {
             this.isLoadingDistributions = false;
             return;
         }
-        console.log(data)
 
         this.distributions = data;
         setTimeout(() => this.isLoadingDistributions = false, 300);

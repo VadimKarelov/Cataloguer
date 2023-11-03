@@ -8,6 +8,7 @@ import CreateDistributionButtonComponent from "../Operations/DistributionOperati
 import {DistributionStore} from "../../stores/DistributionStore";
 import {SHOULD_USE_ONLY_DB_DATA} from "../../constants/Routes";
 import NoDataComponent from "../NoDataComponent";
+import {DistributionDbProps} from "../../types/DistributionTypes";
 
 /**
  * Свойства компонента GoodsDescriptionComponent.
@@ -42,24 +43,24 @@ const DistributionDescriptionComponent: React.FC<DistributionDescriptionComponen
     const columns = [
         {
             title: "Пол",
-            dataIndex: "gender",
+            dataIndex: "genderName",
             key: "distributions_table_gender",
         },
         {
             title: "Населённый пункт",
-            dataIndex: "town",
+            dataIndex: "townName",
             key: "distributions_table_town",
             width: 315
         },
         {
             title: "Возрастная группа",
-            dataIndex: "ageGroup",
+            dataIndex: "ageGroupName",
             key: "distributions_table_age_group",
             width: 315
         },
         {
             title: "Число каталогов",
-            dataIndex: "count",
+            dataIndex: "brochureCount",
             key: "distributions_table_count",
             width: 128
         },
@@ -87,7 +88,7 @@ const DistributionDescriptionComponent: React.FC<DistributionDescriptionComponen
     const updateDistributions = () => {
         const id = brochure?.id ?? -1;
         if (id === -1) return;
-        props.distributionStore?.updateBrochureDistributions(id)
+        props.distributionStore?.updateBrochureDistributions(id);
     };
 
     /**
@@ -108,7 +109,7 @@ const DistributionDescriptionComponent: React.FC<DistributionDescriptionComponen
                             size={"middle"}
                             scroll={{y: "calc(100vh - 278px)", x: "max-content"}}
                             columns={columns}
-                            dataSource={rows}
+                            dataSource={rows as DistributionDbProps[]}
                             pagination={false}
                         />) : (
                             <NoDataComponent/>

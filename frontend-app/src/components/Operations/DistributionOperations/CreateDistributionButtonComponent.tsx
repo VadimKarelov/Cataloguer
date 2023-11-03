@@ -3,15 +3,18 @@ import React from "react";
 import {MetadataProps, MetadataTypes} from "../BrochureOperations/CreateBrochureButtonComponent";
 import {Form, Input, Select} from "antd";
 import {inject, observer} from "mobx-react";
-import {BaseStoreInjector, customProp, DistributionProps} from "../../../types/BrochureTypes";
-import {CreateDistributionDbProps, DistributionStore} from "../../../stores/DistributionStore";
+import {BaseStoreInjector} from "../../../types/BrochureTypes";
+import {DistributionStore} from "../../../stores/DistributionStore";
 import {getValidator} from "../../../Utils";
+import {EditDistributionDbProps} from "../../../types/DistributionTypes";
 
 /**
  * Свойства компонента содания рассылки.
+ * @param row Строка таблицы.
+ * @param distributionStore Хранилище рассылок.
  */
 interface CreateDistributionButtonComponentProps extends BaseStoreInjector {
-    row?: DistributionProps,
+    row?: EditDistributionDbProps,
     distributionStore?: DistributionStore,
 }
 
@@ -41,6 +44,7 @@ const CreateDistributionButtonComponent: React.FC<CreateDistributionButtonCompon
     const getSelectOptions = (formItem: MetadataProps) => {
         const formId = formItem.id;
         const formName = formId.slice(formId.lastIndexOf('_') + 1);
+
         let arr: any[] = [];
 
         switch (formName) {
@@ -66,19 +70,6 @@ const CreateDistributionButtonComponent: React.FC<CreateDistributionButtonCompon
     };
 
     /**
-     * Возвращает значение для инициализации поля формы.
-     * @param key Название поля.
-     */
-    // const getInitValue = (key: string) => {
-    //     const isEditButton = !!props.row;
-    //     if (!isEditButton) return null;
-    //
-    //     const finalKey = key.slice(key.lastIndexOf('_') + 1)
-    //     const parsable: customProp = props.row ?? {};
-    //     return parsable[finalKey] ?? null;
-    // };
-
-    /**
      * Возвращает компонент формы.
      */
     const getForm = (): React.JSX.Element => {
@@ -92,7 +83,7 @@ const CreateDistributionButtonComponent: React.FC<CreateDistributionButtonCompon
                             key={formItem.id}
                             label={formItem.name}
                             name={formName}
-                            initialValue={formItem.defaultValue} /*initialValue={getInitValue(formItem.id)}*/
+                            initialValue={formItem.defaultValue}
                             rules={[{
                                 required: formItem.isRequired,
                                 validator: (_, value) => getValidator(_, value, formItem),
@@ -114,13 +105,13 @@ const CreateDistributionButtonComponent: React.FC<CreateDistributionButtonCompon
                                     .finally(() => {
                                         if (!props.row) return;
 
-                                        const {ageGroup, gender, town, count} = props.row;
+                                        const {ageGroupId, genderId, townId, brochureCount} = props.row;
 
                                         form.setFieldsValue({
-                                            ageGroups: ageGroup,
-                                            genders: gender,
-                                            towns: town,
-                                            brochureCount: count,
+                                            ageGroups: `ageGroups_${ageGroupId}`,
+                                            genders: `genders_${genderId}`,
+                                            towns: `towns_${townId}`,
+                                            brochureCount: brochureCount,
                                         });
                                     });
     };
@@ -154,7 +145,7 @@ const CreateDistributionButtonComponent: React.FC<CreateDistributionButtonCompon
             throw new Error("Приколы с каталогом");
         }
 
-        const finalObject: CreateDistributionDbProps = {
+        const baseObject = {
             brochureId: brochureId,
             ageGroupId: ageGroupId,
             genderId: genderId,
@@ -162,7 +153,15 @@ const CreateDistributionButtonComponent: React.FC<CreateDistributionButtonCompon
             brochureCount: parseFloat(brochureCount)
         };
 
-        props.distributionStore?.handleCreateBrochureDistribution(finalObject);
+        const objectToEdit = {
+            id: props.row?.id ?? -1,
+            ...baseObject
+        };
+
+        !props.row ?
+            props.distributionStore?.handleCreateBrochureDistribution(baseObject)
+            : props.distributionStore?.handleEditBrochureDistribution(objectToEdit);
+
         form.resetFields();
     };
 
