@@ -7,6 +7,9 @@ import {Content, Header} from "antd/es/layout/layout";
 import GoodsStore from "../../stores/GoodsStore";
 import {SHOULD_USE_ONLY_DB_DATA} from "../../constants/Routes";
 import NoDataComponent from "../NoDataComponent";
+import CreateBrochureButtonComponent, {
+    ButtonModes
+} from "../Operations/BrochureOperations/CreateBrochureButtonComponent";
 
 /**
  * Свойства компонента GoodsDescriptionComponent.
@@ -84,7 +87,7 @@ const GoodsDescriptionComponent: React.FC<GoodsDescriptionComponentProps> = inje
             <Layout>
                 <Header className={"goods-tab-header-style"}>
                     <Space>
-                        <Button>Добавить</Button>
+                        <CreateBrochureButtonComponent mode={ButtonModes.CREATE_GOODS}/>
                     </Space>
                 </Header>
                 <Content className={"goods-tab-content-style"}>

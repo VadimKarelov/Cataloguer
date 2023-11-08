@@ -42,18 +42,26 @@ export interface MetadataProps {
 
 /**
  * Режимы кнопок компонента.
+ * @param CREATE Создание каталога.
+ * @param EDIT Редактирование каталога.
+ * @param CREATE_GOODS Создание товара.
  */
 export enum ButtonModes {
     CREATE,
-    EDIT
+    EDIT,
+    CREATE_GOODS
 }
 
 /**
  * Словарь с режимами.
+ * @param CREATE Создание каталога.
+ * @param EDIT Редактирование каталога.
+ * @param CREATE_GOODS Создание товара.
  */
 const modes = new Map([
     [ButtonModes.CREATE, "Создать"],
     [ButtonModes.EDIT, "Изменить"],
+    [ButtonModes.CREATE_GOODS, "Добавить"],
 ]);
 
 /**
@@ -78,11 +86,18 @@ const CreateBrochureButtonComponent: React.FC<CreateBrochureButtonComponentProps
     ];
 
     /**
+     * Метаданные для формы создания товаров.
+     */
+    const createGoodsFormMetaData: Readonly<MetadataProps[]> = [
+        { id: "brochure_positions", name: "Перечень товаров", type: MetadataTypes.TBL_FIELD, isRequired: false},
+    ];
+
+    /**
      * Метаданные создания каталога.
      */
     const createFormMetadata: Readonly<MetadataProps[]> = [
         ...editFormMetadata,
-        { id: "brochure_positions", name: "Перечень товаров", type: MetadataTypes.TBL_FIELD, isRequired: false},
+        ...createGoodsFormMetaData,
     ];
 
     /**
@@ -110,11 +125,37 @@ const CreateBrochureButtonComponent: React.FC<CreateBrochureButtonComponentProps
     };
 
     /**
+     * Возвращает метаданные для формы.
+     */
+    const getFormMetaData = (): readonly MetadataProps[] => {
+        switch (props.mode) {
+            case ButtonModes.CREATE: return createFormMetadata;
+            case ButtonModes.EDIT: return editFormMetadata;
+            case ButtonModes.CREATE_GOODS: return createGoodsFormMetaData;
+            default: return [];
+        }
+    };
+
+    /**
+     * Возвращает идентификатор формы.
+     */
+    const getFormId = (): string => {
+        let operation;
+        switch (props.mode) {
+            case ButtonModes.CREATE: operation = "create"; break;
+            case ButtonModes.EDIT: operation = "edit"; break;
+            case ButtonModes.CREATE_GOODS: operation = "goods_create"; break;
+            default: operation = "";
+        }
+        return `${operation}_form`;
+    };
+
+    /**
      * Возвращает компонент формы.
      */
     const getForm = (): React.JSX.Element => {
-        const metadata = props.mode === ButtonModes.EDIT ? editFormMetadata : createFormMetadata;
-        const formId = `brochure_${props.mode === ButtonModes.EDIT ? "edit" : "create"}_form`;
+        const metadata = getFormMetaData();//props.mode === ButtonModes.EDIT ? editFormMetadata : createFormMetadata;
+        const formId = getFormId();
         return (
             <Form id={formId} form={form} name={formId} layout={"vertical"} colon={false}>
                 {metadata.map(formItem => {
@@ -180,10 +221,22 @@ const CreateBrochureButtonComponent: React.FC<CreateBrochureButtonComponentProps
     };
 
     /**
+     * Возвращает заголовок модального окна.
+     */
+    const getModalTitle = (): string => {
+        switch (props.mode) {
+            case ButtonModes.CREATE: return "Создать каталог";
+            case ButtonModes.EDIT: return "Редактировать каталог";
+            case ButtonModes.CREATE_GOODS: return "Добавить товар";
+            default: return "";
+        }
+    };
+
+    /**
      * Свойства модального окна.
      */
     const modalProps = {
-        title: `${props.mode === ButtonModes.EDIT ? "Редактировать" : "Создать"} каталог`,
+        title: getModalTitle(),
         form: form,
         okText: "Сохранить",
         cancelText: "Отменить",
