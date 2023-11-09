@@ -2,7 +2,6 @@ using Cataloguer.Database.Base;
 using Cataloguer.Database.Commands.GetCommands;
 using Cataloguer.Server.ContextHandlers;
 using Microsoft.AspNetCore.Cors;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Serilog;
 using Serilog.Formatting.Compact;
 
@@ -73,21 +72,6 @@ namespace Cataloguer.Server
             {
                 Log.CloseAndFlush();
             }
-        }
-
-        public void ConfigureServices(IServiceCollection services)
-        {
-            // If using Kestrel:
-            services.Configure<KestrelServerOptions>(options =>
-            {
-                options.AllowSynchronousIO = true;
-            });
-
-            // If using IIS:
-            services.Configure<IISServerOptions>(options =>
-            {
-                options.AllowSynchronousIO = true;
-            });
         }
 
         [EnableCors()]
