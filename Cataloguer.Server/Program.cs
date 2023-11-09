@@ -1,4 +1,5 @@
 using Cataloguer.Database.Base;
+using Cataloguer.Database.Commands;
 using Cataloguer.Database.Commands.GetCommands;
 using Cataloguer.Server.ContextHandlers;
 using Microsoft.AspNetCore.Cors;
@@ -59,6 +60,7 @@ namespace Cataloguer.Server
                 GetSpecialRegistration(app, dbConfig);
                 AddRegistration(app, dbConfig);
                 UpdateRegistration(app, dbConfig);
+                DeleteRegistration(app, dbConfig);
 
                 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
@@ -132,6 +134,13 @@ namespace Cataloguer.Server
         private static void UpdateRegistration(WebApplication app, DataBaseConfiguration config)
         {
             app.MapPost(_baseRoute + "/updateBrochure", (HttpContext context) => ContextHandler.UpdateBrochure(context, config));
+            app.MapPost(_baseRoute + "/updateDistribution", (HttpContext context) => ContextHandler.UpdateDistribution(context, config));
+        }
+
+        [EnableCors()]
+        private static void DeleteRegistration(WebApplication app, DataBaseConfiguration config)
+        {
+            app.MapPost(_baseRoute + "deleteBrochure/id={brochureId}", (int brochureId) => new DeleteCommand(config).DeleteBrochure(brochureId));
         }
     }
 }

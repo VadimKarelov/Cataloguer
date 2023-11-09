@@ -111,7 +111,31 @@ namespace Cataloguer.Server.ContextHandlers
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "Обработка запроса на добавление нового каталога.");
+                Log.Error(ex, "Обработка запроса на обновление каталога.");
+                return "-1";
+            }
+        }
+
+        public static string UpdateDistribution(HttpContext context, DataBaseConfiguration config)
+        {
+            try
+            {
+                var entireRequestBody = GetBody(context);
+
+                var distribution = JsonSerializer.Deserialize<Distribution>(entireRequestBody);
+
+                if (distribution is null)
+                {
+                    throw new ArgumentNullException(nameof(distribution));
+                }
+
+                int id = new AddOrUpdateCommand(config).AddOrUpdate(distribution);
+
+                return id.ToString();
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Обработка запроса на обновление рассылки.");
                 return "-1";
             }
         }
