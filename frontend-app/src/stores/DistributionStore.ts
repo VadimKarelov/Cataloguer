@@ -71,26 +71,32 @@ export class DistributionStore {
      * Обрабатывает редактирование рассылки текущего каталога.
      * @param params Параметры запроса.
      */
-    @action  public async handleEditBrochureDistribution(params: EditDistributionDbProps) {
+    @action  public async handleEditBrochureDistribution(params: EditDistributionDbProps): Promise<string> {
         const id = params.id;
-        if (id === -1) return;
+        if (id === -1) return Promise.reject("Не удалось изменить рассылку");
 
         this.isLoadingDistributions = true;
 
         console.log(params)
 
-        await DistributionService.updateDistribution(id, params);
-        this.updateBrochureDistributions(params.brochureId);
+        const {data} = await DistributionService.updateDistribution(id, params);
+        await this.updateBrochureDistributions(params.brochureId);
+
+        if (data === -1) return Promise.reject("Не удалось изменить рассылку");
+        return Promise.resolve("Изменения сохранены");
     }
 
     /**
      * Обрабатывает создание рассылки текущего каталога.
      * @param params Параметры запроса.
      */
-    @action public async handleCreateBrochureDistribution(params: CreateDistributionDbProps) {
+    @action public async handleCreateBrochureDistribution(params: CreateDistributionDbProps): Promise<string> {
         this.isLoadingDistributions = true;
-        await DistributionService.createDistribution(params);
-        this.updateBrochureDistributions(params.brochureId);
+        const {data} = await DistributionService.createDistribution(params);
+        await this.updateBrochureDistributions(params.brochureId);
+
+        if (data === -1) return Promise.reject("Не удалось создать рассылку");
+        return Promise.resolve("Рассылка успешно создана");
     }
 
     /**

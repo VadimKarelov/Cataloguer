@@ -7,6 +7,7 @@ import {BaseStoreInjector} from "../../../types/BrochureTypes";
 import {DistributionStore} from "../../../stores/DistributionStore";
 import {getValidator} from "../../../Utils";
 import {EditDistributionDbProps} from "../../../types/DistributionTypes";
+import {openNotification} from "../../NotificationComponent";
 
 /**
  * Свойства компонента содания рассылки.
@@ -158,11 +159,14 @@ const CreateDistributionButtonComponent: React.FC<CreateDistributionButtonCompon
             ...baseObject
         };
 
-        !props.row ?
+        const response = !props.row ?
             props.distributionStore?.handleCreateBrochureDistribution(baseObject)
             : props.distributionStore?.handleEditBrochureDistribution(objectToEdit);
 
-        form.resetFields();
+        response?.then(
+            (resolve: string) => {openNotification("Успех", resolve, "success")},
+            (error: string) => {openNotification("Ошибка", error, "error")}
+        ).finally(() => form.resetFields());
     };
 
     /**
@@ -183,6 +187,14 @@ const CreateDistributionButtonComponent: React.FC<CreateDistributionButtonCompon
     };
 
     /**
+     * Обрабатывает нажатие кнопки отменить.
+     */
+    const onCancelClick = (): Promise<void> => {
+        form.resetFields();
+        return Promise.resolve();
+    };
+
+    /**
      * Свойства модального окна.
      */
     const modalProps = {
@@ -191,6 +203,7 @@ const CreateDistributionButtonComponent: React.FC<CreateDistributionButtonCompon
         cancelText: "Отменить",
         children: getForm(),
         onOkClick: onOkClick,
+        onCancelClick: onCancelClick,
     };
 
     /**
