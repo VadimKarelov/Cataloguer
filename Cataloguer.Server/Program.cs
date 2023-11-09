@@ -141,6 +141,7 @@ namespace Cataloguer.Server
         private static void DeleteRegistration(WebApplication app, DataBaseConfiguration config)
         {
             app.MapPost(_baseRoute + "deleteBrochure/id={brochureId}", (int brochureId) => new DeleteCommand(config).DeleteBrochure(brochureId));
+            app.MapPost(_baseRoute + "deleteDistribution/id={distributionId}", (int distributionId) => new DeleteCommand(config).DeleteDistribution(distributionId));
         }
     }
 }
