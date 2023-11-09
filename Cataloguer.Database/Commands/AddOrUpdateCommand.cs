@@ -109,7 +109,7 @@ namespace Cataloguer.Database.Commands
             entity.TownId = distribution.TownId;
 
             // проверка, что каталог существует
-            var brochure = Context.Brochures.FirstOrDefault();
+            var brochure = Context.Brochures.FirstOrDefault(x => x.Id == entity.BrochureId);
 
             if (brochure == null)
                 return -1;
