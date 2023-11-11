@@ -1,6 +1,6 @@
 import {Button, Layout, Popconfirm, Space, Spin, Table} from "antd";
 import React, {useEffect} from "react";
-import {BaseStoreInjector} from "../../types/BrochureTypes";
+import {BaseStoreInjector, customProp, GoodProps, GoodsProps} from "../../types/BrochureTypes";
 import {inject, observer} from "mobx-react";
 import "../../styles/Tabs/GoodsTab.css";
 import {Content, Header} from "antd/es/layout/layout";
@@ -11,6 +11,7 @@ import CreateBrochureButtonComponent, {
     ButtonModes
 } from "../Operations/BrochureOperations/CreateBrochureButtonComponent";
 import DeleteGoodsButtonComponent from "../Operations/GoodsOperations/DeleteGoodsButtonComponent";
+import {DistributionDbProps} from "../../types/DistributionTypes";
 
 /**
  * Свойства компонента GoodsDescriptionComponent.
@@ -40,6 +41,22 @@ const GoodsDescriptionComponent: React.FC<GoodsDescriptionComponentProps> = inje
     const hasData = brochure !== null && rows.length > 0;
 
     /**
+     * Сортирует столбец таблицы.
+     * @param a Строка 1.
+     * @param b Строка 2.
+     * @param key Свойство, по которому нужно сортировать.
+     */
+    const sorter = (a: GoodProps, b: GoodProps, key: string) => {
+        const f: customProp = a, s: customProp = b;
+        const first = f[key], second = s[key];
+
+        if (typeof first === "string") return first.localeCompare(second);
+        if (typeof first === "number") return first - second;
+
+        return 0;
+    };
+
+    /**
      * Колонки таблицы.
      */
     const columns = [
@@ -47,11 +64,13 @@ const GoodsDescriptionComponent: React.FC<GoodsDescriptionComponentProps> = inje
             title: "Наименование",
             dataIndex: "name",
             key: "goods_table_name",
+            sorter: (a: GoodProps, b: GoodProps) => sorter(a, b, "name")
         },
         {
             title: "Цена, руб",
             dataIndex: "price",
             key: "goods_table_price",
+            sorter: (a: GoodProps, b: GoodProps) => sorter(a, b, "price")
         },
         {
             title: "Операция",

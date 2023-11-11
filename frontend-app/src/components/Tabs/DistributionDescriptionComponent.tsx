@@ -1,7 +1,7 @@
 import React, {useEffect} from "react";
 import {Layout, Space, Spin, Table} from "antd";
 import {Content, Header} from "antd/es/layout/layout";
-import {BaseStoreInjector} from "../../types/BrochureTypes";
+import {BaseStoreInjector, customProp} from "../../types/BrochureTypes";
 import {inject, observer} from "mobx-react";
 import "../../styles/Tabs/DistributionsTab.css";
 import CreateDistributionButtonComponent from "../Operations/DistributionOperations/CreateDistributionButtonComponent";
@@ -39,6 +39,22 @@ const DistributionDescriptionComponent: React.FC<DistributionDescriptionComponen
     const hasData = brochure !== null && rows.length > 0;
 
     /**
+     * Сортирует столбец таблицы.
+     * @param a Строка 1.
+     * @param b Строка 2.
+     * @param key Свойство, по которому нужно сортировать.
+     */
+    const sorter = (a: DistributionDbProps, b: DistributionDbProps, key: string) => {
+        const f: customProp = a, s: customProp = b;
+        const first = f[key], second = s[key];
+
+        if (typeof first === "string") return first.localeCompare(second);
+        if (typeof first === "number") return first - second;
+
+        return 0;
+    };
+
+    /**
      * Колонки таблицы.
      */
     const columns = [
@@ -46,24 +62,28 @@ const DistributionDescriptionComponent: React.FC<DistributionDescriptionComponen
             title: "Пол",
             dataIndex: "genderName",
             key: "distributions_table_gender",
+            sorter: (a: DistributionDbProps, b: DistributionDbProps) => sorter(a, b, "genderName")
         },
         {
             title: "Населённый пункт",
             dataIndex: "townName",
             key: "distributions_table_town",
-            width: 315
+            width: 315,
+            sorter: (a: DistributionDbProps, b: DistributionDbProps) => sorter(a, b, "townName")
         },
         {
             title: "Возрастная группа",
             dataIndex: "ageGroupName",
             key: "distributions_table_age_group",
-            width: 315
+            width: 290,
+            sorter: (a: DistributionDbProps, b: DistributionDbProps) => sorter(a, b, "ageGroupName")
         },
         {
             title: "Число каталогов",
             dataIndex: "brochureCount",
             key: "distributions_table_count",
-            width: 128
+            width: 150,
+            sorter: (a: DistributionDbProps, b: DistributionDbProps) => sorter(a, b, "brochureCount")
         },
         {
             title: "Операция",
