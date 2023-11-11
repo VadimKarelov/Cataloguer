@@ -58,7 +58,9 @@ namespace Cataloguer.Database.Commands.GetCommands
         {
             StartExecuteCommand(MethodBase.GetCurrentMethod(), predicate, includeFields);
 
-            var request = Context.Brochures.AsNoTracking();
+            var request = Context.Brochures
+                .AsNoTracking()
+                .OrderByDescending(x => x.Id);
 
             if (includeFields)
             {
