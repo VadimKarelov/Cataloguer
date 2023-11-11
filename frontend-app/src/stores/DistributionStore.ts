@@ -78,13 +78,20 @@ export class DistributionStore {
             return Promise.reject("Ошибка при удалении каталога");
         }
 
-        const {data} = await DistributionService.deleteDistribution(distributionId);
-
-        await this.updateBrochureDistributions(brochureId);
-        if (!isNaN(parseInt(data)) && parseInt(data) === -1) {
-            return Promise.reject("Ошибка при удалении каталога");
-        }
-        return Promise.resolve("Рассылка каталога удалёна успешно");
+        return await DistributionService.deleteDistribution(distributionId).then(
+            async(response) => {
+                const data = response.data;
+                await this.updateBrochureDistributions(brochureId);
+                if (!isNaN(parseInt(data)) && parseInt(data) === -1) {
+                    return Promise.reject("Ошибка при удалении каталога");
+                }
+                return Promise.resolve("Рассылка каталога удалёна успешно");
+            },
+            (error) => {
+                console.log(error);
+                return Promise.reject("Ошибка при удалении каталога");
+            },
+        );
     }
 
     /**
@@ -93,17 +100,28 @@ export class DistributionStore {
      */
     @action  public async handleEditBrochureDistribution(params: EditDistributionDbProps): Promise<string> {
         const id = params.id;
-        if (id === -1) return Promise.reject("Не удалось изменить рассылку");
+        if (id === -1) {
+            return Promise.reject("Не удалось изменить рассылку");
+        }
 
         this.isLoadingDistributions = true;
 
-        console.log(params)
+        return await DistributionService.updateDistribution(id, params).then(
+            async(response) => {
+                const data = response.data;
+                await this.updateBrochureDistributions(params.brochureId);
 
-        const {data} = await DistributionService.updateDistribution(id, params);
-        await this.updateBrochureDistributions(params.brochureId);
-
-        if (data === -1) return Promise.reject("Не удалось изменить рассылку");
-        return Promise.resolve("Изменения сохранены");
+                if (data === -1) {
+                    return Promise.reject("Не удалось изменить рассылку");
+                }
+                return Promise.resolve("Изменения сохранены");
+            },
+            (error) => {
+                console.log(error);
+                this.isLoadingDistributions = false;
+                return Promise.reject("Не удалось изменить рассылку");
+            },
+        );
     }
 
     /**
@@ -112,11 +130,22 @@ export class DistributionStore {
      */
     @action public async handleCreateBrochureDistribution(params: CreateDistributionDbProps): Promise<string> {
         this.isLoadingDistributions = true;
-        const {data} = await DistributionService.createDistribution(params);
-        await this.updateBrochureDistributions(params.brochureId);
+        return await DistributionService.createDistribution(params).then(
+            async(response) => {
+                const data = response.data;
+                await this.updateBrochureDistributions(params.brochureId);
 
-        if (data === -1) return Promise.reject("Не удалось создать рассылку");
-        return Promise.resolve("Рассылка успешно создана");
+                if (data === -1) {
+                    return Promise.reject("Не удалось создать рассылку");
+                }
+                return Promise.resolve("Рассылка успешно создана");
+            },
+            (error) => {
+                console.log(error);
+                this.isLoadingDistributions = false;
+                return Promise.reject("Не удалось создать рассылку");
+            }
+        );
     }
 
     /**
@@ -134,14 +163,18 @@ export class DistributionStore {
      */
     @action public async updateBrochureDistributions(brochureId: number) {
         this.isLoadingDistributions = true;
-        const {data} = await this.getBrochureDistributions(brochureId);
-        if (!(data instanceof Array)) {
-            this.isLoadingDistributions = false;
-            return;
-        }
+        await this.getBrochureDistributions(brochureId).then(
+            (response) => {
+                const data = response.data;
+                if (!(data instanceof Array)) {
+                    this.isLoadingDistributions = false;
+                    return;
+                }
 
-        this.distributions = data;
-        setTimeout(() => this.isLoadingDistributions = false, 300);
+                this.distributions = data;
+            },
+            (error) => console.log(error),
+        ).finally(() => setTimeout(() => this.isLoadingDistributions = false, 300));
     }
 
     /**
@@ -167,17 +200,20 @@ export class DistributionStore {
             this.getDbAgeGroups(),
             this.getDbGenders(),
             this.getDbTowns(),
-        ]).then((responses) => {
-            const ageGroupsAxiosResponse = responses[0];
-            const gendersAxiosResponse = responses[1];
-            const townsAxiosResponse = responses[2];
+        ]).then(
+            (responses) => {
+                const ageGroupsAxiosResponse = responses[0];
+                const gendersAxiosResponse = responses[1];
+                const townsAxiosResponse = responses[2];
 
-            if (responses.some(response => response.status >= 400)) return;
+                if (responses.some(response => response.status >= 400)) return;
 
-            this.genders = gendersAxiosResponse.data;
-            this.ageGroups = ageGroupsAxiosResponse.data;
-            this.towns = townsAxiosResponse.data;
-        });
+                this.genders = gendersAxiosResponse.data;
+                this.ageGroups = ageGroupsAxiosResponse.data;
+                this.towns = townsAxiosResponse.data;
+            },
+            (error) => console.log(error)
+        );
     }
 
     /**

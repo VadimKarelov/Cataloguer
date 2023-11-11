@@ -10,6 +10,7 @@ import NoDataComponent from "../NoDataComponent";
 import CreateBrochureButtonComponent, {
     ButtonModes
 } from "../Operations/BrochureOperations/CreateBrochureButtonComponent";
+import DeleteGoodsButtonComponent from "../Operations/GoodsOperations/DeleteGoodsButtonComponent";
 
 /**
  * Свойства компонента GoodsDescriptionComponent.
@@ -57,11 +58,9 @@ const GoodsDescriptionComponent: React.FC<GoodsDescriptionComponentProps> = inje
             dataIndex: "operation",
             key: "goods_table_operation",
             width: 110,
-            render: () => (
+            render: (_: any, row: any) => (
                 <Space>
-                    <Popconfirm title={`Удалить товар?`} okText={"Удалить"} cancelText={"Отменить"} /*onConfirm={() => handleDelete(record.key)}*/>
-                        <Button>Удалить</Button>
-                    </Popconfirm>
+                    <DeleteGoodsButtonComponent row={row}/>
                 </Space>
             ),
         },

@@ -123,16 +123,28 @@ class BrochureStore {
      * @param brochureId Идентификатор каталога.
      */
     @action public async handleDeleteBrochure(brochureId: number): Promise<string> {
-        const {data} = await BrochureService.deleteBrochure(brochureId);
-        await this.updateBrochureList();
-
-        this.currentBrochure = null;
-        this.saveBrochureToSessionStorage(null);
-
-        if (!isNaN(parseInt(data)) && parseInt(data) === -1) {
+        if (brochureId === -1) {
             return Promise.reject("Ошибка при удалении каталога");
         }
-        return Promise.resolve("Каталог удалён успешно");
+
+        return await BrochureService.deleteBrochure(brochureId).then(
+            async(response) => {
+                await this.updateBrochureList();
+
+                this.currentBrochure = null;
+                this.saveBrochureToSessionStorage(null);
+
+                const data = response.data;
+                if (!isNaN(parseInt(data)) && parseInt(data) === -1) {
+                    return Promise.reject("Ошибка при удалении каталога");
+                }
+                return Promise.resolve("Каталог удалён успешно");
+            },
+            (error) => {
+                console.log(error);
+                return Promise.reject("Ошибка при удалении каталога");
+            }
+        );
     }
 
     /**
@@ -141,29 +153,37 @@ class BrochureStore {
      */
     @action public async handleEditBrochure(brochure: EditBrochureHandlerProps): Promise<string> {
         const id = this.currentBrochure?.id ?? -1;
-        const rejectReason = "Не удалось создать каталог";
+        const rejectReason = "Не удалось изменить каталог";
         if (id === -1) {
             return Promise.reject(rejectReason);
         }
 
-        const {data} = await BrochureService.updateBrochure(id, brochure);
+        return await BrochureService.updateBrochure(id, brochure).then(
+            (response) => {
+                const data = response.data;
 
-        const isResponseString = typeof data === "string";
-        const isResponseNumber = typeof data === "number";
-        const numberParseAttempt = parseInt(data);
+                const isResponseString = typeof data === "string";
+                const isResponseNumber = typeof data === "number";
+                const numberParseAttempt = parseInt(data);
 
-        if (!isResponseString && !isResponseNumber) {
-            return Promise.reject(rejectReason);
-        }
+                if (!isResponseString && !isResponseNumber) {
+                    return Promise.reject(rejectReason);
+                }
 
-        if (isResponseString && !isNaN(numberParseAttempt) && numberParseAttempt === -1) {
-            return Promise.reject(rejectReason);
-        }
+                if (isResponseString && !isNaN(numberParseAttempt) && numberParseAttempt === -1) {
+                    return Promise.reject(rejectReason);
+                }
 
-        if (isResponseNumber && data === -1) {
-            return Promise.reject(rejectReason);
-        }
-        return Promise.resolve("Каталог успешно создан");
+                if (isResponseNumber && data === -1) {
+                    return Promise.reject(rejectReason);
+                }
+                return Promise.resolve("Каталог успешно изменён");
+            },
+            (error) => {
+                console.log(error);
+                return Promise.reject(rejectReason);
+            },
+        );
     }
 
     /**
@@ -237,7 +257,7 @@ class BrochureStore {
 
                 this.allGoods = response.data;
             }),
-            (err) => console.log(err)
+            (error) => console.log(error)
         ).finally(() => this.isLoadingGoods = false);
     }
 
@@ -364,10 +384,15 @@ class BrochureStore {
      * @private
      */
     @action private async updateBrochureList() {
-        const {data} = await BrochureService.getAllBrochures();
-        if (!(data instanceof Array)) return;
+        await BrochureService.getAllBrochures().then(
+            (response) => {
+                const data = response.data;
+                if (!(data instanceof Array)) return;
 
-        this.brochures = data;
+                this.brochures = data;
+            },
+            (error) => console.log(error)
+        );
     }
 
     /**

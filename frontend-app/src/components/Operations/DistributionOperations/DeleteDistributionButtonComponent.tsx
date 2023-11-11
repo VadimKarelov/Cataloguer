@@ -10,19 +10,19 @@ import {EditDistributionDbProps} from "../../../types/DistributionTypes";
  * @param distributionStore Хранилище рассылок.
  * @param row Строка таблицы.
  */
-interface DeleteDistributionButtonComponent {
+interface DeleteDistributionButtonComponentProps {
     distributionStore?: DistributionStore,
     row: EditDistributionDbProps,
 }
 
 /**
- * Компонент кнопки Удалить, открывающий свою модалку.
+ * Компонент кнопки Удалить для рассылки.
  */
-const DeleteDistributionButtonComponent: React.FC<DeleteDistributionButtonComponent> = inject("distributionStore")(observer((props) => {
+const DeleteDistributionButtonComponent: React.FC<DeleteDistributionButtonComponentProps> = inject("distributionStore")(observer((props) => {
     /**
      * Срабатывает при нажатии кнопки удалить.
      */
-    const onOkClick = (): Promise<void> => {
+    const onOkClick = (): void => {
         const {id, brochureId} = props.row;
         const response = props.distributionStore?.handleDeleteBrochureDistribution(id, brochureId);
 
@@ -30,7 +30,6 @@ const DeleteDistributionButtonComponent: React.FC<DeleteDistributionButtonCompon
             (resolve: string) => {openNotification("Успех", resolve, "success")},
             (error: string) => {openNotification("Ошибка", error, "error")}
         );
-        return Promise.resolve();
     };
 
     return (
