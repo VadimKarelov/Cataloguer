@@ -27,7 +27,7 @@ interface ModalProps {
     onCancelClick?: () => Promise<void>,
     cancelText?: string,
     title: React.ReactNode,
-    children: React.JSX.Element,
+    children: React.JSX.Element | null,
 }
 
 /**

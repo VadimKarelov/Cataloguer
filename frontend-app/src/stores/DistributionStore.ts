@@ -65,6 +65,26 @@ export class DistributionStore {
         this.updateBrochureDistributions = this.updateBrochureDistributions.bind(this);
         this.handleCreateBrochureDistribution = this.handleCreateBrochureDistribution.bind(this);
         this.handleEditBrochureDistribution = this.handleEditBrochureDistribution.bind(this);
+        this.handleDeleteBrochureDistribution = this.handleDeleteBrochureDistribution.bind(this);
+    }
+
+    /**
+     * Обарабывает удаление рассылки каталога.
+     * @param distributionId Идентификатор рассылки.
+     * @param brochureId Идентификатор каталога.
+     */
+    @action public async handleDeleteBrochureDistribution(distributionId: number, brochureId: number): Promise<string> {
+        if (brochureId === -1 || distributionId === -1) {
+            return Promise.reject("Ошибка при удалении каталога");
+        }
+
+        const {data} = await DistributionService.deleteDistribution(distributionId);
+
+        await this.updateBrochureDistributions(brochureId);
+        if (!isNaN(parseInt(data)) && parseInt(data) === -1) {
+            return Promise.reject("Ошибка при удалении каталога");
+        }
+        return Promise.resolve("Рассылка каталога удалёна успешно");
     }
 
     /**

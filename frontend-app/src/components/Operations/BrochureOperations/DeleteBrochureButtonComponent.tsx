@@ -3,6 +3,7 @@ import {Typography} from "antd";
 import {BaseStoreInjector} from "../../../types/BrochureTypes";
 import React from "react";
 import {inject, observer} from "mobx-react";
+import {openNotification} from "../../NotificationComponent";
 
 /**
  * Свойства компонента DeleteBrochureButtonComponent.
@@ -20,6 +21,20 @@ const DeleteBrochureButtonComponent: React.FC<DeleteBrochureButtonComponentProps
     const currentBrochure = props.brochureStore?.currentBrochure ?? null;
 
     /**
+     * Срабатывает при нажатии кнопки удалить.
+     */
+    const onOkClick = (): Promise<void> => {
+        const id = currentBrochure?.id ?? -1;
+        const response = props.brochureStore?.handleDeleteBrochure(id);
+
+        response?.then(
+            (resolve: string) => {openNotification("Успех", resolve, "success")},
+            (error: string) => {openNotification("Ошибка", error, "error")}
+        );
+        return Promise.resolve();
+    };
+
+    /**
      * Свойства модалки.
      */
     const modalProps = {
@@ -27,6 +42,7 @@ const DeleteBrochureButtonComponent: React.FC<DeleteBrochureButtonComponentProps
         okText: "Удалить",
         cancelText: "Отменить",
         children: (<Typography.Text>{`Вы действительно хотите удалить каталог ${currentBrochure?.name}?`}</Typography.Text>),
+        onOkClick: onOkClick,
     };
 
     /**

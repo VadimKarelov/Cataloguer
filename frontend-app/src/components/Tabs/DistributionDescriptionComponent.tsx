@@ -1,5 +1,5 @@
 import React, {useEffect} from "react";
-import {Button, Layout, Popconfirm, Space, Spin, Table} from "antd";
+import {Layout, Space, Spin, Table} from "antd";
 import {Content, Header} from "antd/es/layout/layout";
 import {BaseStoreInjector} from "../../types/BrochureTypes";
 import {inject, observer} from "mobx-react";
@@ -9,6 +9,7 @@ import {DistributionStore} from "../../stores/DistributionStore";
 import {SHOULD_USE_ONLY_DB_DATA} from "../../constants/Routes";
 import NoDataComponent from "../NoDataComponent";
 import {DistributionDbProps} from "../../types/DistributionTypes";
+import DeleteDistributionButtonComponent from "../Operations/DistributionOperations/DeleteDistributionButtonComponent";
 
 /**
  * Свойства компонента GoodsDescriptionComponent.
@@ -72,9 +73,7 @@ const DistributionDescriptionComponent: React.FC<DistributionDescriptionComponen
                 return (
                     <Space>
                         <CreateDistributionButtonComponent row={row}/>
-                        <Popconfirm title={`Удалить рассылку?`} okText={"Удалить"} cancelText={"Отменить"} /*onConfirm={() => handleDelete(record.key)}*/>
-                            <Button>Удалить</Button>
-                        </Popconfirm>
+                        <DeleteDistributionButtonComponent row={row}/>
                     </Space>
                 );
             },

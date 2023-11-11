@@ -59,7 +59,6 @@ const GoodsDescriptionComponent: React.FC<GoodsDescriptionComponentProps> = inje
             width: 110,
             render: () => (
                 <Space>
-                    <Button>Изменить</Button>
                     <Popconfirm title={`Удалить товар?`} okText={"Удалить"} cancelText={"Отменить"} /*onConfirm={() => handleDelete(record.key)}*/>
                         <Button>Удалить</Button>
                     </Popconfirm>

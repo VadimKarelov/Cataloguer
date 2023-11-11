@@ -13,6 +13,7 @@ import GoodsService from "../services/GoodsService";
 import BrochureService from "../services/BrochureService";
 import moment from "moment";
 import {SHOULD_USE_ONLY_DB_DATA} from "../constants/Routes";
+import DistributionService from "../services/DistributionService";
 
 /**
  * Путь к данным каталога в session storage.
@@ -114,6 +115,24 @@ class BrochureStore {
         this.handleCreateBrochure = this.handleCreateBrochure.bind(this);
         this.getBrochureById = this.getBrochureById.bind(this);
         this.updateBrochureList = this.updateBrochureList.bind(this);
+        this.handleDeleteBrochure = this.handleDeleteBrochure.bind(this);
+    }
+
+    /**
+     * Обработчик удаления каталога
+     * @param brochureId Идентификатор каталога.
+     */
+    @action public async handleDeleteBrochure(brochureId: number): Promise<string> {
+        const {data} = await BrochureService.deleteBrochure(brochureId);
+        await this.updateBrochureList();
+
+        this.currentBrochure = null;
+        this.saveBrochureToSessionStorage(null);
+
+        if (!isNaN(parseInt(data)) && parseInt(data) === -1) {
+            return Promise.reject("Ошибка при удалении каталога");
+        }
+        return Promise.resolve("Каталог удалён успешно");
     }
 
     /**
@@ -161,8 +180,6 @@ class BrochureStore {
      */
     @action public async handleCreateBrochure(brochure: CreateBrochureHandlerProps) {
         brochure.positions = [...this.checkedGoods.map(good => ({...good}))];
-
-        console.log("Отправляем на backend: ", brochure);
 
         this.isBrochureLoading = true;
         this.isBrochureMenuLoading = true;
