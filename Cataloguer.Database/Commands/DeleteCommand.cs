@@ -37,5 +37,21 @@ namespace Cataloguer.Database.Commands
 
             FinishExecuteCommand(MethodBase.GetCurrentMethod());
         }
+
+        [MethodName("удаление товара из каталога")]
+        public void DeleteGoodFromBrochure(int brochureId, int goodId)
+        {
+            StartExecuteCommand(MethodBase.GetCurrentMethod(), brochureId, goodId);
+
+            var positionToDelete = Context.BrochurePositions
+                .FirstOrDefault(x => x.BrochureId == brochureId && x.GoodId == goodId);
+
+            if (positionToDelete == null) return;
+
+            Context.Remove(positionToDelete);
+            Context.SaveChanges();
+
+            FinishExecuteCommand(MethodBase.GetCurrentMethod());
+        }
     }
 }

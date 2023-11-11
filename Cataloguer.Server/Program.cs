@@ -1,7 +1,9 @@
 using Cataloguer.Database.Base;
 using Cataloguer.Database.Commands;
 using Cataloguer.Database.Commands.GetCommands;
+using Cataloguer.Database.Models;
 using Cataloguer.Server.ContextHandlers;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Cors;
 using Serilog;
 using Serilog.Formatting.Compact;
@@ -133,15 +135,18 @@ namespace Cataloguer.Server
         [EnableCors()]
         private static void UpdateRegistration(WebApplication app, DataBaseConfiguration config)
         {
-            app.MapPost(_baseRoute + "/updateBrochure", (HttpContext context) => ContextHandler.UpdateBrochure(context, config));
-            app.MapPost(_baseRoute + "/updateDistribution", (HttpContext context) => ContextHandler.UpdateDistribution(context, config));
+            app.MapPost(_baseRoute + "/updateBrochure/id={brochureId}", (HttpContext context, int brochureId) => ContextHandler.UpdateBrochure(context, config, brochureId));
+            app.MapPost(_baseRoute + "/updateDistribution/id={distributionId}", (HttpContext context, int distributionId) => ContextHandler.UpdateDistribution(context, config, distributionId));
         }
 
         [EnableCors()]
         private static void DeleteRegistration(WebApplication app, DataBaseConfiguration config)
         {
-            app.MapGet(_baseRoute + "/deleteBrochure/id={brochureId}", (int brochureId) => new DeleteCommand(config).DeleteBrochure(brochureId));
-            app.MapGet(_baseRoute + "/deleteDistribution/id={distributionId}", (int distributionId) => new DeleteCommand(config).DeleteDistribution(distributionId));
+            app.Map(_baseRoute + "/deleteBrochure/id={brochureId}", (int brochureId) => new DeleteCommand(config).DeleteBrochure(brochureId));
+            app.Map(_baseRoute + "/deleteDistribution/id={distributionId}", (int distributionId) => new DeleteCommand(config).DeleteDistribution(distributionId));
+
+            app.Map(_baseRoute + "/deleteGoodFromBrochure/brochureId={brochureId}/distributionId={distributionId}",
+                (int brochureId, int distributionId) => new DeleteCommand(config).DeleteGoodFromBrochure(brochureId, distributionId));
         }
     }
 }

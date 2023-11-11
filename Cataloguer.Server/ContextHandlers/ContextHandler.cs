@@ -92,7 +92,7 @@ namespace Cataloguer.Server.ContextHandlers
             }
         }
 
-        public static string UpdateBrochure(HttpContext context, DataBaseConfiguration config)
+        public static string UpdateBrochure(HttpContext context, DataBaseConfiguration config, int brochureId)
         {
             try
             {
@@ -105,6 +105,8 @@ namespace Cataloguer.Server.ContextHandlers
                     throw new ArgumentNullException(nameof(brochure));
                 }
 
+                brochure.Id = brochureId;
+
                 int id = new AddOrUpdateCommand(config).AddOrUpdate(brochure);
 
                 return id.ToString();
@@ -116,7 +118,7 @@ namespace Cataloguer.Server.ContextHandlers
             }
         }
 
-        public static string UpdateDistribution(HttpContext context, DataBaseConfiguration config)
+        public static string UpdateDistribution(HttpContext context, DataBaseConfiguration config, int distributionId)
         {
             try
             {
@@ -128,6 +130,8 @@ namespace Cataloguer.Server.ContextHandlers
                 {
                     throw new ArgumentNullException(nameof(distribution));
                 }
+
+                distribution.Id = distributionId;
 
                 int id = new AddOrUpdateCommand(config).AddOrUpdate(distribution);
 
