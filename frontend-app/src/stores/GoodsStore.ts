@@ -86,7 +86,7 @@ class GoodsStore {
             },
             (error) => console.log(error),
         ).finally(() => {
-            setTimeout(() => this.isLoadingGoods = false, 250);
+            setTimeout(() => this.isLoadingGoods = false, 300);
         });
     }
 }

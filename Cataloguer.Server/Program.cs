@@ -122,7 +122,7 @@ namespace Cataloguer.Server
             app.MapGet(_baseRoute + "/getBrochureDistributions/id={brochureId}",
                 (int brochureId) => new GetSpecialRequestCommand(config).GetDistributionsFromBrochure(brochureId));
 
-            app.MapGet(_baseRoute + "/getSellHistoryExcludeBrochure/id={brochureId}",
+            app.MapGet(_baseRoute + "/getUnselectedBrochureGoods/id={brochureId}",
                 (int brochureId) => new GetSpecialRequestCommand(config).GetGoodsWithAveragePriceFromHistory(brochureId));
         }
 
@@ -148,8 +148,8 @@ namespace Cataloguer.Server
             app.Map(_baseRoute + "/deleteBrochure/id={brochureId}", (int brochureId) => new DeleteCommand(config).DeleteBrochure(brochureId));
             app.Map(_baseRoute + "/deleteDistribution/id={distributionId}", (int distributionId) => new DeleteCommand(config).DeleteDistribution(distributionId));
 
-            app.Map(_baseRoute + "/deleteGoodFromBrochure/brochureId={brochureId}/distributionId={distributionId}",
-                (int brochureId, int distributionId) => new DeleteCommand(config).DeleteGoodFromBrochure(brochureId, distributionId));
+            app.Map(_baseRoute + "/deleteBrochureGood/id={id}&brochureId={brochureId}",
+                (int id, int brochureId) => new DeleteCommand(config).DeleteGoodFromBrochure(id, brochureId));
         }
     }
 }

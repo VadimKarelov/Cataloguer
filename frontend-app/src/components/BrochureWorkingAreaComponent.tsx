@@ -89,6 +89,11 @@ const BrochureWorkingAreaComponent: React.FC<BrochureWorkingAreaComponentProps> 
     }, [props.brochureStore?.currentBrochure?.id]);
 
     /**
+     * Хук, необходимый для изменения базовых данных о каталоге при изменении хотя бы одного поля.
+     */
+    useEffect(() => setBrochure(props.brochureStore?.currentBrochure ?? null), [props.brochureStore?.currentBrochure]);
+
+    /**
      * Измемняет ключ текущей вкладки.
      * @param tabKey Ключ вкладки.
      */

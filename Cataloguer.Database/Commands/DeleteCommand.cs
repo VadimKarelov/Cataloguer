@@ -39,7 +39,7 @@ namespace Cataloguer.Database.Commands
         }
 
         [MethodName("удаление товара из каталога")]
-        public void DeleteGoodFromBrochure(int brochureId, int goodId)
+        public void DeleteGoodFromBrochure(int goodId, int brochureId)
         {
             StartExecuteCommand(MethodBase.GetCurrentMethod(), brochureId, goodId);
 

@@ -7,6 +7,9 @@ import GoodsTableComponent from "./EditableTable/GoodsTableComponent";
 import moment from "moment";
 import {getValidator} from "../../../Utils";
 import {openNotification} from "../../NotificationComponent";
+import GoodsStore from "../../../stores/GoodsStore";
+import BrochureService from "../../../services/BrochureService";
+import GoodsService from "../../../services/GoodsService";
 
 /**
  * Перечисления типов в метаданных для компонента CreateBrochureButtonComponent.
@@ -68,15 +71,17 @@ const modes = new Map([
 /**
  * Свойства компонента CreateBrochureButtonComponent.
  * @param mode Режим работы кнопок компонента.
+ * @param goodsStore Хранилище каталогов.
  */
 interface CreateBrochureButtonComponentProps extends BaseStoreInjector {
     mode: ButtonModes,
+    goodsStore?: GoodsStore,
 }
 
 /**
  * Компонент кнопки Создать/Изменить, открывающий свою модалку.
  */
-const CreateBrochureButtonComponent: React.FC<CreateBrochureButtonComponentProps> = inject("brochureStore")(observer((props) => {
+const CreateBrochureButtonComponent: React.FC<CreateBrochureButtonComponentProps> = inject("brochureStore", "goodsStore")(observer((props) => {
     /**
      * Метаданные модалки редактирования каталога.
      */
@@ -191,15 +196,22 @@ const CreateBrochureButtonComponent: React.FC<CreateBrochureButtonComponentProps
         values.edition = parseFloat(values.edition);
 
         let response;
-        if (props.mode === ButtonModes.CREATE) {
-            response = props.brochureStore?.handleCreateBrochure(values);
-        } else {
-            const brochureEditProps: EditBrochureHandlerProps = {
-                name: values.name,
-                date: values.date,
-                edition: values.edition
-            };
-            response = props.brochureStore?.handleEditBrochure(brochureEditProps);
+        switch (props.mode) {
+            case ButtonModes.CREATE: {
+                response = props.brochureStore?.handleCreateBrochure(values);
+            } break;
+            case ButtonModes.EDIT: {
+                const brochureEditProps: EditBrochureHandlerProps = {
+                    name: values.name,
+                    date: values.date,
+                    edition: values.edition
+                };
+                response = props.brochureStore?.handleEditBrochure(brochureEditProps);
+            } break;
+            case ButtonModes.CREATE_GOODS: {
+                response = props.brochureStore?.handleUpdateBrochureGoods();
+                props.goodsStore?.updateCurrentBrochureGoods(currentBrochure?.id ?? -1);
+            } break;
         }
 
         response?.then(
@@ -259,9 +271,9 @@ const CreateBrochureButtonComponent: React.FC<CreateBrochureButtonComponentProps
     };
 
     /**
-     * Заполняет поля данными текалога.
+     * Заполняет поля каталога.
      */
-    const fillFieldsOnEdit = (): void => {
+    const fillBrochureFields = () => {
         if (currentBrochure === null) return;
 
         form.setFieldsValue({
@@ -273,12 +285,32 @@ const CreateBrochureButtonComponent: React.FC<CreateBrochureButtonComponentProps
     };
 
     /**
+     * Заполняет поля товаров.
+     */
+    const fillGoodsFields = async() => {
+        if (currentBrochure === null) return;
+        const id = currentBrochure.id ?? -1;
+        await props.brochureStore?.updateGoodsList(id);
+    };
+
+    /**
+     * Заполняет поля данными текалога.
+     */
+    const fillFieldsOnEdit = (): void => {
+        switch (props.mode) {
+            case ButtonModes.EDIT: fillBrochureFields(); return;
+            case ButtonModes.CREATE_GOODS: fillGoodsFields(); return;
+            default: return;
+        }
+    };
+
+    /**
      * Срабатывает при нажатии кнопки.
      * Используется в качестве callback функции в родительском компоненте.
      */
     const onClick = () => {
-        props.brochureStore?.updateGoodsList();
-        props.mode === ButtonModes.EDIT && fillFieldsOnEdit();
+        props.mode === ButtonModes.CREATE && props.brochureStore?.updateGoodsList();
+        (props.mode === ButtonModes.EDIT || props.mode === ButtonModes.CREATE_GOODS) && fillFieldsOnEdit();
     };
 
     /**

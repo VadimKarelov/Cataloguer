@@ -22,7 +22,7 @@ const columns = [
         dataIndex: "price",
         key: "goods_table_cost",
         width: 170,
-        editable: true,
+        editable: false,
     },
 ];
 

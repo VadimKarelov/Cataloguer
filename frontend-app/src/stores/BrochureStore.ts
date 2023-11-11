@@ -1,7 +1,10 @@
-import { observable, action, makeAutoObservable } from "mobx";
+import {action, makeAutoObservable, observable} from "mobx";
 import {
-    BrochureProps, CreateBrochureHandlerProps,
-    DistributionProps, EditBrochureHandlerProps, GoodDBProps,
+    BrochureProps,
+    CreateBrochureHandlerProps,
+    DistributionProps,
+    EditBrochureHandlerProps,
+    GoodDBProps,
     GoodProps,
     GoodsExtendedProps,
     GoodsProps,
@@ -13,7 +16,8 @@ import GoodsService from "../services/GoodsService";
 import BrochureService from "../services/BrochureService";
 import moment from "moment";
 import {SHOULD_USE_ONLY_DB_DATA} from "../constants/Routes";
-import DistributionService from "../services/DistributionService";
+import {ButtonModes} from "../components/Operations/BrochureOperations/CreateBrochureButtonComponent";
+import GoodsStore from "./GoodsStore";
 
 /**
  * Путь к данным каталога в session storage.
@@ -60,28 +64,29 @@ class BrochureStore {
     /**
      * Коллекция каталогов.
      */
-    public brochures: BrochureProps[];
+    @observable public brochures: BrochureProps[];
 
     /**
      * Текущий (выбранный) каталог.
      */
-    public currentBrochure: BrochureProps | null;
+    @observable public currentBrochure: BrochureProps | null;
 
     /**
      * Все возможные товары.
      * Необходимы в форме создания каталога.
      */
-    public allGoods: GoodsProps[];
+    @observable public allGoods: GoodsProps[];
 
     /**
      * Отмеченные товары.
      */
-    private checkedGoods: GoodDBProps[];
+    @observable private checkedGoods: GoodDBProps[];
 
     /**
      * Загружаются ли товары.
      */
-    public isLoadingGoods: boolean;
+    @observable public isLoadingGoods: boolean;
+    private goodsStore: GoodsStore;
 
     /**
      * Конструктор.
@@ -95,6 +100,7 @@ class BrochureStore {
         this.isBrochureLoading = false;
         this.isBrochureMenuLoading = false;
         this.isLoadingGoods = false;
+        this.goodsStore = new GoodsStore();
 
         makeAutoObservable(this);
 
@@ -108,8 +114,11 @@ class BrochureStore {
         this.getSavedBrochureMenu = this.getSavedBrochureMenu.bind(this);
         this.reset = this.reset.bind(this);
 
+        this.getAllGoods = this.getAllGoods.bind(this);
+        this.getUnselectedGoods = this.getUnselectedGoods.bind(this);
         this.setCheckedGoods = this.setCheckedGoods.bind(this);
         this.updateGoodsList = this.updateGoodsList.bind(this);
+        this.handleUpdateBrochureGoods = this.handleUpdateBrochureGoods.bind(this);
 
         this.handleEditBrochure = this.handleEditBrochure.bind(this);
         this.handleCreateBrochure = this.handleCreateBrochure.bind(this);
@@ -159,7 +168,7 @@ class BrochureStore {
         }
 
         return await BrochureService.updateBrochure(id, brochure).then(
-            (response) => {
+            async(response) => {
                 const data = response.data;
 
                 const isResponseString = typeof data === "string";
@@ -177,10 +186,16 @@ class BrochureStore {
                 if (isResponseNumber && data === -1) {
                     return Promise.reject(rejectReason);
                 }
+                await this.updateBrochureData(id);
+
+                this.isBrochureLoading = false;
+                this.isBrochureMenuLoading = false;
                 return Promise.resolve("Каталог успешно изменён");
             },
             (error) => {
                 console.log(error);
+                this.isBrochureLoading = false;
+                this.isBrochureMenuLoading = false;
                 return Promise.reject(rejectReason);
             },
         );
@@ -192,6 +207,25 @@ class BrochureStore {
      */
     @action public async getBrochureById(id: number) {
         return await BrochureService.getBrochureById(id);
+    }
+
+    @action private async updateBrochureData(id: number) {
+        const responses =  await Promise.all([
+            BrochureService.getAllBrochures(),
+            BrochureService.getBrochureById(id),
+        ]);
+
+        const brochuresAxiosResponse = responses[0];
+        const brochureAxiosResponse = responses[1];
+
+        if (brochuresAxiosResponse && brochuresAxiosResponse.data instanceof Array) {
+            this.brochures = brochuresAxiosResponse.data;
+        }
+
+        if (brochureAxiosResponse) {
+            await this.onBrochureClick(id);
+            // this.currentBrochure = brochureAxiosResponse.data;
+        }
     }
 
     /**
@@ -210,26 +244,37 @@ class BrochureStore {
             return Promise.resolve("Ошибка при создании каталога");
         }
 
-        const responses =  await Promise.all([
-            BrochureService.getAllBrochures(),
-            BrochureService.getBrochureById(id),
-        ]);
-
-        const brochuresAxiosResponse = responses[0];
-        const brochureAxiosResponse = responses[1];
-
-        if (brochuresAxiosResponse && brochuresAxiosResponse.data instanceof Array) {
-            this.brochures = brochuresAxiosResponse.data;
-        }
-
-        if (brochureAxiosResponse) {
-            await this.onBrochureClick(id);
-            // this.currentBrochure = brochureAxiosResponse.data;
-        }
+        await this.updateBrochureData(id);
 
         this.isBrochureLoading = false;
         this.isBrochureMenuLoading = false;
         return Promise.resolve("Каталог успешно создан");
+    }
+
+    /**
+     * Обрабатывает изменение товаров в каталоге.
+     */
+    @action public async handleUpdateBrochureGoods(): Promise<string> {
+        const brochureId = this.currentBrochure?.id ?? -1;
+        if (brochureId === -1) {
+            return Promise.reject("Не удалось добавить товары в каталог");
+        }
+
+        return await GoodsService.addGoodsToBrochure(brochureId, this.checkedGoods).then(
+            (response) => {
+                const data = response.data;
+                console.log(data);
+
+                if (!isNaN(parseInt(data)) && parseInt(data) === -1) {
+                    return Promise.reject("Не удалось добавить товары в каталог");
+                }
+                return Promise.resolve("Товары успешно добавлены в каталог");
+            },
+            (error) => {
+                console.log(error);
+                return Promise.reject("Не удалось добавить товары в каталог");
+            },
+        );
     }
 
     /**
@@ -243,14 +288,12 @@ class BrochureStore {
     }
 
     /**
-     * Обновляет список товаров для создания каталога.
+     *
+     * Получает и записывает все возможные товары каталога.
+     * @param brochureId Идентификатор каталога.
      */
-    @action public updateGoodsList() {
-        this.allGoods = [];
-        this.checkedGoods = [];
-
-        this.isLoadingGoods = true;
-        GoodsService.getGoods().then(
+    @action public async getUnselectedGoods(brochureId: number) {
+        return await GoodsService.getUnselectedBrochureGoods(brochureId).then(
             ((response: {data: any}) => {
                 const isFine = response.data instanceof Array;
                 if (!isFine) return;
@@ -258,7 +301,36 @@ class BrochureStore {
                 this.allGoods = response.data;
             }),
             (error) => console.log(error)
-        ).finally(() => this.isLoadingGoods = false);
+        );
+    }
+
+    /**
+     * Получает и записывает все возможные товары каталога.
+     */
+    @action public async getAllGoods() {
+        return await GoodsService.getGoods().then(
+            ((response: {data: any}) => {
+                const isFine = response.data instanceof Array;
+                if (!isFine) return;
+
+                this.allGoods = response.data;
+            }),
+            (error) => console.log(error)
+        );
+    }
+
+    /**
+     * Обновляет список товаров для создания каталога.
+     */
+    @action public async updateGoodsList(brochureId = -1) {
+        this.allGoods = [];
+        this.checkedGoods = [];
+
+        this.isLoadingGoods = true;
+        brochureId === -1 ?
+            await this.getAllGoods()
+            : await this.getUnselectedGoods(brochureId)
+        .finally(() => this.isLoadingGoods = false);
     }
 
     /**
