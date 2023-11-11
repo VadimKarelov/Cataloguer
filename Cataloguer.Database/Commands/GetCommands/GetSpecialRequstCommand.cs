@@ -3,6 +3,7 @@ using Cataloguer.Database.Commands.Base;
 using Cataloguer.Database.Models;
 using Cataloguer.Database.Models.SpecialModels.OutputApiModels;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection;
 
 namespace Cataloguer.Database.Commands.GetCommands
 {
@@ -10,20 +11,29 @@ namespace Cataloguer.Database.Commands.GetCommands
     {
         public GetSpecialRequestCommand(DataBaseConfiguration config) : base(config) { }
 
+        [MethodName("получение товаров из каталога")]
         public IEnumerable<FrontendGood> GetGoodsFromBrochure(int brochureId)
         {
-            return Context.BrochurePositions
+            StartExecuteCommand(MethodBase.GetCurrentMethod(), brochureId);
+
+            var r = Context.BrochurePositions
                 .AsNoTracking()
                 .Where(x => x.BrochureId == brochureId)
                 .Include(x => x.Good)
                 .Where(x => x.Good != null)
-                .Select(x => new FrontendGood(x.Good!) { Price = x.Price})
+                .Select(x => new FrontendGood(x.Good!) { Price = x.Price })
                 .ToArray();
+
+            FinishExecuteCommand(MethodBase.GetCurrentMethod(), r);
+            return r;
         }
 
+        [MethodName("получения рассылок из каталога")]
         public IEnumerable<FrontendDistribution> GetDistributionsFromBrochure(int brochureId)
         {
-            return Context.Distributions
+            StartExecuteCommand(MethodBase.GetCurrentMethod(), brochureId);
+
+            var r = Context.Distributions
                 .AsNoTracking()
                 .Where(x => x.BrochureId == brochureId)
                 .Include(x => x.Brochure)
@@ -38,10 +48,16 @@ namespace Cataloguer.Database.Commands.GetCommands
                     TownName = x.Town.Name
                 })
                 .ToArray();
+
+            FinishExecuteCommand(MethodBase.GetCurrentMethod(), r);
+            return r;
         }
 
+        [MethodName("получение списка товаров со средними ценами")]
         public IEnumerable<FrontendGood> GetGoodsWithAveragePriceFromHistory()
         {
+            StartExecuteCommand(MethodBase.GetCurrentMethod());
+
             var sellHistory = Context.SellHistory
                 .AsNoTracking()
                 .ToList();
@@ -66,23 +82,31 @@ namespace Cataloguer.Database.Commands.GetCommands
                 result.Add(new FrontendGood(good) { Price = avgPrice });
             }
 
+            FinishExecuteCommand(MethodBase.GetCurrentMethod(), result);
+
             return result;
         }
 
+        [MethodName("получение истории продаж товаров из каталога")]
         public IEnumerable<SellHistory> GetGoodsFromSellHistory(Brochure brochure)
         {
+            StartExecuteCommand(MethodBase.GetCurrentMethod(), brochure);
+
             var goodsFromBrochure = Context.BrochurePositions
                 .AsNoTracking()
                 .Where(x => x.BrochureId == brochure.Id)
                 .Select(x => x.Good)
                 .ToList();
 
-            return Context.SellHistory
+            var r = Context.SellHistory
                 .AsNoTracking()
                 .Include(x => x.Good)
                 .Where(x => goodsFromBrochure.Contains(x.Good))
                 .Include(x => x.Town)
                 .Include(x => x.Gender);
+
+            FinishExecuteCommand(MethodBase.GetCurrentMethod(), r);
+            return r;
         }
     }
 }

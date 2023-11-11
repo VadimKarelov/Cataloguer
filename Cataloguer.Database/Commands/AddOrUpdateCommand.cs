@@ -3,7 +3,7 @@ using Cataloguer.Database.Commands.Base;
 using Cataloguer.Database.Models;
 using Cataloguer.Database.Models.SpecialModels.InputApiModels;
 using Microsoft.EntityFrameworkCore;
-using Serilog;
+using System.Reflection;
 
 namespace Cataloguer.Database.Commands
 {
@@ -13,9 +13,10 @@ namespace Cataloguer.Database.Commands
 
         /// <param name="brochureId">Идентификатор каталога</param>
         /// <param name="goodsInBrochure">Список идентификаторов товаров с соответствующими ценами на них</param>
+        [MethodName("добавление позиций в каталог")]
         public void AddPositions(int brochureId, IEnumerable<CreationPosition> goodsInBrochure)
         {
-            Log.Information($"Вызван запрос на добавление товаров в каталог с id={brochureId}. Количество товаров {goodsInBrochure.Count()}.");
+            StartExecuteCommand(MethodBase.GetCurrentMethod(), brochureId, goodsInBrochure);
 
             var brochure = Context.Brochures
                 .AsNoTracking()
@@ -39,14 +40,17 @@ namespace Cataloguer.Database.Commands
                 .Count();
 
             Context.SaveChanges();
+
+            FinishExecuteCommand(MethodBase.GetCurrentMethod());
         }
 
         /// <summary>
         /// Возвращает id созданной/обновленной сущности
         /// </summary>
+        [MethodName("Добавление/обновление каталога")]
         public int AddOrUpdate(Brochure brochure)
         {
-            Log.Information($"Вызван запрос на добавление или обновление каталога.");
+            StartExecuteCommand(MethodBase.GetCurrentMethod(), brochure);
 
             Brochure? entity = Context.Brochures.FirstOrDefault(x => x.Id == brochure.Id);
 
@@ -82,15 +86,18 @@ namespace Cataloguer.Database.Commands
 
             Context.SaveChanges();
 
+            FinishExecuteCommand(MethodBase.GetCurrentMethod(), entity.Id);
+
             return entity.Id;
         }
 
         /// <summary>
         /// Возвращает id созданной/обновленной сущности
         /// </summary>
+        [MethodName("Добавление/обновление рассылки")]
         public int AddOrUpdate(Distribution distribution)
         {
-            Log.Information($"Вызван запрос на добавление или обновление рассылки.");
+            StartExecuteCommand(MethodBase.GetCurrentMethod(), distribution);
 
             var entity = Context.Distributions.FirstOrDefault(x => x.Id == distribution.Id);
 
@@ -134,6 +141,8 @@ namespace Cataloguer.Database.Commands
             }
 
             Context.SaveChanges();
+
+            StartExecuteCommand(MethodBase.GetCurrentMethod(), entity.Id);
 
             return entity.Id;
         }
