@@ -6,6 +6,7 @@ import {inject, observer} from "mobx-react";
 import GoodsTableComponent from "./EditableTable/GoodsTableComponent";
 import moment from "moment";
 import {getValidator} from "../../../Utils";
+import {openNotification} from "../../NotificationComponent";
 
 /**
  * Перечисления типов в метаданных для компонента CreateBrochureButtonComponent.
@@ -189,18 +190,22 @@ const CreateBrochureButtonComponent: React.FC<CreateBrochureButtonComponentProps
         values.date = moment(values?.date).format();
         values.edition = parseFloat(values.edition);
 
+        let response;
         if (props.mode === ButtonModes.CREATE) {
-            props.brochureStore?.handleCreateBrochure(values);
+            response = props.brochureStore?.handleCreateBrochure(values);
         } else {
             const brochureEditProps: EditBrochureHandlerProps = {
                 name: values.name,
                 date: values.date,
                 edition: values.edition
             };
-            props.brochureStore?.handleEditBrochure(brochureEditProps);
+            response = props.brochureStore?.handleEditBrochure(brochureEditProps);
         }
 
-        form.resetFields();
+        response?.then(
+            (resolve: string) => {openNotification("Успех", resolve, "success")},
+            (error: string) => {openNotification("Ошибка", error, "error")}
+        ).finally(() => form.resetFields());
     };
 
     /**
@@ -218,6 +223,14 @@ const CreateBrochureButtonComponent: React.FC<CreateBrochureButtonComponentProps
                                         return Promise.reject();
                                     }
                                 );
+    };
+
+    /**
+     * Обрабатывает нажатие кнопки отменить.
+     */
+    const onCancelClick = (): Promise<void> => {
+        form.resetFields();
+        return Promise.resolve();
     };
 
     /**
@@ -241,6 +254,7 @@ const CreateBrochureButtonComponent: React.FC<CreateBrochureButtonComponentProps
         okText: "Сохранить",
         cancelText: "Отменить",
         onOkClick: onOkClick,
+        onCancelClick: onCancelClick,
         children: getForm(),
     };
 

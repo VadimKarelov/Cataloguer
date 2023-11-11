@@ -120,15 +120,31 @@ class BrochureStore {
      * Обрабатывает создание каталога.
      * @param brochure Каталог.
      */
-    @action public async handleEditBrochure(brochure: EditBrochureHandlerProps) {
+    @action public async handleEditBrochure(brochure: EditBrochureHandlerProps): Promise<string> {
         const id = this.currentBrochure?.id ?? -1;
-        if (id === -1) return;
+        const rejectReason = "Не удалось создать каталог";
+        if (id === -1) {
+            return Promise.reject(rejectReason);
+        }
 
-        console.log("Отправляем на backend: ", brochure);
+        const {data} = await BrochureService.updateBrochure(id, brochure);
 
-        await BrochureService.updateBrochure(id, brochure).then((response: {data: any}) => {
-            console.log("Получаем с backend: ", response.data)
-        });
+        const isResponseString = typeof data === "string";
+        const isResponseNumber = typeof data === "number";
+        const numberParseAttempt = parseInt(data);
+
+        if (!isResponseString && !isResponseNumber) {
+            return Promise.reject(rejectReason);
+        }
+
+        if (isResponseString && !isNaN(numberParseAttempt) && numberParseAttempt === -1) {
+            return Promise.reject(rejectReason);
+        }
+
+        if (isResponseNumber && data === -1) {
+            return Promise.reject(rejectReason);
+        }
+        return Promise.resolve("Каталог успешно создан");
     }
 
     /**
@@ -150,35 +166,33 @@ class BrochureStore {
 
         this.isBrochureLoading = true;
         this.isBrochureMenuLoading = true;
-        await BrochureService.createBrochure(brochure).then(async (response: {data: any}) => {
-            const id = response.data;
+        const {data} = await BrochureService.createBrochure(brochure);
 
-            console.log("Получаем с backend id каталога: ", id)
+        const id = data;
+        if (!(typeof id === "number") || id === -1) {
+            return Promise.resolve("Ошибка при создании каталога");
+        }
 
-            if (!(typeof id === "number")) return;
+        const responses =  await Promise.all([
+            BrochureService.getAllBrochures(),
+            BrochureService.getBrochureById(id),
+        ]);
 
-            await Promise.all([
-                BrochureService.getAllBrochures(),
-                BrochureService.getBrochureById(id),
-            ])
-                .then((responses) => {
-                    const brochuresAxiosResponse = responses[0];
-                    const brochureAxiosResponse = responses[1];
+        const brochuresAxiosResponse = responses[0];
+        const brochureAxiosResponse = responses[1];
 
-                    if (brochuresAxiosResponse && brochuresAxiosResponse.data instanceof Array) {
-                        this.brochures = brochuresAxiosResponse.data;
-                    }
+        if (brochuresAxiosResponse && brochuresAxiosResponse.data instanceof Array) {
+            this.brochures = brochuresAxiosResponse.data;
+        }
 
-                    if (brochureAxiosResponse) {
-                        this.onBrochureClick(id);
-                        // this.currentBrochure = brochureAxiosResponse.data;
-                    }
-                })
-                .finally(() => {
-                    this.isBrochureLoading = false;
-                    this.isBrochureMenuLoading = false;
-                });
-        });
+        if (brochureAxiosResponse) {
+            await this.onBrochureClick(id);
+            // this.currentBrochure = brochureAxiosResponse.data;
+        }
+
+        this.isBrochureLoading = false;
+        this.isBrochureMenuLoading = false;
+        return Promise.resolve("Каталог успешно создан");
     }
 
     /**

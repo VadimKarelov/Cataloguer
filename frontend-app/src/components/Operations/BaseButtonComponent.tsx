@@ -22,7 +22,7 @@ const BaseButtonComponent: React.FC<BaseButtonComponentProps> = (props) => {
     const [isOpen, setIsOpen] = useState(false);
 
     /**
-     * Срабатывает при нажатии на кнопку.
+     * Срабатывает при нажатии на кнопку ок.
      * Пока только открывает модальное окно.
      */
     const onButtonClick = (): void => {
@@ -31,6 +31,18 @@ const BaseButtonComponent: React.FC<BaseButtonComponentProps> = (props) => {
         if (callback) {
             callback();
         }
+    };
+
+    /**
+     * Срабатывает при нажатии на кнопку отменить/крестик.
+     * Пока только открывает модальное окно.
+     */
+    const onCancelClick = (): void => {
+        const callback = modalProps?.onCancelClick;
+        if (callback) {
+            callback();
+        }
+        setIsOpen(false);
     };
 
     /**
@@ -51,7 +63,7 @@ const BaseButtonComponent: React.FC<BaseButtonComponentProps> = (props) => {
         <>
             <Modal
                 open={isOpen}
-                onCancel={() => setIsOpen(false)}
+                onCancel={onCancelClick}
                 title={modalProps.title}
                 okText={modalProps.okText}
                 onOk={onFinish}
