@@ -121,6 +121,9 @@ namespace Cataloguer.Server
 
             app.MapGet(_baseRoute + "/getBrochureDistributions/id={brochureId}",
                 (int brochureId) => new GetSpecialRequestCommand(config).GetDistributionsFromBrochure(brochureId));
+
+            app.MapGet(_baseRoute + "/getSellHistoryExcludeBrochure/id={brochureId}",
+                (int brochureId) => new GetSpecialRequestCommand(config).GetGoodsWithAveragePriceFromHistory(brochureId));
         }
 
         [EnableCors()]

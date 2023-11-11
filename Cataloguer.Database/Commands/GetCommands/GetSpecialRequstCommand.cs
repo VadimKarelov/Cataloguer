@@ -53,18 +53,26 @@ namespace Cataloguer.Database.Commands.GetCommands
             return r;
         }
 
+        /// <param name="excludingBrochureId">Если > 0, то из списка будут исключены товары, которые уже есть в каталоге с идентификатором <paramref name="excludingBrochureId"/>. Если </param>
         [MethodName("получение списка товаров со средними ценами")]
-        public IEnumerable<FrontendGood> GetGoodsWithAveragePriceFromHistory()
+        public IEnumerable<FrontendGood> GetGoodsWithAveragePriceFromHistory(int excludingBrochureId = -1)
         {
-            StartExecuteCommand(MethodBase.GetCurrentMethod());
+            StartExecuteCommand(MethodBase.GetCurrentMethod(), excludingBrochureId);
 
             var sellHistory = Context.SellHistory
                 .AsNoTracking()
                 .ToList();
 
-            var goods = Context.Goods
+            IEnumerable<Good> goods = Context.Goods
                 .AsNoTracking()
                 .ToList();
+
+            if (excludingBrochureId >= 0 && Context.Brochures.FirstOrDefault(x => x.Id == excludingBrochureId) != null)
+            {
+                goods = goods.Where(x => !Context.BrochurePositions
+                    .Where(y => y.BrochureId == excludingBrochureId && y.GoodId == x.Id)
+                    .Any());
+            }
 
             var result = new List<FrontendGood>();
 
