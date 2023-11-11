@@ -47,7 +47,7 @@ namespace Cataloguer.Database.Commands
         /// <summary>
         /// Возвращает id созданной/обновленной сущности
         /// </summary>
-        [MethodName("Добавление/обновление каталога")]
+        [MethodName("добавление/обновление каталога")]
         public int AddOrUpdate(Brochure brochure)
         {
             StartExecuteCommand(MethodBase.GetCurrentMethod(), brochure);
@@ -94,7 +94,7 @@ namespace Cataloguer.Database.Commands
         /// <summary>
         /// Возвращает id созданной/обновленной сущности
         /// </summary>
-        [MethodName("Добавление/обновление рассылки")]
+        [MethodName("добавление/обновление рассылки")]
         public int AddOrUpdate(Distribution distribution)
         {
             StartExecuteCommand(MethodBase.GetCurrentMethod(), distribution);
@@ -129,7 +129,7 @@ namespace Cataloguer.Database.Commands
 
             // Проверка, чтобы нельзя было создать тираж рассылки больше, чем задано в каталоге
             if (distributionsCount > brochure.Edition)
-                return -1;
+                return -555;
 
             if (isNew)
             {
