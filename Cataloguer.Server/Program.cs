@@ -1,9 +1,7 @@
 using Cataloguer.Database.Base;
 using Cataloguer.Database.Commands;
 using Cataloguer.Database.Commands.GetCommands;
-using Cataloguer.Database.Models;
 using Cataloguer.Server.ContextHandlers;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Cors;
 using Serilog;
 using Serilog.Formatting.Compact;
