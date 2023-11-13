@@ -138,6 +138,8 @@ namespace Cataloguer.Server
         {
             app.MapPost(_baseRoute + "/updateBrochure/id={brochureId}", (HttpContext context, int brochureId) => ContextHandler.UpdateBrochure(context, config, brochureId));
             app.MapPost(_baseRoute + "/updateDistribution/id={distributionId}", (HttpContext context, int distributionId) => ContextHandler.UpdateDistribution(context, config, distributionId));
+            app.MapPost(_baseRoute + "/updateBrochurePosition/brochureId={brochureId}&goodId={goodId}&newPrice={newPrice}",
+                (int brochureId, int goodId, decimal newPrice) => new AddOrUpdateCommand(config).UpdateBrochurePosition(brochureId, goodId, newPrice));
         }
 
         [EnableCors()]
