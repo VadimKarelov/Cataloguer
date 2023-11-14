@@ -23,7 +23,10 @@ namespace Cataloguer.Database.Commands
                 .FirstOrDefault(x => x.Id == brochureId);
 
             if (brochure == null)
+            {
+                FinishExecuteCommand(MethodBase.GetCurrentMethod(), "null");
                 return;
+            }
 
             Context.BrochurePositions
                 .AddRange(goodsInBrochure
@@ -41,7 +44,7 @@ namespace Cataloguer.Database.Commands
 
             Context.SaveChanges();
 
-            FinishExecuteCommand(MethodBase.GetCurrentMethod());
+            FinishExecuteCommand(MethodBase.GetCurrentMethod(), "OK");
         }
 
         /// <summary>
@@ -119,7 +122,10 @@ namespace Cataloguer.Database.Commands
             var brochure = Context.Brochures.FirstOrDefault(x => x.Id == entity.BrochureId);
 
             if (brochure == null)
+            {
+                FinishExecuteCommand(MethodBase.GetCurrentMethod(), -1);
                 return -1;
+            }
 
             // Подсчет тиража у текущего каталога
             var distributionsCount = Context.Distributions
@@ -129,7 +135,10 @@ namespace Cataloguer.Database.Commands
 
             // Проверка, чтобы нельзя было создать тираж рассылки больше, чем задано в каталоге
             if (distributionsCount > brochure.Edition)
+            {
+                FinishExecuteCommand(MethodBase.GetCurrentMethod(), -555);
                 return -555;
+            }                
 
             if (isNew)
             {
@@ -142,9 +151,34 @@ namespace Cataloguer.Database.Commands
 
             Context.SaveChanges();
 
-            StartExecuteCommand(MethodBase.GetCurrentMethod(), entity.Id);
+            FinishExecuteCommand(MethodBase.GetCurrentMethod(), entity.Id);
 
             return entity.Id;
+        }
+
+        /// <summary>
+        /// Возвращает id обновленной сущности
+        /// </summary>
+        [MethodName("обновление товара в каталоге")]
+        public int UpdateBrochurePosition(int brochureId, int goodId, decimal newPrice)
+        {
+            StartExecuteCommand(MethodBase.GetCurrentMethod(), brochureId, goodId, newPrice);
+
+            var pos = Context.BrochurePositions.FirstOrDefault(x => x.BrochureId == brochureId && x.GoodId == goodId);
+
+            if (pos == null)
+            {
+                FinishExecuteCommand(MethodBase.GetCurrentMethod(), -1);
+                return -1;
+            }
+
+            pos.Price = newPrice;
+
+            Context.Update(pos);
+            Context.SaveChanges();
+
+            FinishExecuteCommand(MethodBase.GetCurrentMethod(), pos.Id);
+            return pos.Id;
         }
     }
 }
