@@ -42,6 +42,7 @@ interface BrochureProps {
     goods: GoodProps[],
     edition: number,
     status: string,
+    potentialIncome?: string | null,
     distributions?: DistributionProps[],
 }
 

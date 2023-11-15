@@ -16,7 +16,6 @@ import GoodsService from "../services/GoodsService";
 import BrochureService from "../services/BrochureService";
 import moment from "moment";
 import {SHOULD_USE_ONLY_DB_DATA} from "../constants/Routes";
-import {ButtonModes} from "../components/Operations/BrochureOperations/CreateBrochureButtonComponent";
 import GoodsStore from "./GoodsStore";
 
 /**
@@ -120,6 +119,7 @@ class BrochureStore {
         this.updateGoodsList = this.updateGoodsList.bind(this);
         this.handleUpdateBrochureGoods = this.handleUpdateBrochureGoods.bind(this);
 
+        this.updateBrochureData = this.updateBrochureData.bind(this);
         this.handleEditBrochure = this.handleEditBrochure.bind(this);
         this.handleCreateBrochure = this.handleCreateBrochure.bind(this);
         this.getBrochureById = this.getBrochureById.bind(this);
@@ -209,6 +209,11 @@ class BrochureStore {
         return await BrochureService.getBrochureById(id);
     }
 
+    /**
+     * Обновляет данные выбранного каталога.
+     * @param id Идентификатор каталога.
+     * @private
+     */
     @action private async updateBrochureData(id: number) {
         const responses =  await Promise.all([
             BrochureService.getAllBrochures(),
@@ -327,10 +332,10 @@ class BrochureStore {
         this.checkedGoods = [];
 
         this.isLoadingGoods = true;
-        brochureId === -1 ?
-            await this.getAllGoods()
-            : await this.getUnselectedGoods(brochureId)
-        .finally(() => this.isLoadingGoods = false);
+        await (brochureId === -1 ?
+            this.getAllGoods()
+            : this.getUnselectedGoods(brochureId)
+        ).finally(() => this.isLoadingGoods = false);
     }
 
     /**

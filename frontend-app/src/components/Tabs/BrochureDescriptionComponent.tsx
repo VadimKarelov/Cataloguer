@@ -14,7 +14,8 @@ const metaData: Readonly<BrochureBaseInfoProps[]> = [
     {name: "name", displayName: "Название", order: 2, isVisible: true},
     {name: "date", displayName: "Дата выпуска каталога", order: 3, isVisible: true},
     {name: "edition", displayName: "Тираж", order: 4, isVisible: true},
-    {name: "status", displayName: "Статус", order: 5, isVisible: true},
+    {name: "potentialIncome", displayName: "Эффективность", order: 5, isVisible: true},
+    {name: "status", displayName: "Статус", order: 6, isVisible: true},
 ];
 
 /**

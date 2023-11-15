@@ -160,7 +160,7 @@ const CreateBrochureButtonComponent: React.FC<CreateBrochureButtonComponentProps
      * Возвращает компонент формы.
      */
     const getForm = (): React.JSX.Element => {
-        const metadata = getFormMetaData();//props.mode === ButtonModes.EDIT ? editFormMetadata : createFormMetadata;
+        const metadata = getFormMetaData();
         const formId = getFormId();
         return (
             <Form id={formId} form={form} name={formId} layout={"vertical"} colon={false}>

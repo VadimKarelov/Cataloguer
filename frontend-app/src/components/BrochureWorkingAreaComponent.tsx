@@ -18,6 +18,7 @@ enum TabKeys {
     BROCHURE_TAB = "brochure_description_tab",
     DISTRIBUTION_TAB = "distribution_description_tab",
     GOODS_TAB = "goods_description_tab",
+    RUN_TAB = "run_description_tab",
 }
 
 /**
@@ -35,6 +36,11 @@ const tabs: Readonly<TabsProps["items"]> = [
     {
         key: TabKeys.DISTRIBUTION_TAB,
         label: 'Рассылка',
+    },
+    {
+        key: TabKeys.RUN_TAB,
+        label: 'Расчёт',
+        disabled: true,
     },
 ];
 

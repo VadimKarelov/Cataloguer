@@ -1,6 +1,6 @@
 import '../styles/App.css';
 import React from "react";
-import {Layout, Space, Typography} from "antd";
+import {Button, Layout, Space, Typography} from "antd";
 import {Content, Header} from 'antd/es/layout/layout';
 import BrochureComponent from "./BrochureComponent";
 import CreateBrochureButtonComponent, {
@@ -28,6 +28,7 @@ const App = () => {
                             <CreateBrochureButtonComponent mode={ButtonModes.EDIT}/>
                             <DeleteBrochureButtonComponent/>
                             <CheckEfficiencyButtonComponent/>
+                            <Button disabled={true}>Выпустить</Button>
                         </Space>
                     </div>
                 </Header>
