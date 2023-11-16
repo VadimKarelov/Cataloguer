@@ -27,16 +27,23 @@ public class Brochure
     public DateTime Date { get; set; }
 
     /// <summary>
-    ///     Тираж
+    /// Тираж
     /// </summary>
     [Column("edition")]
     [JsonPropertyName("edition")]
     public long Edition { get; set; }
 
     /// <summary>
-    ///     Число товаров в каталоге
+    /// Число товаров в каталоге
     /// </summary>
     [Column("position_count")]
     [JsonPropertyName("positionCount")]
     public int PositionCount { get; set; }
+    
+    /// <summary>
+    /// Преполагаемая выручка каталога
+    /// </summary>
+    [Column("potential_income")]
+    [JsonPropertyName("potential_income")]
+    public decimal PotentialIncome { get; set; }
 }
