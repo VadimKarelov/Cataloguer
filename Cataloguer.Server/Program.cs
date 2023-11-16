@@ -88,8 +88,7 @@ public class Program
         app.MapGet(_baseRoute + "/getBrochurePositions", () => new GetCommand(config).GetListBrochurePositions());
         app.MapGet(_baseRoute + "/getDistributions", () => new GetCommand(config).GetListDistribution());
         app.MapGet(_baseRoute + "/getGenders", () => new GetCommand(config).GetListGender());
-        app.MapGet(_baseRoute + "/getGoods",
-            () => new GetSpecialRequestCommand(config).GetGoodsWithAveragePriceFromHistory());
+        app.MapGet(_baseRoute + "/getGoods", () => new GetCommand(config).GetListGood());
         app.MapGet(_baseRoute + "/getSellHistory", () => new GetCommand(config).GetListSellHistory());
         app.MapGet(_baseRoute + "/getStatuses", () => new GetCommand(config).GetListStatus());
         app.MapGet(_baseRoute + "/getTowns", () => new GetCommand(config).GetListTown());
@@ -120,7 +119,7 @@ public class Program
             (int brochureId) => new GetSpecialRequestCommand(config).GetDistributionsFromBrochure(brochureId));
 
         app.MapGet(_baseRoute + "/getUnselectedBrochureGoods/id={brochureId}",
-            (int brochureId) => new GetSpecialRequestCommand(config).GetGoodsWithAveragePriceFromHistory(brochureId));
+            (int brochureId) => new GetSpecialRequestCommand(config).GetGoodsNotFromBrochure(brochureId));
     }
 
     [EnableCors]
