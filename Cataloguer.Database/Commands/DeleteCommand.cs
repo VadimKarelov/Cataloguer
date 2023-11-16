@@ -1,57 +1,58 @@
-﻿using Cataloguer.Database.Base;
+﻿using System.Reflection;
+using Cataloguer.Database.Base;
 using Cataloguer.Database.Commands.Base;
-using System.Reflection;
 
-namespace Cataloguer.Database.Commands
+namespace Cataloguer.Database.Commands;
+
+public class DeleteCommand : AbstractCommand
 {
-    public class DeleteCommand : AbstractCommand
+    public DeleteCommand(DataBaseConfiguration config) : base(config)
     {
-        public DeleteCommand(DataBaseConfiguration config) : base(config) { }
+    }
 
-        [MethodName("удаление каталога")]
-        public void DeleteBrochure(int id)
-        {
-            StartExecuteCommand(MethodBase.GetCurrentMethod(), id);
+    [MethodName("удаление каталога")]
+    public void DeleteBrochure(int id)
+    {
+        StartExecuteCommand(MethodBase.GetCurrentMethod(), id);
 
-            var brochure = Context.Brochures.FirstOrDefault(x => x.Id == id);
+        var brochure = Context.Brochures.FirstOrDefault(x => x.Id == id);
 
-            if (brochure == null) return;
+        if (brochure == null) return;
 
-            Context.Remove(brochure);
-            Context.SaveChanges();
+        Context.Remove(brochure);
+        Context.SaveChanges();
 
-            FinishExecuteCommand(MethodBase.GetCurrentMethod());
-        }
+        FinishExecuteCommand(MethodBase.GetCurrentMethod());
+    }
 
-        [MethodName("удаление рассылки")]
-        public void DeleteDistribution(int id)
-        {
-            StartExecuteCommand(MethodBase.GetCurrentMethod(), id);
+    [MethodName("удаление рассылки")]
+    public void DeleteDistribution(int id)
+    {
+        StartExecuteCommand(MethodBase.GetCurrentMethod(), id);
 
-            var distribution = Context.Distributions.FirstOrDefault(x => x.Id == id);
+        var distribution = Context.Distributions.FirstOrDefault(x => x.Id == id);
 
-            if (distribution == null) return;
+        if (distribution == null) return;
 
-            Context.Remove(distribution);
-            Context.SaveChanges();
+        Context.Remove(distribution);
+        Context.SaveChanges();
 
-            FinishExecuteCommand(MethodBase.GetCurrentMethod());
-        }
+        FinishExecuteCommand(MethodBase.GetCurrentMethod());
+    }
 
-        [MethodName("удаление товара из каталога")]
-        public void DeleteGoodFromBrochure(int goodId, int brochureId)
-        {
-            StartExecuteCommand(MethodBase.GetCurrentMethod(), brochureId, goodId);
+    [MethodName("удаление товара из каталога")]
+    public void DeleteGoodFromBrochure(int goodId, int brochureId)
+    {
+        StartExecuteCommand(MethodBase.GetCurrentMethod(), brochureId, goodId);
 
-            var positionToDelete = Context.BrochurePositions
-                .FirstOrDefault(x => x.BrochureId == brochureId && x.GoodId == goodId);
+        var positionToDelete = Context.BrochurePositions
+            .FirstOrDefault(x => x.BrochureId == brochureId && x.GoodId == goodId);
 
-            if (positionToDelete == null) return;
+        if (positionToDelete == null) return;
 
-            Context.Remove(positionToDelete);
-            Context.SaveChanges();
+        Context.Remove(positionToDelete);
+        Context.SaveChanges();
 
-            FinishExecuteCommand(MethodBase.GetCurrentMethod());
-        }
+        FinishExecuteCommand(MethodBase.GetCurrentMethod());
     }
 }

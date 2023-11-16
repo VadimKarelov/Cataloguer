@@ -1,7 +1,6 @@
-﻿namespace Cataloguer.Database.Base
+﻿namespace Cataloguer.Database.Base;
+
+public class DataBaseConfiguration
 {
-    public class DataBaseConfiguration
-    {
-        public required string ConnectionsString { get; set; }
-    }
+    public required string ConnectionsString { get; set; }
 }
