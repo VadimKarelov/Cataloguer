@@ -15,6 +15,8 @@ public static class ContextHandler
     {
         try
         {
+            Log.Information("Получен составной запрос на добавление каталога.");
+            
             var entireRequestBody = GetBody(context);
 
             var brochure = JsonSerializer.Deserialize<BrochureCreationModel>(entireRequestBody);
@@ -45,6 +47,8 @@ public static class ContextHandler
     {
         try
         {
+            Log.Information("Получен запрос на добавление рассылки.");
+            
             var entireRequestBody = GetBody(context);
 
             var distribution = JsonSerializer.Deserialize<Distribution>(entireRequestBody);
@@ -66,6 +70,8 @@ public static class ContextHandler
     {
         try
         {
+            Log.Information("Получен запрос на товаров в каталог.");
+            
             var entireRequestBody = GetBody(context);
 
             var goods = JsonSerializer.Deserialize<CreationPosition[]>(entireRequestBody);
@@ -87,6 +93,8 @@ public static class ContextHandler
     {
         try
         {
+            Log.Information("Получен запрос на обновление каталога.");
+            
             var entireRequestBody = GetBody(context);
 
             var brochure = JsonSerializer.Deserialize<Brochure>(entireRequestBody);
@@ -110,6 +118,8 @@ public static class ContextHandler
     {
         try
         {
+            Log.Information("Получен запрос на обновление рассылки.");
+            
             var entireRequestBody = GetBody(context);
 
             var distribution = JsonSerializer.Deserialize<Distribution>(entireRequestBody);
