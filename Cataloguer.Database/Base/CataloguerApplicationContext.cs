@@ -7,7 +7,7 @@ using Serilog;
 namespace Cataloguer.Database.Base;
 
 /// <summary>
-///     Можно использовать только внутри проекта Database
+/// Можно использовать только внутри проекта Database
 /// </summary>
 internal class CataloguerApplicationContext : DbContext
 {
@@ -53,14 +53,15 @@ internal class CataloguerApplicationContext : DbContext
         modelBuilder.Entity<Gender>().HasData(new Gender() { Id = 1, Name = "Мужской" },
             new Gender { Id = 2, Name = "Женский" }, new Gender { Id = 3, Name = "Боевой вертолет" });
 
-        modelBuilder.Entity<Status>().HasData(new Status() { Id = 1, Name = "Не проверено" },
-            new Status { Id = 2, Name = "Эффективный" }, new Status { Id = 3, Name = "Не эффективный" });
+        modelBuilder.Entity<Status>().HasData(
+            new Status() { Id = 1, Name = "Не выпущен" },
+            new Status { Id = 2, Name = "Выпущен" });
 
         modelBuilder.Entity<SellHistory>().HasKey(x => x.Id);
     }
 
     /// <summary>
-    ///     Обязательно вызвать после создания Context
+    /// Обязательно вызвать после создания Context
     /// </summary>
     public void Init()
     {
