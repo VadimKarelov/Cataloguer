@@ -68,4 +68,67 @@ public static class BrochureAnalyzer
             return -1;
         }
     }
+
+    public static string TryComputeBrochureIncome(DataBaseConfiguration config, int brochureId)
+    {
+        try
+        {
+            var res = ComputeBrochurePotentialIncome(config, brochureId);
+
+            // обновляем данные в таблице
+            var brochure = new GetCommand(config).GetBrochure(brochureId);
+            brochure.PotentialIncome = res;
+            new AddOrUpdateCommand(config).AddOrUpdate(brochure);
+
+            return res.ToString();
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Произошла ошибка во время вычисления эффективности каталога.");
+            return ex.Message;
+        }
+    }
+
+    private static decimal ComputeBrochurePotentialIncome(DataBaseConfiguration config, int brochureId)
+    {
+        var brochure = new GetCommand(config).GetBrochure(brochureId, true);
+
+        if (brochure == null)
+            throw new Exception($"Каталог с id={brochureId} не найден в базе данных!");
+        
+        var distributions = new GetCommand(config).GetListDistribution(x => x.BrochureId == brochureId, true);
+
+        if (distributions == null)
+            throw new Exception($"Каталог с id={brochureId} не содержит рассылок!");
+
+        var goodsFromBrochure = new GetSpecialRequestCommand(config).GetGoodsFromBrochure(brochureId);
+
+        if (goodsFromBrochure == null)
+            throw new Exception($"Каталог с id={brochureId} не содержит товаров!");
+
+        decimal income = 0;
+        
+        foreach (var distrib in distributions)
+        {
+            // список товаров из истории, которые есть в каталоге и в истории с фильтром по конкретной рассылке
+            var historyForDistribution = new GetSpecialRequestCommand(config).GetGoodsForBrochureDistribution(brochureId, distrib.Id);
+
+            // список только товаров, не повторяющихся
+            var goods = historyForDistribution.Select(x => x.Good).Distinct().ToList();
+
+            // идем по товарам
+            foreach (var good in goods)
+            {
+                // записи из истории по конкретному товару
+                var historyNotes = historyForDistribution.Where(x => x.GoodId == good!.Id);
+
+                // количество проданных товаров по рассылке
+                var n = historyNotes.Count();
+
+                income += n * historyNotes.Average(x => x.Price);
+            }
+        }
+
+        return income;
+    }
 }

@@ -2,6 +2,7 @@ using Cataloguer.Database.Base;
 using Cataloguer.Database.Commands;
 using Cataloguer.Database.Commands.GetCommands;
 using Cataloguer.Server.ContextHandlers;
+using Cataloguer.Server.Modules;
 using Microsoft.AspNetCore.Cors;
 using Serilog;
 using Serilog.Formatting.Compact;
@@ -120,6 +121,9 @@ public class Program
 
         app.MapGet(_baseRoute + "/getUnselectedBrochureGoods/id={brochureId}",
             (int brochureId) => new GetSpecialRequestCommand(config).GetGoodsNotFromBrochure(brochureId));
+
+        app.MapGet(_baseRoute + "/computeBrochurePotentialIncome/id={brochureId}",
+            (int brochureId) => BrochureAnalyzer.TryComputeBrochureIncome(config, brochureId));
     }
 
     [EnableCors]

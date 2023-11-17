@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Linq;
+using System.Reflection;
 using Cataloguer.Common.Models;
 using Cataloguer.Common.Models.SpecialModels.OutputApiModels;
 using Cataloguer.Database.Base;
@@ -90,6 +91,40 @@ public class GetSpecialRequestCommand : AbstractCommand
             .Include(x => x.Town)
             .Include(x => x.Gender);
 
+        FinishExecuteCommand(MethodBase.GetCurrentMethod(), r);
+        return r;
+    }
+
+    [MethodName("получение истории покупок по рассылке")]
+    public IEnumerable<SellHistory> GetGoodsForBrochureDistribution(int brochureId, int distributionId)
+    {
+        StartExecuteCommand(MethodBase.GetCurrentMethod(), brochureId, distributionId);
+
+        var brochure = Context.Brochures
+            .AsNoTracking()
+            .FirstOrDefault(x => x.Id == brochureId);
+
+        var distribution = Context.Distributions
+            .AsNoTracking()
+            .FirstOrDefault(x => x.Id == distributionId);
+
+        if (brochure == null || distribution == null)
+            return Array.Empty<SellHistory>();
+
+        var goodsFromBrochure = GetGoodsFromBrochure(brochureId).Select(x => x.Id).ToList();
+
+        var r = Context.SellHistory
+            .AsNoTracking()
+            .Include(x => x.Gender)
+            .Include(x => x.Good)
+            .Include(x => x.Town)
+            .Where(x => goodsFromBrochure.Contains(x.GoodId))
+            .Where(x => x.GenderId == distribution.GenderId &&
+                        x.TownId == distribution.TownId &&
+                        x.Age >= distribution.AgeGroup.MinimalAge &&
+                        x.Age <= distribution.AgeGroup.MaximalAge)
+            .ToArray();
+        
         FinishExecuteCommand(MethodBase.GetCurrentMethod(), r);
         return r;
     }
