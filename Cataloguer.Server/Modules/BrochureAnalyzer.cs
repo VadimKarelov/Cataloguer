@@ -80,7 +80,7 @@ public static class BrochureAnalyzer
             brochure.PotentialIncome = res;
             new AddOrUpdateCommand(config).AddOrUpdate(brochure);
 
-            return res.ToString();
+            return "OK";
         }
         catch (Exception ex)
         {

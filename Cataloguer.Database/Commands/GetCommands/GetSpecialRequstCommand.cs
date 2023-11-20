@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices.JavaScript;
 using Cataloguer.Common.Models;
 using Cataloguer.Common.Models.SpecialModels.OutputApiModels;
 using Cataloguer.Database.Base;
@@ -124,6 +125,31 @@ public class GetSpecialRequestCommand : AbstractCommand
                         x.Age >= distribution.AgeGroup.MinimalAge &&
                         x.Age <= distribution.AgeGroup.MaximalAge)
             .ToArray();
+        
+        FinishExecuteCommand(MethodBase.GetCurrentMethod(), r);
+        return r;
+    }
+
+    public IEnumerable<SellHistoryForChart> GetSellHistoryForChart()
+    {
+        StartExecuteCommand(MethodBase.GetCurrentMethod());
+
+        var dates = Context.SellHistory
+            .AsNoTracking()
+            .Select(x => x.SellDate)
+            .Select(x => new DateTime(x.Year, x.Month, x.DayOfYear)) // чтобы отбросить время
+            .Distinct();
+
+        var r = dates.Select(x => new SellHistoryForChart()
+        {
+            Date = x,
+            Income = Context.SellHistory.Where(y => y.SellDate.Day == x.Day &&
+                                                    y.SellDate.Month == x.Month &&
+                                                    y.SellDate.Year == x.Year)
+                                        .Sum(x => x.Price)
+        })
+        .OrderBy(x => x.Date)
+        .ToArray();
         
         FinishExecuteCommand(MethodBase.GetCurrentMethod(), r);
         return r;

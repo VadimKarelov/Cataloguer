@@ -59,6 +59,7 @@ public class Program
             AddRegistration(app, dbConfig);
             UpdateRegistration(app, dbConfig);
             DeleteRegistration(app, dbConfig);
+            RunBackgroundProcessRegistration(app, dbConfig);
 
             AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
@@ -122,8 +123,8 @@ public class Program
         app.MapGet(_baseRoute + "/getUnselectedBrochureGoods/id={brochureId}",
             (int brochureId) => new GetSpecialRequestCommand(config).GetGoodsNotFromBrochure(brochureId));
 
-        app.MapGet(_baseRoute + "/computeBrochurePotentialIncome/id={brochureId}",
-            (int brochureId) => BrochureAnalyzer.TryComputeBrochureIncome(config, brochureId));
+        app.MapGet(_baseRoute + "/getSellHistoryForChart",
+            () => new GetSpecialRequestCommand(config).GetSellHistoryForChart());
     }
 
     [EnableCors]
@@ -161,5 +162,12 @@ public class Program
 
         app.Map(_baseRoute + "/deleteBrochureGood/id={id}&brochureId={brochureId}",
             (int id, int brochureId) => new DeleteCommand(config).DeleteGoodFromBrochure(id, brochureId));
+    }
+
+    [EnableCors]
+    private static void RunBackgroundProcessRegistration(WebApplication app, DataBaseConfiguration config)
+    {
+        app.MapGet(_baseRoute + "/computeBrochurePotentialIncome/id={brochureId}",
+            (int brochureId) => BrochureAnalyzer.TryComputeBrochureIncome(config, brochureId));
     }
 }
