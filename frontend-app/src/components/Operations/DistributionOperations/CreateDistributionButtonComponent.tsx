@@ -195,6 +195,14 @@ const CreateDistributionButtonComponent: React.FC<CreateDistributionButtonCompon
     };
 
     /**
+     * Возвращает настройки хинта.
+     */
+    const getTooltipProps = () => {
+        const title = "";
+        return {title: title};
+    };
+
+    /**
      * Свойства модального окна.
      */
     const modalProps = {
@@ -212,6 +220,7 @@ const CreateDistributionButtonComponent: React.FC<CreateDistributionButtonCompon
     const buttonProps = {
         buttonText: `${!props.row ? "Добавить" : "Изменить"}`,
         onClick: onButtonClick,
+        tooltip: getTooltipProps(),
     };
 
     return (

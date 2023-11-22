@@ -31,7 +31,9 @@ const DistributionDescriptionComponent: React.FC<DistributionDescriptionComponen
     /**
      * Строки таблицы.
      */
-    const rows = SHOULD_USE_ONLY_DB_DATA ? (props.distributionStore?.distributions ?? []) : (brochure?.distributions ?? []);
+    const rows = SHOULD_USE_ONLY_DB_DATA ?
+        (props.distributionStore?.distributions ?? []).map(distr => ({key: `distribution_${distr.id}`, ...distr}))
+        : (brochure?.distributions ?? []).map((distr, i) => ({key: `distribution_${i}`, ...distr}));
 
     /**
      * Есть данные или нет.

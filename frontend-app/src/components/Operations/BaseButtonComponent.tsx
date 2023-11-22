@@ -1,4 +1,4 @@
-import {Button, Modal} from "antd";
+import {Button, Modal, Tooltip} from "antd";
 import React, {useState} from "react";
 import {BaseButtonComponentProps} from "../../types/OperationsTypes";
 
@@ -19,14 +19,19 @@ const BaseButtonComponent: React.FC<BaseButtonComponentProps> = (props) => {
     /**
      * Открыто модальное окно или нет.
      */
-    const [isOpen, setIsOpen] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    /**
+     * Наведён ли курсор на кнопку открытия модалки.
+     */
+    const [isButtonHovered, setIsButtonHovered] = useState(false);
 
     /**
      * Срабатывает при нажатии на кнопку ок.
      * Пока только открывает модальное окно.
      */
     const onButtonClick = (): void => {
-        setIsOpen(true);
+        setIsModalOpen(true);
         const callback = props?.buttonProps?.onClick
         if (callback) {
             callback();
@@ -42,7 +47,7 @@ const BaseButtonComponent: React.FC<BaseButtonComponentProps> = (props) => {
         if (callback) {
             callback();
         }
-        setIsOpen(false);
+        setIsModalOpen(false);
     };
 
     /**
@@ -53,8 +58,8 @@ const BaseButtonComponent: React.FC<BaseButtonComponentProps> = (props) => {
         if (modalProps.onOkClick) {
             const shouldCloseHandler = modalProps.onOkClick();
             shouldCloseHandler.then(
-                () => setIsOpen(false),
-                () => setIsOpen(true),
+                () => setIsModalOpen(false),
+                () => setIsModalOpen(true),
             );
         }
     };
@@ -62,7 +67,7 @@ const BaseButtonComponent: React.FC<BaseButtonComponentProps> = (props) => {
     return (
         <>
             <Modal
-                open={isOpen}
+                open={isModalOpen}
                 onCancel={onCancelClick}
                 title={modalProps.title}
                 okText={modalProps.okText}
@@ -71,9 +76,19 @@ const BaseButtonComponent: React.FC<BaseButtonComponentProps> = (props) => {
             >
                 {modalProps.children}
             </Modal>
-            <Button disabled={buttonProps.isDisabled} onClick={onButtonClick}>
-                {buttonProps.buttonText}
-            </Button>
+            <Tooltip
+                title={buttonProps.tooltip.title}
+                open={buttonProps.isDisabled && isButtonHovered}
+            >
+                <Button
+                    onMouseOver={e => setIsButtonHovered(true)}
+                    onMouseLeave={e => setIsButtonHovered(false)}
+                    disabled={buttonProps.isDisabled}
+                    onClick={onButtonClick}
+                >
+                    {buttonProps.buttonText}
+                </Button>
+            </Tooltip>
         </>
     );
 };

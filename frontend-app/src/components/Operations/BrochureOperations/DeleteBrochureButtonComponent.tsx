@@ -35,6 +35,14 @@ const DeleteBrochureButtonComponent: React.FC<DeleteBrochureButtonComponentProps
     };
 
     /**
+     * Возвращает настройки хинта.
+     */
+    const getTooltipProps = () => {
+        const title = "Необходимо выбрать каталог";
+        return {title: title};
+    };
+
+    /**
      * Свойства модалки.
      */
     const modalProps = {
@@ -51,6 +59,7 @@ const DeleteBrochureButtonComponent: React.FC<DeleteBrochureButtonComponentProps
     const buttonProps = {
         buttonText: "Удалить",
         isDisabled: currentBrochure === null,
+        tooltip: getTooltipProps(),
     };
 
     return (

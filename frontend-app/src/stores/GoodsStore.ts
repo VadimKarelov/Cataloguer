@@ -52,7 +52,7 @@ class GoodsStore {
                 return Promise.resolve("Рассылка товара удалёна успешно");
             },
             (error) => {
-                console.log(error)
+                console.error(error)
                 return Promise.reject("Ошибка при удалении товара");
             }
         );
@@ -84,7 +84,7 @@ class GoodsStore {
 
                 this.goods = data;
             },
-            (error) => console.log(error),
+            (error) => console.error(error),
         ).finally(() => {
             setTimeout(() => this.isLoadingGoods = false, 300);
         });

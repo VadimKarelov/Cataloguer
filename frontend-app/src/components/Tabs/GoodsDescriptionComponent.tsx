@@ -33,7 +33,9 @@ const GoodsDescriptionComponent: React.FC<GoodsDescriptionComponentProps> = inje
     /**
      * Строки таблицы.
      */
-    const rows = SHOULD_USE_ONLY_DB_DATA ? (props.goodsStore?.goods ?? []) : (brochure?.goods ?? []);
+    const rows = ((SHOULD_USE_ONLY_DB_DATA ?
+                                    (props.goodsStore?.goods ?? []).map(good => ({key: `good_${good.id}`, ...good}))
+                                : brochure?.goods) ?? []).map((good, i) => ({key: `good_${i}`, ...good}));
 
     /**
      * Есть данные или нет.

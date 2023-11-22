@@ -8,6 +8,7 @@ import DistributionDescriptionComponent from "./Tabs/DistributionDescriptionComp
 import GoodsDescriptionComponent from "./Tabs/GoodsDescriptionComponent";
 import {inject, observer} from "mobx-react";
 import {BaseStoreInjector, BrochureProps} from "../types/BrochureTypes";
+import RunResultComponent from "./Tabs/RunResultComponent";
 
 /**
  * Перечисление для вкладок.
@@ -40,7 +41,7 @@ const tabs: Readonly<TabsProps["items"]> = [
     {
         key: TabKeys.RUN_TAB,
         label: 'Расчёт',
-        disabled: true,
+        disabled: false,
     },
 ];
 
@@ -116,6 +117,7 @@ const BrochureWorkingAreaComponent: React.FC<BrochureWorkingAreaComponentProps> 
             case TabKeys.BROCHURE_TAB: return (<BrochureDescriptionComponent/>);
             case TabKeys.DISTRIBUTION_TAB: return (<DistributionDescriptionComponent/>);
             case TabKeys.GOODS_TAB: return (<GoodsDescriptionComponent/>);
+            case TabKeys.RUN_TAB: return (<RunResultComponent/>);
             default: return null;
         }
     };

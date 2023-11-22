@@ -34,7 +34,7 @@ export class DistributionStore {
     /**
      * Список рассылок.
      */
-    @observable public distributions: DistributionDbProps[];
+    @observable public distributions: EditDistributionDbProps[];
 
     /**
      * Загружаются ли рассылки.
@@ -88,7 +88,7 @@ export class DistributionStore {
                 return Promise.resolve("Рассылка каталога удалёна успешно");
             },
             (error) => {
-                console.log(error);
+                console.error(error);
                 return Promise.reject("Ошибка при удалении каталога");
             },
         );
@@ -117,7 +117,7 @@ export class DistributionStore {
                 return Promise.resolve("Изменения сохранены");
             },
             (error) => {
-                console.log(error);
+                console.error(error);
                 this.isLoadingDistributions = false;
                 return Promise.reject("Не удалось изменить рассылку");
             },
@@ -141,7 +141,7 @@ export class DistributionStore {
                 return Promise.resolve("Рассылка успешно создана");
             },
             (error) => {
-                console.log(error);
+                console.error(error);
                 this.isLoadingDistributions = false;
                 return Promise.reject("Не удалось создать рассылку");
             }
@@ -170,10 +170,9 @@ export class DistributionStore {
                     this.isLoadingDistributions = false;
                     return;
                 }
-
                 this.distributions = data;
             },
-            (error) => console.log(error),
+            (error) => console.error(error),
         ).finally(() => setTimeout(() => this.isLoadingDistributions = false, 300));
     }
 
@@ -212,7 +211,7 @@ export class DistributionStore {
                 this.ageGroups = ageGroupsAxiosResponse.data;
                 this.towns = townsAxiosResponse.data;
             },
-            (error) => console.log(error)
+            (error) => console.error(error)
         );
     }
 

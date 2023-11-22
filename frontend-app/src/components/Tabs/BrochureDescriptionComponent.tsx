@@ -59,7 +59,7 @@ const BrochureDescriptionComponent: React.FC<BrochureDescriptionComponentProps> 
                     const label = (<div className={"brochure-form-item-label-style"}>{field.displayName}</div>);
                     const valueToShow = field.name === "date" ? moment(value).format('DD.MM.YYYY HH:mm:ss') : value;
                     return (
-                        <Form.Item id={`brochure_description_${field.name}`} label={label}>
+                        <Form.Item key={`brochure_description_${field.name}`} label={label}>
                             <Typography.Text className={"brochure-form-item-text-style"}>
                                 {valueToShow ?? NO_DATA_TEXT}
                             </Typography.Text>

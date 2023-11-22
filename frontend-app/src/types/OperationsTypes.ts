@@ -5,11 +5,21 @@ import React from "react";
  * @param buttonText Текст кнопки.
  * @param onClick Калбек функция при нажатии на кнопку.
  * @param isDisabled Не активна кнопка или нет.
+ * @param tooltip Свойства хинта для кнопки модалки.
  */
 interface ButtonProps {
     buttonText: string,
     onClick?: () => void,
     isDisabled?: boolean,
+    tooltip: TooltipProps,
+}
+
+/**
+ * Свойства хинта для кнопки модалки.
+ * @param title Сообщение в хинте.
+ */
+export interface TooltipProps {
+    title: string,
 }
 
 /**

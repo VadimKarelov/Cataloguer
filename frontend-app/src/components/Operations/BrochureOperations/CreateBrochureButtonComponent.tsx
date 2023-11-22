@@ -10,6 +10,7 @@ import {openNotification} from "../../NotificationComponent";
 import GoodsStore from "../../../stores/GoodsStore";
 import BrochureService from "../../../services/BrochureService";
 import GoodsService from "../../../services/GoodsService";
+import {TooltipProps} from "../../../types/OperationsTypes";
 
 /**
  * Перечисления типов в метаданных для компонента CreateBrochureButtonComponent.
@@ -319,12 +320,28 @@ const CreateBrochureButtonComponent: React.FC<CreateBrochureButtonComponentProps
     const currentBrochure = props.brochureStore?.currentBrochure ?? null;
 
     /**
+     * Возвращает настройки хинта.
+     */
+    const getTooltipProps = () => {
+        let title = "";
+        switch (props.mode) {
+            case ButtonModes.CREATE:
+            case ButtonModes.EDIT:
+            case ButtonModes.CREATE_GOODS: title = "Необходимо выбрать каталог"; break;
+            default: break;
+        }
+
+        return {title: title};
+    };
+
+    /**
      * Свойства кнопки для родительского компонента.
      */
     const buttonProps = {
         buttonText: currentMode,
         onClick: onClick,
         isDisabled: currentBrochure === null && props.mode === ButtonModes.EDIT,
+        tooltip: getTooltipProps(),
     };
 
     return (

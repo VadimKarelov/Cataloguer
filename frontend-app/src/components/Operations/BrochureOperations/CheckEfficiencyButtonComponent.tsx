@@ -20,6 +20,14 @@ const CheckEfficiencyButtonComponent: React.FC<CheckEfficiencyButtonComponentPro
     const currentBrochure = props.brochureStore?.currentBrochure ?? null;
 
     /**
+     * Возвращает настройки хинта.
+     */
+    const getTooltipProps = () => {
+        const title = "Необходимо выбрать каталог";
+        return {title: title};
+    };
+
+    /**
      * Свойства модалки.
      */
     const modalProps = {
@@ -35,6 +43,7 @@ const CheckEfficiencyButtonComponent: React.FC<CheckEfficiencyButtonComponentPro
     const buttonProps = {
         buttonText: "Проверить",
         isDisabled: currentBrochure === null,
+        tooltip: getTooltipProps(),
     };
 
     return (

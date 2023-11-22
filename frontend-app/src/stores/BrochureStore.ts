@@ -150,7 +150,7 @@ class BrochureStore {
                 return Promise.resolve("Каталог удалён успешно");
             },
             (error) => {
-                console.log(error);
+                console.error(error);
                 return Promise.reject("Ошибка при удалении каталога");
             }
         );
@@ -193,7 +193,7 @@ class BrochureStore {
                 return Promise.resolve("Каталог успешно изменён");
             },
             (error) => {
-                console.log(error);
+                console.error(error);
                 this.isBrochureLoading = false;
                 this.isBrochureMenuLoading = false;
                 return Promise.reject(rejectReason);
@@ -276,7 +276,7 @@ class BrochureStore {
                 return Promise.resolve("Товары успешно добавлены в каталог");
             },
             (error) => {
-                console.log(error);
+                console.error(error);
                 return Promise.reject("Не удалось добавить товары в каталог");
             },
         );
@@ -305,7 +305,7 @@ class BrochureStore {
 
                 this.allGoods = response.data;
             }),
-            (error) => console.log(error)
+            (error) => console.error(error)
         );
     }
 
@@ -468,7 +468,7 @@ class BrochureStore {
 
                 this.brochures = data;
             },
-            (error) => console.log(error)
+            (error) => console.error(error)
         );
     }
 
