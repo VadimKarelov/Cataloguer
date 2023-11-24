@@ -7,6 +7,6 @@ public class SellHistoryForChart
     [JsonPropertyName("date")]
     public DateTime Date { get; set; }
     
-    [JsonPropertyName("income_value")]
+    [JsonPropertyName("income")]
     public decimal Income { get; set; }
 }

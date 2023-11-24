@@ -44,6 +44,6 @@ public class Brochure
     /// Преполагаемая выручка каталога
     /// </summary>
     [Column("potential_income")]
-    [JsonPropertyName("potential_income")]
+    [JsonPropertyName("potentialIncome")]
     public decimal PotentialIncome { get; set; }
 }
