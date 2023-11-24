@@ -21,7 +21,10 @@ internal class CataloguerApplicationContext : DbContext
         _connectionString = config.ConnectionsString;
 
         if (!_isInitialised)
+        {
+            Database.EnsureDeleted();
             Database.EnsureCreated();
+        }
     }
 
     public DbSet<AgeGroup> AgeGroups { get; set; }
@@ -98,7 +101,7 @@ internal class CataloguerApplicationContext : DbContext
                         .Where(x => !fromFile.Contains(x.Name));
 
                     var toAdd = fromFile.Except(Goods.Select(x => x.Name))
-                        .Select(x => new Good { Name = x });
+                        .Select(x => new Good { Name = x, Price = random.Next(1000, 10000)});
 
                     Goods.RemoveRange(toRemove);
                     Goods.AddRange(toAdd);

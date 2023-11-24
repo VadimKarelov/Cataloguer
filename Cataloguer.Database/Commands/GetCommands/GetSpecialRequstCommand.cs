@@ -137,16 +137,19 @@ public class GetSpecialRequestCommand : AbstractCommand
         var dates = Context.SellHistory
             .AsNoTracking()
             .Select(x => x.SellDate)
-            .Select(x => new DateTime(x.Year, x.Month, x.DayOfYear)) // чтобы отбросить время
-            .Distinct();
+            .Select(x => new DateTime(x.Year, x.Month, x.Day)) // чтобы отбросить время
+            .Distinct()
+            .ToArray();
 
         var r = dates.Select(x => new SellHistoryForChart()
         {
             Date = x,
-            Income = Context.SellHistory.Where(y => y.SellDate.Day == x.Day &&
-                                                    y.SellDate.Month == x.Month &&
-                                                    y.SellDate.Year == x.Year)
-                                        .Sum(x => x.Price)
+            Income = Context.SellHistory
+                .AsNoTracking()
+                .Where(y => y.SellDate.Day == x.Day &&
+                            y.SellDate.Month == x.Month &&
+                            y.SellDate.Year == x.Year)
+                .Sum(x => x.Price)
         })
         .OrderBy(x => x.Date)
         .ToArray();
