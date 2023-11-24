@@ -2,6 +2,7 @@ using Cataloguer.Database.Base;
 using Cataloguer.Database.Commands;
 using Cataloguer.Database.Commands.GetCommands;
 using Cataloguer.Server.ContextHandlers;
+using Cataloguer.Server.Modules;
 using Microsoft.AspNetCore.Cors;
 using Serilog;
 using Serilog.Formatting.Compact;
@@ -58,6 +59,7 @@ public class Program
             AddRegistration(app, dbConfig);
             UpdateRegistration(app, dbConfig);
             DeleteRegistration(app, dbConfig);
+            RunBackgroundProcessRegistration(app, dbConfig);
 
             AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
@@ -88,8 +90,7 @@ public class Program
         app.MapGet(_baseRoute + "/getBrochurePositions", () => new GetCommand(config).GetListBrochurePositions());
         app.MapGet(_baseRoute + "/getDistributions", () => new GetCommand(config).GetListDistribution());
         app.MapGet(_baseRoute + "/getGenders", () => new GetCommand(config).GetListGender());
-        app.MapGet(_baseRoute + "/getGoods",
-            () => new GetSpecialRequestCommand(config).GetGoodsWithAveragePriceFromHistory());
+        app.MapGet(_baseRoute + "/getGoods", () => new GetCommand(config).GetListGood());
         app.MapGet(_baseRoute + "/getSellHistory", () => new GetCommand(config).GetListSellHistory());
         app.MapGet(_baseRoute + "/getStatuses", () => new GetCommand(config).GetListStatus());
         app.MapGet(_baseRoute + "/getTowns", () => new GetCommand(config).GetListTown());
@@ -120,7 +121,10 @@ public class Program
             (int brochureId) => new GetSpecialRequestCommand(config).GetDistributionsFromBrochure(brochureId));
 
         app.MapGet(_baseRoute + "/getUnselectedBrochureGoods/id={brochureId}",
-            (int brochureId) => new GetSpecialRequestCommand(config).GetGoodsWithAveragePriceFromHistory(brochureId));
+            (int brochureId) => new GetSpecialRequestCommand(config).GetGoodsNotFromBrochure(brochureId));
+
+        app.MapGet(_baseRoute + "/getSellHistoryForChart",
+            () => new GetSpecialRequestCommand(config).GetSellHistoryForChart());
     }
 
     [EnableCors]
@@ -158,5 +162,12 @@ public class Program
 
         app.Map(_baseRoute + "/deleteBrochureGood/id={id}&brochureId={brochureId}",
             (int id, int brochureId) => new DeleteCommand(config).DeleteGoodFromBrochure(id, brochureId));
+    }
+
+    [EnableCors]
+    private static void RunBackgroundProcessRegistration(WebApplication app, DataBaseConfiguration config)
+    {
+        app.MapGet(_baseRoute + "/computeBrochurePotentialIncome/id={brochureId}",
+            (int brochureId) => BrochureAnalyzer.TryComputeBrochureIncome(config, brochureId));
     }
 }

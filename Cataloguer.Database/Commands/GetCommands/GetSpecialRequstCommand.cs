@@ -1,4 +1,6 @@
-﻿using System.Reflection;
+﻿using System.Linq;
+using System.Reflection;
+using System.Runtime.InteropServices.JavaScript;
 using Cataloguer.Common.Models;
 using Cataloguer.Common.Models.SpecialModels.OutputApiModels;
 using Cataloguer.Database.Base;
@@ -14,18 +16,35 @@ public class GetSpecialRequestCommand : AbstractCommand
     }
 
     [MethodName("получение товаров из каталога")]
-    public IEnumerable<FrontendGood> GetGoodsFromBrochure(int brochureId)
+    public IEnumerable<Good> GetGoodsFromBrochure(int brochureId)
     {
         StartExecuteCommand(MethodBase.GetCurrentMethod(), brochureId);
 
+        // цены на товары достаются из BrochurePostion
         var r = Context.BrochurePositions
             .AsNoTracking()
             .Where(x => x.BrochureId == brochureId)
             .Include(x => x.Good)
             .Where(x => x.Good != null)
-            .Select(x => new FrontendGood(x.Good!) { Price = x.Price })
+            .Select(x => new Good() { Name = x.Good!.Name, Price = x.Price })
             .ToArray();
 
+        FinishExecuteCommand(MethodBase.GetCurrentMethod(), r);
+        return r;
+    }
+
+    [MethodName("получение товаров, которых нет в каталоге")]
+    public IEnumerable<Good> GetGoodsNotFromBrochure(int brochureId)
+    {
+        StartExecuteCommand(MethodBase.GetCurrentMethod(), brochureId);
+
+        var r = Context.BrochurePositions
+            .AsNoTracking()
+            .Include(x => x.Good)
+            .Where(x => x.BrochureId != brochureId)
+            .Select(x => x.Good)
+            .ToArray();
+        
         FinishExecuteCommand(MethodBase.GetCurrentMethod(), r);
         return r;
     }
@@ -55,49 +74,6 @@ public class GetSpecialRequestCommand : AbstractCommand
         return r;
     }
 
-    /// <param name="excludingBrochureId">
-    ///     Если > 0, то из списка будут исключены товары, которые уже есть в каталоге с
-    ///     идентификатором <paramref name="excludingBrochureId" />. Если
-    /// </param>
-    [MethodName("получение списка товаров со средними ценами")]
-    public IEnumerable<FrontendGood> GetGoodsWithAveragePriceFromHistory(int excludingBrochureId = -1)
-    {
-        StartExecuteCommand(MethodBase.GetCurrentMethod(), excludingBrochureId);
-
-        var sellHistory = Context.SellHistory
-            .AsNoTracking()
-            .ToList();
-
-        IEnumerable<Good> goods = Context.Goods
-            .AsNoTracking()
-            .ToList();
-
-        if (excludingBrochureId >= 0 && Context.Brochures.FirstOrDefault(x => x.Id == excludingBrochureId) != null)
-            goods = goods.Where(x => !Context.BrochurePositions
-                .Where(y => y.BrochureId == excludingBrochureId && y.GoodId == x.Id)
-                .Any());
-
-        var result = new List<FrontendGood>();
-
-        foreach (var good in goods)
-        {
-            var purchases = Context.SellHistory
-                .AsNoTracking()
-                .Where(x => x.GoodId == good.Id);
-
-            decimal avgPrice = 0;
-
-            if (purchases.Any())
-                avgPrice = Math.Round(purchases.Average(x => x.Price), 2);
-
-            result.Add(new FrontendGood(good) { Price = avgPrice });
-        }
-
-        FinishExecuteCommand(MethodBase.GetCurrentMethod(), result);
-
-        return result;
-    }
-
     [MethodName("получение истории продаж товаров из каталога")]
     public IEnumerable<SellHistory> GetGoodsFromSellHistory(Brochure brochure)
     {
@@ -116,6 +92,68 @@ public class GetSpecialRequestCommand : AbstractCommand
             .Include(x => x.Town)
             .Include(x => x.Gender);
 
+        FinishExecuteCommand(MethodBase.GetCurrentMethod(), r);
+        return r;
+    }
+
+    [MethodName("получение истории покупок по рассылке")]
+    public IEnumerable<SellHistory> GetGoodsForBrochureDistribution(int brochureId, int distributionId)
+    {
+        StartExecuteCommand(MethodBase.GetCurrentMethod(), brochureId, distributionId);
+
+        var brochure = Context.Brochures
+            .AsNoTracking()
+            .FirstOrDefault(x => x.Id == brochureId);
+
+        var distribution = Context.Distributions
+            .AsNoTracking()
+            .FirstOrDefault(x => x.Id == distributionId);
+
+        if (brochure == null || distribution == null)
+            return Array.Empty<SellHistory>();
+
+        var goodsFromBrochure = GetGoodsFromBrochure(brochureId).Select(x => x.Id).ToList();
+
+        var r = Context.SellHistory
+            .AsNoTracking()
+            .Include(x => x.Gender)
+            .Include(x => x.Good)
+            .Include(x => x.Town)
+            .Where(x => goodsFromBrochure.Contains(x.GoodId))
+            .Where(x => x.GenderId == distribution.GenderId &&
+                        x.TownId == distribution.TownId &&
+                        x.Age >= distribution.AgeGroup.MinimalAge &&
+                        x.Age <= distribution.AgeGroup.MaximalAge)
+            .ToArray();
+        
+        FinishExecuteCommand(MethodBase.GetCurrentMethod(), r);
+        return r;
+    }
+
+    public IEnumerable<SellHistoryForChart> GetSellHistoryForChart()
+    {
+        StartExecuteCommand(MethodBase.GetCurrentMethod());
+
+        var dates = Context.SellHistory
+            .AsNoTracking()
+            .Select(x => x.SellDate)
+            .Select(x => new DateTime(x.Year, x.Month, x.Day)) // чтобы отбросить время
+            .Distinct()
+            .ToArray();
+
+        var r = dates.Select(x => new SellHistoryForChart()
+        {
+            Date = x,
+            Income = Context.SellHistory
+                .AsNoTracking()
+                .Where(y => y.SellDate.Day == x.Day &&
+                            y.SellDate.Month == x.Month &&
+                            y.SellDate.Year == x.Year)
+                .Sum(x => x.Price)
+        })
+        .OrderBy(x => x.Date)
+        .ToArray();
+        
         FinishExecuteCommand(MethodBase.GetCurrentMethod(), r);
         return r;
     }

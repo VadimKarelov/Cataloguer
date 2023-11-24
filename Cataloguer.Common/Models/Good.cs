@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 namespace Cataloguer.Common.Models;
 
 /// <summary>
-///     Нет, не хорошо, а товар
+/// Нет, не хорошо, а товар
 /// </summary>
 [Table("good")]
 public class Good
@@ -18,4 +18,8 @@ public class Good
     [Column("name")]
     [JsonPropertyName("name")]
     public string Name { get; set; } = string.Empty;
+    
+    [Column("price")]
+    [JsonPropertyName("price")]
+    public decimal Price { get; set; }
 }

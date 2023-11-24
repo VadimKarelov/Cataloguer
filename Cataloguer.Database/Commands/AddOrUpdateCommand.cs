@@ -50,7 +50,7 @@ public class AddOrUpdateCommand : AbstractCommand
     }
 
     /// <summary>
-    ///     Возвращает id созданной/обновленной сущности
+    /// Возвращает id созданной/обновленной сущности
     /// </summary>
     [MethodName("добавление/обновление каталога")]
     public int AddOrUpdate(Brochure brochure)
@@ -76,7 +76,7 @@ public class AddOrUpdateCommand : AbstractCommand
             .Count();
 
         if (Context.Statuses.FirstOrDefault(x => x.Id == entity.StatusId) == null)
-            entity.StatusId = Context.Statuses.FirstOrDefault(x => x.Name == "Не проверено").Id;
+            entity.StatusId = Context.Statuses.FirstOrDefault(x => x.Name == "Не выпущен").Id;
 
         if (isNew)
             Context.Add(entity);
@@ -91,7 +91,7 @@ public class AddOrUpdateCommand : AbstractCommand
     }
 
     /// <summary>
-    ///     Возвращает id созданной/обновленной сущности
+    /// Возвращает id созданной/обновленной сущности
     /// </summary>
     [MethodName("добавление/обновление рассылки")]
     public int AddOrUpdate(Distribution distribution)
@@ -149,7 +149,7 @@ public class AddOrUpdateCommand : AbstractCommand
     }
 
     /// <summary>
-    ///     Возвращает id обновленной сущности
+    /// Возвращает id обновленной сущности
     /// </summary>
     [MethodName("обновление товара в каталоге")]
     public int UpdateBrochurePosition(int brochureId, int goodId, decimal newPrice)
