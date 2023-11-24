@@ -59,6 +59,15 @@ class BrochureService extends BaseService {
         const methodRoute = `/deleteBrochure/id=${id}`;
         return await BaseService.sendGetHttpRequest(BACKEND_CONTROLLER_ROUTE, methodRoute);
     }
+
+    /**
+     * Возвращает данные расчёта для каталога.
+     * @param id Идентификатор каталога.
+     */
+    public static async getRunData(id: number) {
+        const methodRoute = `/getBrochureRunData/id=${id}`;
+        return await BaseService.sendGetHttpRequest(BACKEND_CONTROLLER_ROUTE, methodRoute);
+    }
 }
 
 export default BrochureService;

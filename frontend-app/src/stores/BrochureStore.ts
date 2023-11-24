@@ -85,7 +85,11 @@ class BrochureStore {
      * Загружаются ли товары.
      */
     @observable public isLoadingGoods: boolean;
-    private goodsStore: GoodsStore;
+
+    /**
+     * Множество точек для постороения графика.
+     */
+    @observable public runPoints: any[];
 
     /**
      * Конструктор.
@@ -94,12 +98,12 @@ class BrochureStore {
         this.brochures = [];
         this.allGoods = [];
         this.checkedGoods = [];
+        this.runPoints = [];
         this.currentBrochure = null;
         this.isBrochureSelected = false;
         this.isBrochureLoading = false;
         this.isBrochureMenuLoading = false;
         this.isLoadingGoods = false;
-        this.goodsStore = new GoodsStore();
 
         makeAutoObservable(this);
 
@@ -125,6 +129,39 @@ class BrochureStore {
         this.getBrochureById = this.getBrochureById.bind(this);
         this.updateBrochureList = this.updateBrochureList.bind(this);
         this.handleDeleteBrochure = this.handleDeleteBrochure.bind(this);
+        this.getRunData = this.getRunData.bind(this);
+        this.updateRunChartPoints = this.updateRunChartPoints.bind(this);
+    }
+
+    /**
+     * Обновляет коллекцию точек для графика.
+     */
+    @action public updateRunChartPoints() {
+        const brochureId: number = this.currentBrochure?.id ?? -1;
+        if (brochureId === -1) return;
+
+        this.getRunData(brochureId).then(
+            (response) => {
+                const data = response.data;
+                console.log(data);
+
+                if (data instanceof Array) {
+                    this.runPoints = data;
+                }
+            },
+            (error) => {
+                console.error(error);
+            },
+        )
+    }
+
+    /**
+     * Возвращает множество точек для графика расчёта.
+     * @param brochureId Идентификатор каталога.
+     * @private
+     */
+    @action private async getRunData(brochureId: number) {
+        return await BrochureService.getRunData(brochureId);
     }
 
     /**
