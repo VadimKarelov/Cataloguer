@@ -22,7 +22,6 @@ internal class CataloguerApplicationContext : DbContext
 
         if (!_isInitialised)
         {
-            Database.EnsureDeleted();
             Database.EnsureCreated();
         }
     }
