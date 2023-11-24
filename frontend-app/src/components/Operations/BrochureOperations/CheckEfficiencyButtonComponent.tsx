@@ -28,6 +28,14 @@ const CheckEfficiencyButtonComponent: React.FC<CheckEfficiencyButtonComponentPro
     };
 
     /**
+     * Вызывает метод запуска расчёта.
+     */
+    const onOkClick = () => {
+        props.brochureStore?.startBrochureRun();
+        return Promise.resolve();
+    };
+
+    /**
      * Свойства модалки.
      */
     const modalProps = {
@@ -35,6 +43,7 @@ const CheckEfficiencyButtonComponent: React.FC<CheckEfficiencyButtonComponentPro
         okText: "Проверить",
         cancelText: "Отменить",
         children: (<Typography.Text>{`Вы действительно хотите проверить эффективность каталога ${currentBrochure?.name}?`}</Typography.Text>),
+        onOkClick: onOkClick,
     };
 
     /**

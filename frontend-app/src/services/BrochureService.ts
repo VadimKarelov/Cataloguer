@@ -65,7 +65,26 @@ class BrochureService extends BaseService {
      * @param id Идентификатор каталога.
      */
     public static async getRunData(id: number) {
-        const methodRoute = `/getBrochureRunData/id=${id}`;
+        // const methodRoute = `/getSellHistoryForChart/id=${id}`;
+        const methodRoute = `/getSellHistoryForChart`;
+        return await BaseService.sendGetHttpRequest(BACKEND_CONTROLLER_ROUTE, methodRoute);
+    }
+
+    /**
+     * Отправляет запрос на запуск расчёта.
+     * @param id Идентификатор каталога.
+     */
+    public static async startBrochureRun(id: number) {
+        const methodRoute = `/computeBrochurePotentialIncome/id=${id}`;
+        return await BaseService.sendGetHttpRequest(BACKEND_CONTROLLER_ROUTE, methodRoute);
+    }
+
+    /**
+     * Отправляет запрос на выпуск каталога.
+     * @param id Идентификатор каталога.
+     */
+    public static async releaseBrochure(id: number) {
+        const methodRoute = `/releaseBrochure/id=${id}`;
         return await BaseService.sendGetHttpRequest(BACKEND_CONTROLLER_ROUTE, methodRoute);
     }
 }

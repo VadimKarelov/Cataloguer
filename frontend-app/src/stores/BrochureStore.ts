@@ -7,7 +7,7 @@ import {
     GoodDBProps,
     GoodProps,
     GoodsExtendedProps,
-    GoodsProps,
+    GoodsProps, RunPointsDbProps,
     StatusArrayProps
 } from "../types/BrochureTypes";
 import {random} from "../Utils";
@@ -89,7 +89,7 @@ class BrochureStore {
     /**
      * Множество точек для постороения графика.
      */
-    @observable public runPoints: any[];
+    @observable public runPoints: RunPointsDbProps[];
 
     /**
      * Конструктор.
@@ -131,6 +131,44 @@ class BrochureStore {
         this.handleDeleteBrochure = this.handleDeleteBrochure.bind(this);
         this.getRunData = this.getRunData.bind(this);
         this.updateRunChartPoints = this.updateRunChartPoints.bind(this);
+        this.startBrochureRun = this.startBrochureRun.bind(this);
+        this.releaseBrochure = this.releaseBrochure.bind(this);
+    }
+
+    /**
+     * Выпускает каталог.
+     */
+    @action public async releaseBrochure() {
+        const brochureId = this.currentBrochure?.id ?? -1;
+        if (brochureId === -1) return;
+
+        await BrochureService.releaseBrochure(brochureId).then(
+            (response) => {
+                const data = response.data;
+                console.log(data);
+            },
+            (error) => {
+                console.error(error);
+            },
+        );
+    }
+
+    /**
+     * Запускает расчёт.
+     */
+    @action public async startBrochureRun() {
+        const brochureId = this.currentBrochure?.id ?? -1;
+        if (brochureId === -1) return;
+
+        await BrochureService.startBrochureRun(brochureId).then(
+            (response) => {
+                const data = response.data;
+                console.log(data);
+            },
+            (error) => {
+                console.error(error);
+            },
+        );
     }
 
     /**
@@ -143,7 +181,6 @@ class BrochureStore {
         this.getRunData(brochureId).then(
             (response) => {
                 const data = response.data;
-                console.log(data);
 
                 if (data instanceof Array) {
                     this.runPoints = data;
@@ -432,7 +469,7 @@ class BrochureStore {
             const tempDistributions = this.getRandomDistributions();
             const status = BROCHURE_STATUSES[random(0, BROCHURE_STATUSES.length - 1)].value;
             tempBrochures.push(
-                { id: i, name: `Каталог ${i}`, edition: tempCount, date: tempCreationDate, goods: tempGoods, distributions: tempDistributions, status: status }
+                { id: i, name: `Каталог ${i}`, edition: tempCount, date: tempCreationDate, goods: tempGoods, distributions: tempDistributions, status: status, potentialIncome: 0 }
             );
         }
         this.brochures = tempBrochures;
@@ -480,6 +517,7 @@ class BrochureStore {
                 foundBrochure = this.brochures.find(brochure => brochure.id === brochureId) ?? null;
             } else {
                 await this.getBrochureById(brochureId).then((response: {data: any}) => {
+                    console.log(response.data)
                     foundBrochure = response.data;
                 });
             }
