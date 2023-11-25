@@ -1,5 +1,6 @@
 using Cataloguer.Database.Base;
 using Cataloguer.Database.Commands;
+using Cataloguer.Database.Commands.AddOrUpdateCommands;
 using Cataloguer.Database.Commands.GetCommands;
 using Cataloguer.Server.ContextHandlers;
 using Cataloguer.Server.Modules;
@@ -169,5 +170,8 @@ public class Program
     {
         app.MapGet(_baseRoute + "/computeBrochurePotentialIncome/id={brochureId}",
             (int brochureId) => BrochureAnalyzer.TryComputeBrochureIncome(config, brochureId));
+
+        app.Map(_baseRoute + "/releaseBrochure/brochureId={brochureId}",
+            (int brochureId) => new SpecialAddOrUpdateCommand(config).TryMarkBrochureAsReleased(brochureId));
     }
 }
