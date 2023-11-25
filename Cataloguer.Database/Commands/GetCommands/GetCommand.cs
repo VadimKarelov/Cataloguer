@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using Cataloguer.Common.Models;
+using Cataloguer.Common.Models.SpecialModels.OutputApiModels;
 using Cataloguer.Database.Base;
 using Cataloguer.Database.Commands.Base;
 using Microsoft.EntityFrameworkCore;
@@ -38,11 +39,11 @@ public class GetCommand : AbstractCommand
     }
 
     [MethodName("получение каталога")]
-    public Brochure? GetBrochure(int id, bool includeFields = false)
+    public FrontendBrochure? GetBrochure(int id, bool includeFields = false)
     {
         StartExecuteCommand(MethodBase.GetCurrentMethod(), id, includeFields);
 
-        var r = includeFields
+        var brochure = includeFields
             ? Context.Brochures
                 .AsNoTracking()
                 .Include(x => x.Status)
@@ -51,12 +52,20 @@ public class GetCommand : AbstractCommand
                 .AsNoTracking()
                 .FirstOrDefault(x => x.Id == id);
 
+        var r = new FrontendBrochure(brochure)
+        {
+            StatusName = Context.Statuses
+                .AsNoTracking()
+                .FirstOrDefault(x => x.Id == brochure.StatusId)
+                .Name
+        };
+
         FinishExecuteCommand(MethodBase.GetCurrentMethod(), r);
         return r;
     }
 
     [MethodName("получение списка каталогов")]
-    public IEnumerable<Brochure> GetListBrochure(Func<Brochure, bool>? predicate = null, bool includeFields = false)
+    public IEnumerable<FrontendBrochure> GetListBrochure(Func<Brochure, bool>? predicate = null, bool includeFields = false)
     {
         StartExecuteCommand(MethodBase.GetCurrentMethod(), predicate, includeFields);
 
@@ -66,7 +75,15 @@ public class GetCommand : AbstractCommand
 
         if (includeFields) request.Include(x => x.Status);
 
-        var r = TryApplyPredicate(request, predicate);
+        var brochures = TryApplyPredicate(request, predicate);
+
+        var r = brochures.Select(x => new FrontendBrochure(x)
+        {
+            StatusName = Context.Statuses
+                .AsNoTracking()
+                .FirstOrDefault(y => y.Id == x.Id)
+                .Name
+        });
 
         FinishExecuteCommand(MethodBase.GetCurrentMethod(), r);
         return r;

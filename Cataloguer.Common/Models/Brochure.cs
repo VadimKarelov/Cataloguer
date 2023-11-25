@@ -13,7 +13,7 @@ public class Brochure
     public int Id { get; set; }
 
     [Column("status_id")]
-    [JsonPropertyName("statusId")]
+    [JsonIgnore]
     public int StatusId { get; set; }
 
     [JsonIgnore] public Status? Status { get; set; }
