@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using System.Text;
 using System.Text.Json;
+using Cataloguer.Common.Models;
 using Cataloguer.Database.Base;
 using Serilog;
 
@@ -20,21 +21,20 @@ public abstract class AbstractCommand
     private protected CataloguerApplicationContext Context { get; set; }
 
     /// <summary>
-    ///     Обработка действий перед началом выполнения команды
+    /// Обработка действий перед началом выполнения команды
     /// </summary>
     protected void StartExecuteCommand(string commandDescription, params object?[] inputParams)
     {
-        var parameters = new StringBuilder().AppendJoin(' ', inputParams.Select(x => JsonSerializer.Serialize(x)))
-            .ToString();
+        var parameters = ConvertParametersToString(inputParams);
         Log.Information($"Начало выполнения команды <{commandDescription}>. Входные параметры: {parameters}");
     }
 
     /// <summary>
-    ///     Обработка действий перед началом выполнения команды
+    /// Обработка действий перед началом выполнения команды
     /// </summary>
     /// <param name="currentMethod">
-    ///     Получается через System.Reflection.MethodBase.GetCurrentMethod(). Метод требует атрибут
-    ///     MethodNameAttribute.
+    /// Получается через System.Reflection.MethodBase.GetCurrentMethod(). Метод требует атрибут
+    /// MethodNameAttribute.
     /// </param>
     protected void StartExecuteCommand(MethodBase? currentMethod, params object?[] inputParams)
     {
@@ -44,21 +44,20 @@ public abstract class AbstractCommand
     }
 
     /// <summary>
-    ///     Обработка действий после выполнения команды
+    /// Обработка действий после выполнения команды
     /// </summary>
     protected void FinishExecuteCommand(string commandDescription, params object?[] outputParams)
     {
-        var parameters = new StringBuilder().AppendJoin(' ', outputParams.Select(x => JsonSerializer.Serialize(x)))
-            .ToString();
+        var parameters = ConvertParametersToString(outputParams);
         Log.Information($"Выполнена команда <{commandDescription}>. Результат: {parameters}");
     }
 
     /// <summary>
-    ///     Обработка действий перед началом выполнения команды
+    /// Обработка действий перед началом выполнения команды
     /// </summary>
     /// <param name="currentMethod">
-    ///     Получается через System.Reflection.MethodBase.GetCurrentMethod(). Метод требует атрибут
-    ///     MethodNameAttribute.
+    /// Получается через System.Reflection.MethodBase.GetCurrentMethod(). Метод требует атрибут
+    /// MethodNameAttribute.
     /// </param>
     protected void FinishExecuteCommand(MethodBase? currentMethod, params object?[] outputParams)
     {
@@ -75,5 +74,17 @@ public abstract class AbstractCommand
         var requiredAttribute = currentMethod.GetCustomAttributes().FirstOrDefault(x => x is MethodNameAttribute);
 
         commandDescription = (requiredAttribute as MethodNameAttribute)?.MethodName ?? string.Empty;
+    }
+
+    private string ConvertParametersToString(params object?[] parameters)
+    {
+        return new StringBuilder().AppendJoin(' ', parameters
+                .Where(x => x is not null && 
+                            x.GetType() != typeof(Delegate) && 
+                            x.GetType() != typeof(Func<>) &&
+                            x.GetType() != typeof(Action) &&
+                            x.GetType() != typeof(System.Func<Distribution, bool>))
+                .Select(x => JsonSerializer.Serialize(x)))
+            .ToString();
     }
 }
