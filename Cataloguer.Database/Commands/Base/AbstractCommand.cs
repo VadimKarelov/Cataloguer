@@ -8,9 +8,12 @@ namespace Cataloguer.Database.Commands.Base;
 
 public abstract class AbstractCommand
 {
+    protected DataBaseConfiguration DBConfig { get; private set; }
+    
     public AbstractCommand(DataBaseConfiguration config)
     {
         Context = new CataloguerApplicationContext(config);
+        DBConfig = config;
         Context.Init();
     }
 

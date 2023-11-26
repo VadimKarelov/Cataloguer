@@ -23,7 +23,7 @@ public static class BrochureAnalyzer
 
             // история продажи товаров из конкретного каталога
             var sellHistory = new GetSpecialRequestCommand(config)
-                .GetGoodsFromSellHistory(brochure);
+                .GetGoodsFromSellHistory(brochure.Id);
 
             var distributions = new GetCommand(config)
                 .GetListDistribution(x => x.BrochureId == brochure.Id);
@@ -80,7 +80,7 @@ public static class BrochureAnalyzer
             brochure.PotentialIncome = res;
             new AddOrUpdateCommand(config).AddOrUpdate(brochure);
 
-            return "OK";
+            return Math.Round(res, 2).ToString();
         }
         catch (Exception ex)
         {

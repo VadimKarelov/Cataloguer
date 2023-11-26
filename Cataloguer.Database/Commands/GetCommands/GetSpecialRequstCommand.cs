@@ -75,13 +75,13 @@ public class GetSpecialRequestCommand : AbstractCommand
     }
 
     [MethodName("получение истории продаж товаров из каталога")]
-    public IEnumerable<SellHistory> GetGoodsFromSellHistory(Brochure brochure)
+    public IEnumerable<SellHistory> GetGoodsFromSellHistory(int brochureId)
     {
-        StartExecuteCommand(MethodBase.GetCurrentMethod(), brochure);
+        StartExecuteCommand(MethodBase.GetCurrentMethod(), brochureId);
 
         var goodsFromBrochure = Context.BrochurePositions
             .AsNoTracking()
-            .Where(x => x.BrochureId == brochure.Id)
+            .Where(x => x.BrochureId == brochureId)
             .Select(x => x.Good)
             .ToList();
 
@@ -130,9 +130,14 @@ public class GetSpecialRequestCommand : AbstractCommand
         return r;
     }
 
-    public IEnumerable<SellHistoryForChart> GetSellHistoryForChart()
+    public IEnumerable<SellHistoryForChart> GetSellHistoryForChart(int brochureId)
     {
-        StartExecuteCommand(MethodBase.GetCurrentMethod());
+        StartExecuteCommand(MethodBase.GetCurrentMethod(), brochureId);
+
+        var goodsFromBrochure = GetGoodsFromBrochure(brochureId);
+
+        var distributions = new GetCommand(DBConfig)
+            .GetListDistribution(x => x.BrochureId == brochureId, true);
 
         var dates = Context.SellHistory
             .AsNoTracking()
@@ -146,6 +151,12 @@ public class GetSpecialRequestCommand : AbstractCommand
             Date = x,
             Income = Context.SellHistory
                 .AsNoTracking()
+                .Where(y => goodsFromBrochure.Any(z => z.Id == y.GoodId))
+                .Where(y => distributions.Any(z => z.BrochureId == brochureId &&
+                                                   z.TownId == y.TownId &&
+                                                   z.GenderId == y.GenderId &&
+                                                   z.AgeGroup.MinimalAge >= y.Age &&
+                                                   z.AgeGroup.MaximalAge <= y.Age))
                 .Where(y => y.SellDate.Day == x.Day &&
                             y.SellDate.Month == x.Month &&
                             y.SellDate.Year == x.Year)

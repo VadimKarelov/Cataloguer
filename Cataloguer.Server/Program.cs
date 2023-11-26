@@ -123,8 +123,8 @@ public class Program
         app.MapGet(_baseRoute + "/getUnselectedBrochureGoods/id={brochureId}",
             (int brochureId) => new GetSpecialRequestCommand(config).GetGoodsNotFromBrochure(brochureId));
 
-        app.MapGet(_baseRoute + "/getSellHistoryForChart",
-            () => new GetSpecialRequestCommand(config).GetSellHistoryForChart());
+        app.MapGet(_baseRoute + "/getSellHistoryForChart/id={brochureId}",
+            (int brochureId) => new GetSpecialRequestCommand(config).GetSellHistoryForChart(brochureId));
     }
 
     [EnableCors]
