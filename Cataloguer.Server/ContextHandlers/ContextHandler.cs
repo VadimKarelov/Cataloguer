@@ -5,6 +5,7 @@ using Cataloguer.Common.Models;
 using Cataloguer.Common.Models.SpecialModels.InputApiModels;
 using Cataloguer.Database.Base;
 using Cataloguer.Database.Commands;
+using Cataloguer.Database.Commands.AddOrUpdateCommands;
 using Serilog;
 
 namespace Cataloguer.Server.ContextHandlers;

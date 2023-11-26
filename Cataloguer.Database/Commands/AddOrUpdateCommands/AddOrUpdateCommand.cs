@@ -5,7 +5,7 @@ using Cataloguer.Database.Base;
 using Cataloguer.Database.Commands.Base;
 using Microsoft.EntityFrameworkCore;
 
-namespace Cataloguer.Database.Commands;
+namespace Cataloguer.Database.Commands.AddOrUpdateCommands;
 
 public class AddOrUpdateCommand : AbstractCommand
 {

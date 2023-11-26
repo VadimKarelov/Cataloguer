@@ -1,6 +1,6 @@
 import '../styles/App.css';
 import React from "react";
-import {Button, Layout, Space, Typography} from "antd";
+import {Layout, Space, Typography} from "antd";
 import {Content, Header} from 'antd/es/layout/layout';
 import BrochureComponent from "./BrochureComponent";
 import CreateBrochureButtonComponent, {
@@ -8,6 +8,7 @@ import CreateBrochureButtonComponent, {
 } from "./Operations/BrochureOperations/CreateBrochureButtonComponent";
 import DeleteBrochureButtonComponent from "./Operations/BrochureOperations/DeleteBrochureButtonComponent";
 import CheckEfficiencyButtonComponent from "./Operations/BrochureOperations/CheckEfficiencyButtonComponent";
+import ReleaseBrochureButtonComponent from "./Operations/BrochureOperations/ReleaseBrochureButtonComponent";
 
 /**
  * Стартовый компонент.
@@ -28,7 +29,7 @@ const App = () => {
                             <CreateBrochureButtonComponent mode={ButtonModes.EDIT}/>
                             <DeleteBrochureButtonComponent/>
                             <CheckEfficiencyButtonComponent/>
-                            <Button disabled={true}>Выпустить</Button>
+                            <ReleaseBrochureButtonComponent/>
                         </Space>
                     </div>
                 </Header>

@@ -15,4 +15,9 @@ public class Status
     [Column("name")]
     [JsonPropertyName("name")]
     public string Name { get; set; } = string.Empty;
+
+    public static Status[] AvailableStatuses = new Status[] { NotReleased, Released };
+
+    public static Status NotReleased = new Status() { Id = 1, Name = "Не выпущен" };
+    public static Status Released = new Status() { Id = 2, Name = "Выпущен" };
 }

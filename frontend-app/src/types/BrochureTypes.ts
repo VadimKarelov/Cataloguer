@@ -27,13 +27,14 @@ interface DistributionProps {
 
 /**
  * Свойства каталога.
- * @property id Идентификатор.
- * @property name Наименование каталога.
- * @property date Дата создания.
- * @property goods Набор товаров в каталоге.
- * @property edition Тираж.
- * @property status Статус.
- * @property distributions Множество рассылок.
+ * @param id Идентификатор.
+ * @param name Наименование каталога.
+ * @param date Дата создания.
+ * @param goods Набор товаров в каталоге.
+ * @param edition Тираж.
+ * @param status Статус.
+ * @param potentialIncome Потенциальный доход, характеризующий эффективность каталога.
+ * @param distributions Множество рассылок.
  */
 interface BrochureProps {
     id: number,
@@ -42,7 +43,7 @@ interface BrochureProps {
     goods: GoodProps[],
     edition: number,
     status: string,
-    potentialIncome?: string | null,
+    potentialIncome: number,
     distributions?: DistributionProps[],
 }
 
@@ -133,6 +134,16 @@ interface CreateBrochureHandlerProps extends EditBrochureHandlerProps {
     positions: GoodDBProps[],
 }
 
+/**
+ * Свойства точек для графика, получаемых из БД.
+ * @param date Дата продажи.
+ * @param income Доход с продажи.
+ */
+interface RunPointsDbProps {
+    date: string,
+    income: number,
+}
+
 export type {
     GoodProps,
     DistributionProps,
@@ -146,4 +157,5 @@ export type {
     GoodsExtendedProps,
     EditBrochureHandlerProps,
     CreateBrochureHandlerProps,
+    RunPointsDbProps,
 }

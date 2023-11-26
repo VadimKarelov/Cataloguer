@@ -22,17 +22,46 @@ const RunResultComponent: React.FC<RunResultComponentProps> = inject("brochureSt
     /**
      * Значения X точек.
      */
-    const xs = SHOULD_USE_ONLY_DB_DATA && false ? dataSource.map(point => point.x) : [2, 3, 4];
+    const xs = SHOULD_USE_ONLY_DB_DATA ? dataSource.map(point => point.date) : [2, 3, 4];
 
     /**
      * Значения Y точек.
      */
-    const ys = SHOULD_USE_ONLY_DB_DATA && false ? dataSource.map(point => point.y) : [100, 110, 120];
+    const ys = SHOULD_USE_ONLY_DB_DATA ? dataSource.map(point => point.income) : [100, 110, 120];
 
     /**
      * Вызывает запрос на получение точек графика.
      */
     useEffect(() => props.brochureStore?.updateRunChartPoints(), [props.brochureStore?.currentBrochure?.id]);
+
+    /**
+     * Конфигурация макета.
+     */
+    const layout = {
+        autosize: true,
+        title: 'Продажи',
+        showlegend: true,
+        xaxis: {
+            title: {
+                text: 'Дата продажи',
+                // font: {
+                //     family: 'Courier New, monospace',
+                //     size: 18,
+                //     color: '#7f7f7f'
+                // }
+            },
+        },
+        yaxis: {
+            title: {
+                text: 'Доход',
+                // font: {
+                //     family: 'Courier New, monospace',
+                //     size: 18,
+                //     color: '#7f7f7f'
+                // }
+            }
+        },
+    };
 
     return (
         <div style={{width: "calc(100vw - 500px)", height: "calc(100vh - 200px)"}}>
@@ -41,13 +70,14 @@ const RunResultComponent: React.FC<RunResultComponentProps> = inject("brochureSt
                     {
                         x: xs,
                         y: ys,
-                        xaxis: 'x',
-                        yaxis: 'y',
+                        xaxis: 'date',
+                        yaxis: 'income',
+                        name: "Потенциальный доход",
                         type: 'scatter'
                     },
                 ]}
                 style={{width: "calc(100vw - 500px)", height: "calc(100vh - 200px)"}}
-                layout={{autosize: true, title: 'Продажи'}}
+                layout={layout}
                 config={{responsive: true}}
             />
         </div>
