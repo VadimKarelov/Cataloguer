@@ -4,6 +4,7 @@
         <TargetFramework>net7.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
+		<SpaRoot>/frontend-app</SpaRoot>
     </PropertyGroup>
 
     <ItemGroup>
@@ -18,5 +19,28 @@
       <Folder Include="Logs\" />
       <Folder Include="wwwroot\" />
     </ItemGroup>
+    
+    <Target Name="CleanFolders" BeforeTargets="Build">
+        <RemoveDir Directories="wwwroot\" MSBuildRuntime="*" />
+        <RemoveDir Directories="..\frontend-app\build\" MSBuildRuntime="*" />
+        <MakeDir Directories="wwwroot\" MSBuildRuntime="*"/>
+    </Target>
 
+	<Target Name="BuildFrontend" BeforeTargets="Build">
+        <!--<Exec ConsoleToMSBuild="true" WorkingDirectory="..\frontend-app\" Command="npm install" />-->
+        <Exec ConsoleToMSBuild="true" WorkingDirectory="..\frontend-app\" Command="npm run build" />        
+    </Target>
+
+    <Target Name="CopyStaticFiles" AfterTargets="BuildFrontend">
+        <Exec Command="xcopy.exe /e /v ..\frontend-app\build\static\* wwwroot\static\*" />
+        <Exec Command="xcopy.exe ..\frontend-app\build\* wwwroot\*" />
+    </Target>
+    
+    <!--<Target Name="MoveStaticFiles" AfterTargets="BuildFrontend">
+        <ItemGroup>
+            <FilesToMove Include="..\frontend-app\build\**\*.*" />
+        </ItemGroup>
+        <MakeDir Directories="wwwroot\" />
+        <Copy SourceFiles="@(FilesToMove)" DestinationFolder="wwwroot\" MSBuildRuntime="*" />
+    </Target>-->
 </Project>
