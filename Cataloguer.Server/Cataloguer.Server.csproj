@@ -7,15 +7,16 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Cataloguer.Database\Cataloguer.Database.csproj"/>
+        <ProjectReference Include="..\Cataloguer.Database\Cataloguer.Database.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="serilog.aspnetcore" Version="7.0.0"/>
+        <PackageReference Include="serilog.aspnetcore" Version="7.0.0" />
     </ItemGroup>
 
     <ItemGroup>
       <Folder Include="Logs\" />
+      <Folder Include="wwwroot\" />
     </ItemGroup>
 
 </Project>

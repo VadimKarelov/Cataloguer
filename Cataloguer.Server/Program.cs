@@ -46,6 +46,8 @@ public class Program
 
             var app = builder.Build();
 
+            app.UseDefaultFiles();
+            app.UseStaticFiles();
             app.UseCorsMiddleware();
 
             var dbConfig = new DataBaseConfiguration
@@ -79,7 +81,7 @@ public class Program
     [EnableCors]
     private static void DefaultRoutesRegistration(WebApplication app)
     {
-        app.MapGet("/", (IEnumerable<EndpointDataSource> endpointSources) =>
+        app.MapGet(_baseRoute, (IEnumerable<EndpointDataSource> endpointSources) =>
             string.Join("\n", endpointSources.SelectMany(x => x.Endpoints)));
     }
 
