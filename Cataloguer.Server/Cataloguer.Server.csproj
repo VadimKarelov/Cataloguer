@@ -5,6 +5,10 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
 		<SpaRoot>/frontend-app</SpaRoot>
+        
+        <FrontendPath>..\frontend-app\</FrontendPath>
+        <FrontendBuildPath>$(ProjectPath)build\</FrontendBuildPath>
+        <ProjectStaticFilesPath>wwwroot\</ProjectStaticFilesPath>
     </PropertyGroup>
 
     <ItemGroup>
@@ -17,30 +21,24 @@
 
     <ItemGroup>
       <Folder Include="Logs\" />
-      <Folder Include="wwwroot\" />
+      <Folder Include="$(ProjectStaticFilesPath)" />
     </ItemGroup>
     
     <Target Name="CleanFolders" BeforeTargets="Build">
-        <RemoveDir Directories="wwwroot\" MSBuildRuntime="*" />
-        <RemoveDir Directories="..\frontend-app\build\" MSBuildRuntime="*" />
-        <MakeDir Directories="wwwroot\" MSBuildRuntime="*"/>
+        <RemoveDir Directories="$(ProjectStaticFilesPath)" MSBuildRuntime="*" />
+        <RemoveDir Directories="$(FrontendBuildPath)" MSBuildRuntime="*" />
+        <MakeDir Directories="$(ProjectStaticFilesPath)" MSBuildRuntime="*"/>
     </Target>
 
 	<Target Name="BuildFrontend" BeforeTargets="Build">
-        <!--<Exec ConsoleToMSBuild="true" WorkingDirectory="..\frontend-app\" Command="npm install" />-->
-        <Exec ConsoleToMSBuild="true" WorkingDirectory="..\frontend-app\" Command="npm run build" />        
+        <!--<Exec ConsoleToMSBuild="true" WorkingDirectory="$(FrontendPath)" Command="npm install" />-->
+        <Exec ConsoleToMSBuild="true" WorkingDirectory="$(FrontendPath)" Command="npm run build" />
     </Target>
 
     <Target Name="CopyStaticFiles" AfterTargets="BuildFrontend">
-        <Exec Command="xcopy.exe /e /v ..\frontend-app\build\static\* wwwroot\static\*" />
-        <Exec Command="xcopy.exe ..\frontend-app\build\* wwwroot\*" />
+        <Exec Command="./moveStaticFiles.sh" Condition="'$(OS)' != 'Windows_NT'" />
+        <Exec Command="./moveStaticFiles.bat" Condition="'$(OS)' == 'Windows_NT'" />
+        <!--<Exec Command="xcopy.exe /e /v ..\frontend-app\build\static\* wwwroot\static\*" />-->
+        <!--<Exec Command="xcopy.exe ..\frontend-app\build\* wwwroot\*" />-->
     </Target>
-    
-    <!--<Target Name="MoveStaticFiles" AfterTargets="BuildFrontend">
-        <ItemGroup>
-            <FilesToMove Include="..\frontend-app\build\**\*.*" />
-        </ItemGroup>
-        <MakeDir Directories="wwwroot\" />
-        <Copy SourceFiles="@(FilesToMove)" DestinationFolder="wwwroot\" MSBuildRuntime="*" />
-    </Target>-->
 </Project>
