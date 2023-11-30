@@ -18,7 +18,7 @@ const App = () => {
         <Layout className={"white-background-style"}>
             <Header className={"main-window-header"}>
                 <Typography.Title className={"header-title"}>
-                    Новый тетс эффективного каталога товаров
+                    Формирование эффективного каталога товаров
                 </Typography.Title>
             </Header>
             <Layout className={"main-window-layout"}>

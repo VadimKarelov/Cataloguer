@@ -1,14 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
-
     <PropertyGroup>
         <TargetFramework>net7.0</TargetFramework>
         <Nullable>enable</Nullable>
-        <ImplicitUsings>enable</ImplicitUsings>
-		<SpaRoot>/frontend-app</SpaRoot>
-        
+        <ImplicitUsings>enable</ImplicitUsings>        
         <FrontendPath>..\frontend-app\</FrontendPath>
         <FrontendBuildPath>$(ProjectPath)build\</FrontendBuildPath>
         <ProjectStaticFilesPath>wwwroot\</ProjectStaticFilesPath>
+        <ScriptsPath>Scripts\</ScriptsPath>
     </PropertyGroup>
 
     <ItemGroup>
@@ -31,14 +29,12 @@
     </Target>
 
 	<Target Name="BuildFrontend" BeforeTargets="Build">
-        <!--<Exec ConsoleToMSBuild="true" WorkingDirectory="$(FrontendPath)" Command="npm install" />-->
+        <Exec ConsoleToMSBuild="true" WorkingDirectory="$(FrontendPath)" Command="npm install" />
         <Exec ConsoleToMSBuild="true" WorkingDirectory="$(FrontendPath)" Command="npm run build" />
     </Target>
 
     <Target Name="CopyStaticFiles" AfterTargets="BuildFrontend">
-        <Exec Command="./moveStaticFiles.sh" Condition="'$(OS)' != 'Windows_NT'" />
-        <Exec Command="./moveStaticFiles.bat" Condition="'$(OS)' == 'Windows_NT'" />
-        <!--<Exec Command="xcopy.exe /e /v ..\frontend-app\build\static\* wwwroot\static\*" />-->
-        <!--<Exec Command="xcopy.exe ..\frontend-app\build\* wwwroot\*" />-->
+        <Exec Command="$(ScriptsPath)moveStaticFiles.sh" Condition="'$(OS)' != 'Windows_NT'" />
+        <Exec Command="$(ScriptsPath)moveStaticFiles.bat" Condition="'$(OS)' == 'Windows_NT'" />
     </Target>
 </Project>
