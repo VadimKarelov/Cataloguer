@@ -22,18 +22,18 @@
       <Folder Include="$(ProjectStaticFilesPath)" />
     </ItemGroup>
     
-    <Target Name="CleanFolders" BeforeTargets="Build">
+    <Target Name="CleanFolders" BeforeTargets="Build" Condition="'$(Configuration)' == 'Release'">
         <RemoveDir Directories="$(ProjectStaticFilesPath)" MSBuildRuntime="*" />
         <RemoveDir Directories="$(FrontendBuildPath)" MSBuildRuntime="*" />
         <MakeDir Directories="$(ProjectStaticFilesPath)" MSBuildRuntime="*"/>
     </Target>
 
-	<Target Name="BuildFrontend" BeforeTargets="Build">
+	<Target Name="BuildFrontend" BeforeTargets="Build" Condition="'$(Configuration)' == 'Release'">
         <Exec ConsoleToMSBuild="true" WorkingDirectory="$(FrontendPath)" Command="npm install" />
         <Exec ConsoleToMSBuild="true" WorkingDirectory="$(FrontendPath)" Command="npm run build" />
     </Target>
 
-    <Target Name="CopyStaticFiles" AfterTargets="BuildFrontend">
+    <Target Name="CopyStaticFiles" AfterTargets="BuildFrontend" Condition="'$(Configuration)' == 'Release'">
         <Exec Command="$(ScriptsPath)moveStaticFiles.sh" Condition="'$(OS)' != 'Windows_NT'" />
         <Exec Command="$(ScriptsPath)moveStaticFiles.bat" Condition="'$(OS)' == 'Windows_NT'" />
     </Target>
