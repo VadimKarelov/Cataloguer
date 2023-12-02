@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using System.Text;
 using System.Text.Json;
+using Cataloguer.Common.Models.SpecialModels.Logging;
 using Cataloguer.Common.Models;
 using Cataloguer.Database.Base;
 using Serilog;
@@ -86,5 +87,36 @@ public abstract class AbstractCommand
                             x.GetType() != typeof(System.Func<Distribution, bool>))
                 .Select(x => JsonSerializer.Serialize(x)))
             .ToString();
+    }
+
+    protected void LogChange(object? previousObjectState, object? newObjectState)
+    {
+        if (previousObjectState == null && newObjectState == null) return;
+
+        if (previousObjectState != null && newObjectState != null && previousObjectState.GetType() != newObjectState.GetType()) return;
+
+        var typeName = previousObjectState?.GetType().Name ?? newObjectState?.GetType().Name;
+
+        var prevProperties = GetProperties(previousObjectState);
+
+        var newProperties = GetProperties(newObjectState);
+
+        // выьираем любую не пустую коллекцию свойств
+        var notNullCollection = prevProperties ?? newProperties;
+
+        foreach (var prop in notNullCollection!)
+        {
+
+        }
+
+        Context.SaveChanges();
+    }
+
+    private Dictionary<string, object?>? GetProperties(object? obj)
+    {
+        return obj?.GetType()
+                .GetProperties()
+                .ToDictionary(p => p.Name,
+                p => p.GetValue(obj));
     }
 }

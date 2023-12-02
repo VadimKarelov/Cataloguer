@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using Cataloguer.Common.Models;
+using Cataloguer.Common.Models.SpecialModels.Logging;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Serilog;
@@ -11,6 +12,18 @@ namespace Cataloguer.Database.Base;
 /// </summary>
 internal class CataloguerApplicationContext : DbContext
 {
+    public DbSet<AgeGroup> AgeGroups { get; set; }
+    public DbSet<Brochure> Brochures { get; set; }
+    public DbSet<BrochurePosition> BrochurePositions { get; set; }
+    public DbSet<Distribution> Distributions { get; set; }
+    public DbSet<Gender> Genders { get; set; }
+    public DbSet<Good> Goods { get; set; }
+    public DbSet<SellHistory> SellHistory { get; set; }
+    public DbSet<Status> Statuses { get; set; }
+    public DbSet<Town> Towns { get; set; }
+
+    public DbSet<LogEntity> Logs { get; set; }
+
     private static bool _isInitialised;
     private static readonly int _sellHistoryCount = 10000;
 
@@ -25,16 +38,6 @@ internal class CataloguerApplicationContext : DbContext
             Database.EnsureCreated();
         }
     }
-
-    public DbSet<AgeGroup> AgeGroups { get; set; }
-    public DbSet<Brochure> Brochures { get; set; }
-    public DbSet<BrochurePosition> BrochurePositions { get; set; }
-    public DbSet<Distribution> Distributions { get; set; }
-    public DbSet<Gender> Genders { get; set; }
-    public DbSet<Good> Goods { get; set; }
-    public DbSet<SellHistory> SellHistory { get; set; }
-    public DbSet<Status> Statuses { get; set; }
-    public DbSet<Town> Towns { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {

@@ -12,10 +12,3 @@ public class BrochureCreationModel
 
     [JsonPropertyName("positions")] public CreationPosition[] Positions { get; set; }
 }
-
-public class CreationPosition
-{
-    [JsonPropertyName("id")] public int GoodId { get; set; }
-
-    [JsonPropertyName("price")] public decimal Price { get; set; }
-}
