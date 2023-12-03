@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using System.Text.Json.Serialization;
+using Cataloguer.Common.Models;
 using Cataloguer.Common.Models.SpecialModels.Logging;
 using Cataloguer.Database.Base;
 
@@ -22,7 +23,7 @@ public abstract class AbstractCommand
 
     protected void RememberState(object? objectToRemember)
     {
-        ShallowCopy(objectToRemember, out _rememberedState);
+        ShallowCopy(objectToRemember, _rememberedState);
     }
 
     /// <summary>
@@ -72,6 +73,8 @@ public abstract class AbstractCommand
                 PreviousValue = prevValue?.ToString(),
                 NewValue = newValue?.ToString()
             };
+
+            Context.Logs.Add(log);
         }
 
         Context.SaveChanges();
@@ -82,11 +85,12 @@ public abstract class AbstractCommand
         return obj?.GetType()?.GetProperties();
     }
 
-    private void ShallowCopy(object? copyFrom, out object? copyTo)
+    private void ShallowCopy(object? copyFrom, object? copyTo)
     {
-        copyTo = null;
-        if (copyFrom == null) return;
-        
+        if (copyFrom == null || copyTo == null) return;
+
+        copyTo = Activator.CreateInstance(copyFrom.GetType());
+
         foreach (var prop in copyFrom.GetType().GetProperties())
         {
             prop.SetValue(copyTo, prop.GetValue(copyFrom));
