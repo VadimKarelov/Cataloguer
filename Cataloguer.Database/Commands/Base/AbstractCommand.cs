@@ -1,6 +1,5 @@
 ﻿using System.Reflection;
 using System.Text.Json.Serialization;
-using Cataloguer.Common.Models;
 using Cataloguer.Common.Models.SpecialModels.Logging;
 using Cataloguer.Database.Base;
 
