@@ -22,7 +22,7 @@ public abstract class AbstractCommand
 
     protected void RememberState(object? objectToRemember)
     {
-        ShallowCopy(objectToRemember, _rememberedState);
+        _rememberedState = ShallowCopy(objectToRemember);
     }
 
     /// <summary>
@@ -84,15 +84,17 @@ public abstract class AbstractCommand
         return obj?.GetType()?.GetProperties();
     }
 
-    private void ShallowCopy(object? copyFrom, object? copyTo)
+    private object? ShallowCopy(object? copyFrom)
     {
-        if (copyFrom == null || copyTo == null) return;
+        if (copyFrom == null) return null;
 
-        copyTo = Activator.CreateInstance(copyFrom.GetType());
+        var res = Activator.CreateInstance(copyFrom.GetType());
 
         foreach (var prop in copyFrom.GetType().GetProperties())
         {
-            prop.SetValue(copyTo, prop.GetValue(copyFrom));
+            prop.SetValue(res, prop.GetValue(copyFrom));
         }
+
+        return res;
     }
 }
