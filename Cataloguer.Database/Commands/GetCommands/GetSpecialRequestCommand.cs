@@ -14,7 +14,7 @@ public class GetSpecialRequestCommand : AbstractCommand
     
     public IEnumerable<Good> GetGoodsFromBrochure(int brochureId)
     {
-        // цены на товары достаются из BrochurePostion
+        // цены на товары достаются из BrochurePosition
         return Context.BrochurePositions
             .AsNoTracking()
             .Where(x => x.BrochureId == brochureId)
@@ -93,6 +93,28 @@ public class GetSpecialRequestCommand : AbstractCommand
                         x.TownId == distribution.TownId &&
                         x.Age >= distribution.AgeGroup.MinimalAge &&
                         x.Age <= distribution.AgeGroup.MaximalAge)
+            .OrderBy(x => x.SellDate)
+            .ToArray();
+    }
+
+    public IEnumerable<SellHistory> GetSellHistoryForBrochureGoodsAndDistributions(int brochureId)
+    {
+        var distributions = new GetCommand(DBConfig)
+            .GetListDistribution(x => x.BrochureId == brochureId, true);
+
+        var brochurePositions = Context.BrochurePositions
+            .AsNoTracking()
+            .Where(x => x.BrochureId == brochureId)
+            .ToArray();
+
+        return Context.SellHistory
+            .AsNoTracking()
+            .Where(x => brochurePositions.Any(y => y.GoodId == x.GoodId) &&
+                distributions.Any(z => z.BrochureId == brochureId &&
+                                                   z.TownId == x.TownId &&
+                                                   z.GenderId == x.GenderId &&
+                                                   z.AgeGroup.MinimalAge >= x.Age &&
+                                                   z.AgeGroup.MaximalAge <= x.Age))
             .ToArray();
     }
 

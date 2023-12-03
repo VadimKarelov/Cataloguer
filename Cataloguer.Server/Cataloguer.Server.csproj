@@ -14,6 +14,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="Accord.MachineLearning" Version="3.8.0" />
         <PackageReference Include="serilog.aspnetcore" Version="7.0.0" />
     </ItemGroup>
 
@@ -25,7 +26,7 @@
     <Target Name="CleanFolders" BeforeTargets="Build" Condition="'$(Configuration)' == 'Release'">
         <RemoveDir Directories="$(ProjectStaticFilesPath)" MSBuildRuntime="*" />
         <RemoveDir Directories="$(FrontendBuildPath)" MSBuildRuntime="*" />
-        <MakeDir Directories="$(ProjectStaticFilesPath)" MSBuildRuntime="*"/>
+        <MakeDir Directories="$(ProjectStaticFilesPath)" MSBuildRuntime="*" />
     </Target>
 
 	<Target Name="BuildFrontend" BeforeTargets="Build" Condition="'$(Configuration)' == 'Release'">
