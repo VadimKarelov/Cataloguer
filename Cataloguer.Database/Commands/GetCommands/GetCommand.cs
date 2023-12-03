@@ -58,9 +58,9 @@ public class GetCommand : AbstractCommand
         {
             StatusName = Context.Statuses
                 .AsNoTracking()
-                .FirstOrDefault(y => y.Id == x.Id)
+                .FirstOrDefault(y => y.Id == x.StatusId)
                 .Name
-        });
+        }).ToArray();
     }
 
     public BrochurePosition? GetBrochurePosition(int id, bool includeFields = false)
