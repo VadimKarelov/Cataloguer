@@ -1,4 +1,5 @@
 import {MetadataProps, MetadataTypes} from "./components/Operations/BrochureOperations/CreateBrochureButtonComponent";
+import {customProp} from "./types/BrochureTypes";
 
 /**
  * Возвращает случайное число в промежутке от min до max.
@@ -46,4 +47,20 @@ export const getValidator = (_: any, value: any, itemMetadata: MetadataProps) =>
     }
 
     return isFine ? Promise.resolve() : Promise.reject();
+};
+
+/**
+ * Сортирует столбец таблицы.
+ * @param a Строка 1.
+ * @param b Строка 2.
+ * @param key Свойство, по которому нужно сортировать.
+ */
+export const sorter = (a: any, b: any, key: string) => {
+    const f: customProp = a, s: customProp = b;
+    const first = f[key], second = s[key];
+
+    if (typeof first === "string") return first.localeCompare(second);
+    if (typeof first === "number") return first - second;
+
+    return 0;
 };

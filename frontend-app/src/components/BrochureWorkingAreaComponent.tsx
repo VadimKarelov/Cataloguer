@@ -3,12 +3,12 @@ import {Layout, Tabs, Typography} from "antd";
 import type { TabsProps } from 'antd';
 import {Content, Header} from "antd/es/layout/layout";
 import "../styles/BrochureWorkingArea.css"
-import BrochureDescriptionComponent from "./Tabs/BrochureDescriptionComponent";
-import DistributionDescriptionComponent from "./Tabs/DistributionDescriptionComponent";
-import GoodsDescriptionComponent from "./Tabs/GoodsDescriptionComponent";
+import BrochureDescriptionComponent from "./Tabs/BrochureNestedTabs/BrochureDescriptionComponent";
+import DistributionDescriptionComponent from "./Tabs/BrochureNestedTabs/DistributionDescriptionComponent";
+import GoodsDescriptionComponent from "./Tabs/BrochureNestedTabs/GoodsDescriptionComponent";
 import {inject, observer} from "mobx-react";
 import {BaseStoreInjector, BrochureProps} from "../types/BrochureTypes";
-import RunResultComponent from "./Tabs/RunResultComponent";
+import RunResultComponent from "./Tabs/BrochureNestedTabs/RunResultComponent";
 
 /**
  * Перечисление для вкладок.

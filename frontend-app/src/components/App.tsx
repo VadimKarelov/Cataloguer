@@ -1,43 +1,62 @@
 import '../styles/App.css';
-import React from "react";
-import {Layout, Space, Typography} from "antd";
-import {Content, Header} from 'antd/es/layout/layout';
-import BrochureComponent from "./BrochureComponent";
-import CreateBrochureButtonComponent, {
-    ButtonModes
-} from "./Operations/BrochureOperations/CreateBrochureButtonComponent";
-import DeleteBrochureButtonComponent from "./Operations/BrochureOperations/DeleteBrochureButtonComponent";
-import CheckEfficiencyButtonComponent from "./Operations/BrochureOperations/CheckEfficiencyButtonComponent";
-import ReleaseBrochureButtonComponent from "./Operations/BrochureOperations/ReleaseBrochureButtonComponent";
+import React, {useState} from "react";
+import {Layout, Tabs, Typography} from "antd";
+import {Header} from 'antd/es/layout/layout';
+import BrochureTabContent from './Tabs/BrochureTabContentComponent';
+import AuditTabContentComponent from "./Tabs/AuditTabContentComponent";
+import {TabProps} from "../types/AppTypes";
+
+/**
+ * Перечисление табов.
+ */
+enum TabKey {
+    BROCHURES = "main_tab_brochures",
+    AUDIT = "main_tab_loggs",
+}
+
+/**
+ * Вкладки меню первого уровня.
+ */
+const TABS: Readonly<TabProps[]> = [
+    {label: "Каталоги", key: TabKey.BROCHURES},
+    {label: "Аудит", key: TabKey.AUDIT}
+];
 
 /**
  * Стартовый компонент.
  */
 const App = () => {
+    /**
+     * Текущая вкладка.
+     */
+    const [currentTab, setCurrentTab] = useState<string>(TabKey.BROCHURES);
+
+    /**
+     * Содержимая вкладки.
+     */
+    const getTabContent = () => {
+        switch (currentTab) {
+            case TabKey.BROCHURES: return (<BrochureTabContent/>);
+            case TabKey.AUDIT: return (<AuditTabContentComponent/>);
+            default: return null;
+        }
+    };
+
     return (
         <Layout className={"white-background-style"}>
             <Header className={"main-window-header"}>
                 <Typography.Title className={"header-title"}>
                     Формирование эффективного каталога товаров
                 </Typography.Title>
+                <Tabs
+                    className={"main-tabs-style"}
+                    activeKey={currentTab}
+                    onChange={setCurrentTab}
+                    items={TABS.map(tab => tab)}
+                />
             </Header>
             <Layout className={"main-window-layout"}>
-                <Header className={"main-window-buttons-panel-style"}>
-                    <div className={"buttons-style"}>
-                        <Space>
-                            <CreateBrochureButtonComponent mode={ButtonModes.CREATE}/>
-                            <CreateBrochureButtonComponent mode={ButtonModes.EDIT}/>
-                            <DeleteBrochureButtonComponent/>
-                            <CheckEfficiencyButtonComponent/>
-                            <ReleaseBrochureButtonComponent/>
-                        </Space>
-                    </div>
-                </Header>
-                <Layout className={"white-background-style"}>
-                    <Content className={"main-window-content white-background-style"}>
-                        <BrochureComponent/>
-                    </Content>
-                </Layout>
+                {getTabContent()}
             </Layout>
         </Layout>
     );

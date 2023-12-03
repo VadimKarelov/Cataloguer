@@ -177,13 +177,17 @@ class BrochureStore {
     @action public updateRunChartPoints() {
         const brochureId: number = this.currentBrochure?.id ?? -1;
         if (brochureId === -1) return;
-
-        this.getRunData(brochureId).then(
-            (response) => {
-                const data = response.data;
-
-                if (data instanceof Array) {
-                    this.runPoints = data;
+        Promise.all([
+            BrochureService.getRunData(brochureId),
+            BrochureService.getPredictedRunData(brochureId),
+        ]).then(
+            (responses) => {
+                const runData = responses[0].data;
+                const predictedRunData = responses[1].data;
+                console.log(runData)
+                console.log(predictedRunData)
+                if (runData instanceof Array) {
+                    this.runPoints = runData;
                 }
             },
             (error) => {
