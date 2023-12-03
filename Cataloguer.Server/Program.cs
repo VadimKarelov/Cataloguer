@@ -44,6 +44,8 @@ public class Program
             builder.WebHost.UseUrls(builder.Configuration["BackendConnectionString"])
                 .UseKestrel(options => { options.AllowSynchronousIO = true; });
 
+            builder.Host.UseSerilog();
+            
             var app = builder.Build();
 
             app.UseDefaultFiles();

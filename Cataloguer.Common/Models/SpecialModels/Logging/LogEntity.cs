@@ -13,7 +13,7 @@ public class LogEntity
 
     public int EntityId { get; set; }
 
-    public string AttributeName { get; set; } = string.Empty;
+    public string PropertyName { get; set; } = string.Empty;
 
     public string? PreviousValue { get; set; }
 

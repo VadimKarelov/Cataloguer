@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using Cataloguer.Common.Models;
+﻿using Cataloguer.Common.Models;
 using Cataloguer.Common.Models.SpecialModels.InputApiModels;
 using Cataloguer.Database.Base;
 using Cataloguer.Database.Commands.Base;
@@ -15,50 +14,50 @@ public class AddOrUpdateCommand : AbstractCommand
 
     /// <param name="brochureId">Идентификатор каталога</param>
     /// <param name="goodsInBrochure">Список идентификаторов товаров с соответствующими ценами на них</param>
-    [MethodName("добавление позиций в каталог")]
     public void AddPositions(int brochureId, IEnumerable<CreationPosition> goodsInBrochure)
     {
-        StartExecuteCommand(MethodBase.GetCurrentMethod(), brochureId, goodsInBrochure);
-
         var brochure = Context.Brochures
             .AsNoTracking()
             .FirstOrDefault(x => x.Id == brochureId);
 
-        if (brochure == null)
-        {
-            FinishExecuteCommand(MethodBase.GetCurrentMethod(), "null");
-            return;
-        }
+        if (brochure == null) return;
 
-        Context.BrochurePositions
-            .AddRange(goodsInBrochure
+        var entitiesToAdd = goodsInBrochure
                 .Select(x => new BrochurePosition()
                 {
                     BrochureId = brochureId,
                     Price = x.Price,
                     GoodId = x.GoodId
-                }));
-
+                });
+        
+        Context.BrochurePositions.AddRange(entitiesToAdd);
+        
+        RememberState(brochure);
+        
         brochure.PositionCount = Context.BrochurePositions
             .AsNoTracking()
             .Where(x => x.BrochureId == brochureId)
             .Count();
 
         Context.SaveChanges();
-
-        FinishExecuteCommand(MethodBase.GetCurrentMethod(), "OK");
+        
+        foreach (var pos in entitiesToAdd)
+        {
+            LogChange(null, pos);
+        }
+        
+        LogChange(brochure);
     }
 
     /// <summary>
     /// Возвращает id созданной/обновленной сущности
     /// </summary>
-    [MethodName("добавление/обновление каталога")]
     public int AddOrUpdate(Brochure brochure)
     {
-        StartExecuteCommand(MethodBase.GetCurrentMethod(), brochure);
-
         var entity = Context.Brochures.FirstOrDefault(x => x.Id == brochure.Id);
 
+        RememberState(entity);
+        
         var isNew = false;
 
         if (entity == null)
@@ -85,7 +84,7 @@ public class AddOrUpdateCommand : AbstractCommand
 
         Context.SaveChanges();
 
-        FinishExecuteCommand(MethodBase.GetCurrentMethod(), entity.Id);
+        LogChange(entity);
 
         return entity.Id;
     }
@@ -93,13 +92,12 @@ public class AddOrUpdateCommand : AbstractCommand
     /// <summary>
     /// Возвращает id созданной/обновленной сущности
     /// </summary>
-    [MethodName("добавление/обновление рассылки")]
     public int AddOrUpdate(Distribution distribution)
     {
-        StartExecuteCommand(MethodBase.GetCurrentMethod(), distribution);
-
         var entity = Context.Distributions.FirstOrDefault(x => x.Id == distribution.Id);
 
+        RememberState(entity);
+        
         var isNew = false;
 
         if (entity == null)
@@ -118,10 +116,7 @@ public class AddOrUpdateCommand : AbstractCommand
         var brochure = Context.Brochures.FirstOrDefault(x => x.Id == entity.BrochureId);
 
         if (brochure == null)
-        {
-            FinishExecuteCommand(MethodBase.GetCurrentMethod(), -1);
             return -1;
-        }
 
         // Подсчет тиража у текущего каталога
         var distributionsCount = Context.Distributions
@@ -131,19 +126,16 @@ public class AddOrUpdateCommand : AbstractCommand
 
         // Проверка, чтобы нельзя было создать тираж рассылки больше, чем задано в каталоге
         if (distributionsCount > brochure.Edition)
-        {
-            FinishExecuteCommand(MethodBase.GetCurrentMethod(), -555);
             return -555;
-        }
 
         if (isNew)
             Context.Add(entity);
         else
             Context.Update(entity);
-
+        
         Context.SaveChanges();
-
-        FinishExecuteCommand(MethodBase.GetCurrentMethod(), entity.Id);
+        
+        LogChange(entity);
 
         return entity.Id;
     }
@@ -151,25 +143,22 @@ public class AddOrUpdateCommand : AbstractCommand
     /// <summary>
     /// Возвращает id обновленной сущности
     /// </summary>
-    [MethodName("обновление товара в каталоге")]
     public int UpdateBrochurePosition(int brochureId, int goodId, decimal newPrice)
     {
-        StartExecuteCommand(MethodBase.GetCurrentMethod(), brochureId, goodId, newPrice);
-
         var pos = Context.BrochurePositions.FirstOrDefault(x => x.BrochureId == brochureId && x.GoodId == goodId);
 
+        RememberState(pos);
+        
         if (pos == null)
-        {
-            FinishExecuteCommand(MethodBase.GetCurrentMethod(), -1);
             return -1;
-        }
 
         pos.Price = newPrice;
 
         Context.Update(pos);
         Context.SaveChanges();
 
-        FinishExecuteCommand(MethodBase.GetCurrentMethod(), pos.Id);
+        LogChange(pos);
+        
         return pos.Id;
     }
 }
