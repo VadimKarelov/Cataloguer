@@ -1,4 +1,5 @@
 ﻿using Cataloguer.Common.Models;
+using Cataloguer.Common.Models.SpecialModels.Logging;
 using Cataloguer.Common.Models.SpecialModels.OutputApiModels;
 using Cataloguer.Database.Base;
 using Cataloguer.Database.Commands.Base;
@@ -189,6 +190,11 @@ public class GetCommand : AbstractCommand
     public IEnumerable<Town> GetListTown(Func<Town, bool>? predicate = null)
     {
         return TryApplyPredicate(Context.Towns.AsNoTracking(), predicate).ToArray();
+    }
+
+    public IEnumerable<LogEntity> GetListLog(Func<LogEntity, bool>? predicate = null)
+    {
+        return TryApplyPredicate(Context.Logs.AsNoTracking(), predicate).ToArray();
     }
 
     private static IEnumerable<T> TryApplyPredicate<T>(IQueryable<T> request, Func<T, bool>? predicate)

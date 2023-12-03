@@ -99,6 +99,8 @@ public class Program
         app.MapGet(_baseRoute + "/getSellHistory", () => new GetCommand(config).GetListSellHistory());
         app.MapGet(_baseRoute + "/getStatuses", () => new GetCommand(config).GetListStatus());
         app.MapGet(_baseRoute + "/getTowns", () => new GetCommand(config).GetListTown());
+
+        app.MapGet(_baseRoute + "/getLogs", () => new GetCommand(config).GetListLog());
     }
 
     [EnableCors]
