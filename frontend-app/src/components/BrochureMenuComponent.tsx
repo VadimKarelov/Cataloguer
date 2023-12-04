@@ -46,12 +46,13 @@ const BrochureMenuComponent: React.FC<BrochureMenuComponentProps> = inject("broc
      * Возвращает компонент span для элемента меню.
      * @param name Название каталога.
      * @param status Статус каталога.
+     * @param potentialIncome Потенциальный доход с каталога, характеризующий эффективность.
      */
-    const getMenuItemSpan = (name: string, status: string) => {
+    const getMenuItemSpan = (name: string, status: string, potentialIncome: number) => {
         return (
             <span className={"brochure-menu-items-style"}>
                 <Space>
-                    <StatusIconsComponent status={status}/>{name}
+                    <StatusIconsComponent status={status} potentialIncome={potentialIncome}/>{name}
                 </Space>
             </span>
         );
@@ -65,7 +66,11 @@ const BrochureMenuComponent: React.FC<BrochureMenuComponentProps> = inject("broc
         setBrochureItems(
             brochures.map(brochure => {
                 return ({
-                    label: getMenuItemSpan(brochure.name ?? `Каталог ${brochure.id}`, brochure.status),
+                    label: getMenuItemSpan(
+                        brochure.name ?? `Каталог ${brochure.id}`,
+                        brochure.statusName,
+                        brochure.potentialIncome
+                    ),
                     key: `brochure_${brochure.id}`,
                 });
             })

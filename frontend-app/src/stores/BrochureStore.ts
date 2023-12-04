@@ -27,18 +27,16 @@ const BROCHURE_SS_PATH: Readonly<string> = "ss_brochure";
  * Перечислимый тип для статусов.
  */
 export enum Status {
-    EFFECTIVE,
-    INEFFECTIVE,
-    UNCHECKED,
+    DRAFT,
+    RELEASED,
 }
 
 /**
  * Набор возможных статусов.
  */
 export const BROCHURE_STATUSES: Readonly<StatusArrayProps[]> = [
-    {key: Status.UNCHECKED, value: "Не проверен"},
-    {key: Status.INEFFECTIVE, value: "Не эффективен"},
-    {key: Status.EFFECTIVE, value: "Эффективный"},
+    {key: Status.DRAFT, value: "Не выпущен"},
+    {key: Status.RELEASED, value: "Выпущен"},
 ];
 
 /**
@@ -472,9 +470,16 @@ class BrochureStore {
             const tempGoods = this.getRandomGoods();
             const tempDistributions = this.getRandomDistributions();
             const status = BROCHURE_STATUSES[random(0, BROCHURE_STATUSES.length - 1)].value;
-            tempBrochures.push(
-                { id: i, name: `Каталог ${i}`, edition: tempCount, date: tempCreationDate, goods: tempGoods, distributions: tempDistributions, status: status, potentialIncome: 0 }
-            );
+            tempBrochures.push({
+                id: i,
+                name: `Каталог ${i}`,
+                edition: tempCount,
+                date: tempCreationDate,
+                goods: tempGoods,
+                distributions: tempDistributions,
+                statusName: status,
+                potentialIncome: 0
+            });
         }
         this.brochures = tempBrochures;
     }

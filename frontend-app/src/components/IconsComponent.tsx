@@ -8,16 +8,20 @@ import "../styles/StatusIconsComponent.css";
 /**
  * Компонент, возвращающий иконку по статусу.
  */
-const StatusIconsComponent: React.FC<{status: string}> = (props) => {
+const StatusIconsComponent: React.FC<{status: string, potentialIncome: number}> = (props) => {
     /**
      * Возвращает иконку, отражающую статус каталога.
      */
     const getStatusIcon = () => {
         const statusGettingAttempt = BROCHURE_STATUSES.find(status => status.value === props.status);
         switch (statusGettingAttempt?.key) {
-            case Status.EFFECTIVE: return (<EffectiveStatusIcon/>);
-            case Status.INEFFECTIVE: return (<IneffectiveStatusIcon/>);
-            case Status.UNCHECKED: return (<UncheckedStatusIcon/>);
+            case Status.RELEASED: return (<EffectiveStatusIcon/>);
+            case Status.DRAFT: {
+                if (props.potentialIncome > 0) {
+                    return (<IneffectiveStatusIcon/>);
+                }
+                return (<UncheckedStatusIcon/>);
+            }
             default: return null;
         }
     };

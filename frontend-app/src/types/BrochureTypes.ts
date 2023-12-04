@@ -32,7 +32,7 @@ interface DistributionProps {
  * @param date Дата создания.
  * @param goods Набор товаров в каталоге.
  * @param edition Тираж.
- * @param status Статус.
+ * @param statusName Статус.
  * @param potentialIncome Потенциальный доход, характеризующий эффективность каталога.
  * @param distributions Множество рассылок.
  */
@@ -42,7 +42,7 @@ interface BrochureProps {
     date: string,
     goods: GoodProps[],
     edition: number,
-    status: string,
+    statusName: string,
     potentialIncome: number,
     distributions?: DistributionProps[],
 }
