@@ -26,16 +26,21 @@ public class GetSpecialRequestCommand : AbstractCommand
     
     public IEnumerable<Good> GetGoodsNotFromBrochure(int brochureId)
     {
-        return Context.BrochurePositions
+        var brochurePositions = Context.BrochurePositions
             .AsNoTracking()
-            .Include(x => x.Good)
-            .Where(x => x.BrochureId != brochureId)
-            .Select(x => x.Good)
+            .Where(x => x.BrochureId == brochureId)
+            .ToList();
+
+        return Context.Goods
+            .AsNoTracking()
+            .AsEnumerable()
+            .Where(x => brochurePositions.All(y => y.GoodId != x.Id))
             .ToArray();
     }
     
     public IEnumerable<FrontendDistribution> GetDistributionsFromBrochure(int brochureId)
-    {return Context.Distributions
+    {
+        return Context.Distributions
             .AsNoTracking()
             .Where(x => x.BrochureId == brochureId)
             .Include(x => x.Brochure)
