@@ -201,6 +201,6 @@ public class GetCommand : AbstractCommand
 
     private static IEnumerable<T> TryApplyPredicate<T>(IQueryable<T> request, Func<T, bool>? predicate)
     {
-        return predicate is null ? request.ToArray() : request.Where(predicate).ToArray();
+        return predicate is null ? request.ToList() : request.Where(predicate).ToList();
     }
 }

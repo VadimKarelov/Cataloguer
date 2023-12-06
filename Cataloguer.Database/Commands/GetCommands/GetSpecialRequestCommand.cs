@@ -110,16 +110,17 @@ public class GetSpecialRequestCommand : AbstractCommand
         var brochurePositions = Context.BrochurePositions
             .AsNoTracking()
             .Where(x => x.BrochureId == brochureId)
-            .ToArray();
+            .ToList();
 
         return Context.SellHistory
             .AsNoTracking()
+            .AsEnumerable()
             .Where(x => brochurePositions.Any(y => y.GoodId == x.GoodId) &&
                 distributions.Any(z => z.BrochureId == brochureId &&
-                                                   z.TownId == x.TownId &&
-                                                   z.GenderId == x.GenderId &&
-                                                   z.AgeGroup.MinimalAge >= x.Age &&
-                                                   z.AgeGroup.MaximalAge <= x.Age))
+                                               z.TownId == x.TownId &&
+                                               z.GenderId == x.GenderId &&
+                                               z.AgeGroup!.MinimalAge >= x.Age &&
+                                               z.AgeGroup!.MaximalAge <= x.Age))
             .ToArray();
     }
 
@@ -135,13 +136,14 @@ public class GetSpecialRequestCommand : AbstractCommand
             .Select(x => x.SellDate)
             .Select(x => new DateTime(x.Year, x.Month, x.Day)) // чтобы отбросить время
             .Distinct()
-            .ToArray();
+            .ToList();
 
         return dates.Select(x => new SellHistoryForChart()
         {
             Date = x,
             Income = Context.SellHistory
                 .AsNoTracking()
+                .ToList()
                 .Where(y => goodsFromBrochure.Any(z => z.Id == y.GoodId))
                 .Where(y => distributions.Any(z => z.BrochureId == brochureId &&
                                                    z.TownId == y.TownId &&
