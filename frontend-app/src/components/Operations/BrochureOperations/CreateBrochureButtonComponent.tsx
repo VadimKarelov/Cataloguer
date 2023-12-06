@@ -4,7 +4,7 @@ import {DatePicker, Form, Input} from "antd";
 import {BaseStoreInjector, EditBrochureHandlerProps} from "../../../types/BrochureTypes";
 import {inject, observer} from "mobx-react";
 import GoodsTableComponent from "./EditableTable/GoodsTableComponent";
-import {getValidator} from "../../../Utils";
+import {cerr, getValidator} from "../../../Utils";
 import {openNotification} from "../../NotificationComponent";
 import GoodsStore from "../../../stores/GoodsStore";
 import dayjs from "dayjs";
@@ -229,7 +229,7 @@ const CreateBrochureButtonComponent: React.FC<CreateBrochureButtonComponentProps
                                         return Promise.resolve();
                                     },
                                     (error) => {
-                                        console.log("Validate Failed:", error);
+                                        cerr(`Validate Failed: ${error}`);
                                         return Promise.reject();
                                     }
                                 );

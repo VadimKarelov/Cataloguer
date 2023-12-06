@@ -6,11 +6,11 @@ import {inject, observer} from "mobx-react";
 import "../../../styles/Tabs/DistributionsTab.css";
 import CreateDistributionButtonComponent from "../../Operations/DistributionOperations/CreateDistributionButtonComponent";
 import {DistributionStore} from "../../../stores/DistributionStore";
-import {SHOULD_USE_ONLY_DB_DATA} from "../../../constants/Routes";
 import NoDataComponent from "../../NoDataComponent";
 import {DistributionDbProps} from "../../../types/DistributionTypes";
 import DeleteDistributionButtonComponent from "../../Operations/DistributionOperations/DeleteDistributionButtonComponent";
 import {sorter} from "../../../Utils";
+import {SHOULD_USE_ONLY_DB_DATA} from "../../../constants/EnvironmentVariables";
 
 /**
  * Свойства компонента GoodsDescriptionComponent.

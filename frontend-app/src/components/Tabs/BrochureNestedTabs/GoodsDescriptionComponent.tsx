@@ -5,12 +5,12 @@ import {inject, observer} from "mobx-react";
 import "../../../styles/Tabs/GoodsTab.css";
 import {Content, Header} from "antd/es/layout/layout";
 import GoodsStore from "../../../stores/GoodsStore";
-import {SHOULD_USE_ONLY_DB_DATA} from "../../../constants/Routes";
 import NoDataComponent from "../../NoDataComponent";
 import CreateBrochureButtonComponent, {
     ButtonModes
 } from "../../Operations/BrochureOperations/CreateBrochureButtonComponent";
 import DeleteGoodsButtonComponent from "../../Operations/GoodsOperations/DeleteGoodsButtonComponent";
+import {SHOULD_USE_ONLY_DB_DATA} from "../../../constants/EnvironmentVariables";
 
 /**
  * Свойства компонента GoodsDescriptionComponent.

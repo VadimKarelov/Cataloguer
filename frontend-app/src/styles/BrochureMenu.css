@@ -7,3 +7,7 @@
 .brochure-menu-items-style {
     margin-left: 30px;
 }
+
+.empty-menu-style {
+    margin-top: calc(calc(100vh - 110px) / 2.5);
+}

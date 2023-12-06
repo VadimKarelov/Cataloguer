@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {Menu, Space, Spin} from "antd";
+import {Empty, Menu, Space, Spin} from "antd";
 import type { MenuProps } from 'antd';
 import "../styles/BrochureMenu.css";
 import {inject, observer} from "mobx-react";
@@ -102,14 +102,20 @@ const BrochureMenuComponent: React.FC<BrochureMenuComponentProps> = inject("broc
     }, [props.brochureStore?.currentBrochure]);
 
     return (
-        <Spin spinning={props.brochureStore?.isBrochureMenuLoading}>
-            <Menu
-                className={"brochure-menu-style"}
-                mode={"inline"}
-                selectedKeys={currentlySelectedMenuItems}
-                items={brochureItems}
-                onClick={onSelectBrochure}
-            />
+        <Spin className={"white-background-style"} spinning={props.brochureStore?.isBrochureMenuLoading}>
+            {brochureItems && brochureItems.length > 0 ?
+                <Menu
+                    className={"brochure-menu-style"}
+                    mode={"inline"}
+                    selectedKeys={currentlySelectedMenuItems}
+                    items={brochureItems}
+                    onClick={onSelectBrochure}
+                />
+            : <Empty
+                className={"empty-menu-style"}
+                image={Empty.PRESENTED_IMAGE_SIMPLE}
+                description={"Нет каталогов"}
+            />}
         </Spin>
     );
 }));

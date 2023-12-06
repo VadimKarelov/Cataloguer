@@ -1,7 +1,7 @@
 import { observable, action, makeAutoObservable } from "mobx";
 import GoodsService from "../services/GoodsService";
 import {GoodsProps} from "../types/BrochureTypes";
-import DistributionService from "../services/DistributionService";
+import {cerr, cout} from "../Utils";
 
 /**
  * Класс хранилище для раздела товаров.
@@ -43,7 +43,7 @@ class GoodsStore {
         return await GoodsService.deleteBrochureGood(goodId, brochureId).then(
             async(response) => {
                 const data = response.data;
-                console.log(data);
+                cout(data);
 
                 await this.updateCurrentBrochureGoods(brochureId);
                 if (!isNaN(parseInt(data)) && parseInt(data) === -1) {
@@ -52,7 +52,7 @@ class GoodsStore {
                 return Promise.resolve("Рассылка товара удалёна успешно");
             },
             (error) => {
-                console.error(error)
+                cerr(error);
                 return Promise.reject("Ошибка при удалении товара");
             }
         );
@@ -84,7 +84,7 @@ class GoodsStore {
 
                 this.goods = data;
             },
-            (error) => console.error(error),
+            (error) => cerr(error),
         ).finally(() => {
             setTimeout(() => this.isLoadingGoods = false, 300);
         });

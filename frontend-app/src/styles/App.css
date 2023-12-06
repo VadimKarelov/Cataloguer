@@ -40,6 +40,6 @@
 }
 
 .sider-style {
-    background-color: white;
-    height: auto;
+    background-color: rgb(240, 240, 240) !important;
+    height: calc(100vh - 110px);
 }

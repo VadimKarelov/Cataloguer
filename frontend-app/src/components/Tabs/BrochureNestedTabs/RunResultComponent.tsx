@@ -2,7 +2,8 @@ import Plot from 'react-plotly.js';
 import React, {useEffect} from "react";
 import {BaseStoreInjector} from "../../../types/BrochureTypes";
 import {inject, observer} from "mobx-react";
-import {SHOULD_USE_ONLY_DB_DATA} from "../../../constants/Routes";
+
+import {SHOULD_USE_ONLY_DB_DATA} from "../../../constants/EnvironmentVariables";
 
 /**
  * Свойства компонента для построения графика.

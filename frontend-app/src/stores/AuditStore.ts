@@ -2,6 +2,8 @@ import { observable, action, makeAutoObservable } from "mobx";
 import {AuditDbProps} from "../types/AuditTypes";
 import AuditService from "../services/AuditService";
 import dayjs from "dayjs";
+import {cerr} from "../Utils";
+import {IS_DEBUG} from "../constants/EnvironmentVariables";
 
 /**
  * Класс хранилище для раздела аудита.
@@ -52,7 +54,7 @@ class AuditStore {
                 }
                 this.logs = data.map((row: AuditDbProps) => ({...row, dateTime: dayjs(row.dateTime).format('DD.MM.YYYY HH:mm:ss')}));
             },
-            (error) => console.error(error),
+            (error) => cerr(error),
         ).finally(() => {
             setTimeout(() => this.isLoadingLogs = false, 300);
         });

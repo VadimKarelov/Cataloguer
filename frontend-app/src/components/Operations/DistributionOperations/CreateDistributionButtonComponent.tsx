@@ -5,7 +5,7 @@ import {Form, Input, Select} from "antd";
 import {inject, observer} from "mobx-react";
 import {BaseStoreInjector} from "../../../types/BrochureTypes";
 import {DistributionStore} from "../../../stores/DistributionStore";
-import {getValidator} from "../../../Utils";
+import {cerr, getValidator} from "../../../Utils";
 import {EditDistributionDbProps} from "../../../types/DistributionTypes";
 import {openNotification} from "../../NotificationComponent";
 
@@ -180,7 +180,7 @@ const CreateDistributionButtonComponent: React.FC<CreateDistributionButtonCompon
                     return Promise.resolve();
                 },
                 (error) => {
-                    console.log("Validate Failed:", error);
+                    cerr(`Validate Failed: ${error}`);
                     return Promise.reject();
                 }
             );

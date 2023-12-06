@@ -6,6 +6,7 @@ import {Content} from "antd/es/layout/layout";
 import {BaseStoreInjector} from "../types/BrochureTypes";
 import Sider from "antd/es/layout/Sider";
 import BrochureMenuComponent from "./BrochureMenuComponent";
+import "../styles/Brochure.css";
 
 /**
  * Свойства компонента BrochureComponent.
@@ -32,7 +33,7 @@ const BrochureComponent: React.FC<BrochureComponentProps> = inject("brochureStor
                     {
                         (currentBrochure !== null) ?
                             <BrochureWorkingAreaComponent/>
-                        : <Empty image={Empty.PRESENTED_IMAGE_SIMPLE}/>
+                        : <Empty className={"empty-brochure-data-style"} image={Empty.PRESENTED_IMAGE_SIMPLE}/>
                     }
                 </Spin>
             </Content>
