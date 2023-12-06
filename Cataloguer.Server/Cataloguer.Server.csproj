@@ -20,7 +20,14 @@
 
     <ItemGroup>
       <Folder Include="Logs\" />
-      <Folder Include="$(ProjectStaticFilesPath)" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="wwwroot\static\css\main.8c21164d.css" />
+      <_ContentIncludedByDefault Remove="wwwroot\static\css\main.8c21164d.css.map" />
+      <_ContentIncludedByDefault Remove="wwwroot\static\js\main.586ad7eb.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\static\js\main.586ad7eb.js.LICENSE.txt" />
+      <_ContentIncludedByDefault Remove="wwwroot\static\js\main.586ad7eb.js.map" />
     </ItemGroup>
     
     <Target Name="CleanFolders" BeforeTargets="Build" Condition="'$(Configuration)' == 'Release'">

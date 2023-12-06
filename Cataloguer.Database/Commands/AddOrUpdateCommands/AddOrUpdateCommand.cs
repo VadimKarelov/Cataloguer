@@ -31,6 +31,7 @@ public class AddOrUpdateCommand : AbstractCommand
                 });
         
         Context.BrochurePositions.AddRange(entitiesToAdd);
+        Context.SaveChanges();
         
         RememberState(brochure);
         
@@ -40,8 +41,13 @@ public class AddOrUpdateCommand : AbstractCommand
             .Count();
 
         Context.SaveChanges();
+
+        var newPositions = entitiesToAdd
+            .Select(x => Context.BrochurePositions
+                .Where(y => y.Equals(x)))
+            .ToArray();
         
-        foreach (var pos in entitiesToAdd)
+        foreach (var pos in newPositions)
         {
             LogChange(null, pos);
         }
