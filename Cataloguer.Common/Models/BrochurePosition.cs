@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 namespace Cataloguer.Common.Models;
 
 [Table("brochure_position")]
-public class BrochurePosition : IEquatable<BrochurePosition>
+public class BrochurePosition
 {
     [Key]
     [Column("id")]
@@ -40,8 +40,7 @@ public class BrochurePosition : IEquatable<BrochurePosition>
     {
         if (ReferenceEquals(null, other)) return false;
         if (ReferenceEquals(this, other)) return true;
-        return Id == other.Id &&
-               BrochureId == other.BrochureId && 
+        return BrochureId == other.BrochureId && 
                GoodId == other.GoodId && 
                Price == other.Price;
     }

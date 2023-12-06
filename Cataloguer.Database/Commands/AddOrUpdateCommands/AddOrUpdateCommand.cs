@@ -17,7 +17,6 @@ public class AddOrUpdateCommand : AbstractCommand
     public void AddPositions(int brochureId, IEnumerable<CreationPosition> goodsInBrochure)
     {
         var brochure = Context.Brochures
-            .AsNoTracking()
             .FirstOrDefault(x => x.Id == brochureId);
 
         if (brochure == null) return;
@@ -28,7 +27,8 @@ public class AddOrUpdateCommand : AbstractCommand
                     BrochureId = brochureId,
                     Price = x.Price,
                     GoodId = x.GoodId
-                });
+                })
+                .ToArray();
         
         Context.BrochurePositions.AddRange(entitiesToAdd);
         Context.SaveChanges();
@@ -37,17 +37,17 @@ public class AddOrUpdateCommand : AbstractCommand
         
         brochure.PositionCount = Context.BrochurePositions
             .AsNoTracking()
-            .Where(x => x.BrochureId == brochureId)
-            .Count();
+            .Count(x => x.BrochureId == brochureId);
 
         Context.SaveChanges();
 
         var newPositions = entitiesToAdd
             .Select(x => Context.BrochurePositions
-                .Where(y => y.Equals(x)))
+                .AsNoTracking()
+                .First(y => y.Equals(x)))
             .ToArray();
         
-        foreach (var pos in newPositions)
+        foreach (BrochurePosition pos in newPositions)
         {
             LogChange(null, pos);
         }
