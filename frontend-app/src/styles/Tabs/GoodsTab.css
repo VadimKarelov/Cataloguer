@@ -10,9 +10,15 @@
 }
 
 .goods-table-style {
-    margin: 20px 0 0 50px;
-    height: calc(100vh - 248px);
+    margin: 0 0 0 50px;
+    height: calc(100vh - 288px);
     width: calc(100vw - 450px);
     flex: min-content;
     min-width: 400px;
+}
+
+.goods-tab-search {
+    margin-top: 20px;
+    margin-left: 50px;
+    width: calc(100vw - 450px);
 }
