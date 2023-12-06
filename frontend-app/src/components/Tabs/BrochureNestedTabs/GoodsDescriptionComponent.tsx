@@ -144,6 +144,7 @@ const GoodsDescriptionComponent: React.FC<GoodsDescriptionComponentProps> = inje
                         onSearch={onTableSearch}
                         allowClear
                         title={"Найти товар"}
+                        disabled={!hasData}
                     />
                     <Spin spinning={props.goodsStore?.isLoadingGoods} size={"large"}>
                         {hasData ? (<Table

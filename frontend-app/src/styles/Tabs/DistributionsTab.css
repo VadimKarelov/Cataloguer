@@ -10,9 +10,15 @@
 }
 
 .distributions-table-style {
-    margin: 10px 0 0 50px;
-    height: calc(100vh - 243px);
+    margin: 0px 0 0 50px;
+    height: calc(100vh - 293px);
     width: calc(100vw - 450px);
     flex: min-content;
     min-width: 400px;
+}
+
+.distributions-tab-search {
+    margin-top: 20px;
+    margin-left: 50px;
+    width: calc(100vw - 450px);
 }
