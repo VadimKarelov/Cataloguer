@@ -14,9 +14,8 @@ import {random} from "../Utils";
 import {ageGroups, genders, goodsNames, towns} from "./HandbookExamples";
 import GoodsService from "../services/GoodsService";
 import BrochureService from "../services/BrochureService";
-import moment from "moment";
 import {SHOULD_USE_ONLY_DB_DATA} from "../constants/Routes";
-import GoodsStore from "./GoodsStore";
+import dayjs from "dayjs";
 
 /**
  * Путь к данным каталога в session storage.
@@ -466,7 +465,7 @@ class BrochureStore {
         const brochureCount = 100;
         for (let i = 0; i < brochureCount; ++i) {
             const tempCount = random(1, 5000);
-            const tempCreationDate = moment(new Date()).toDate().toDateString();
+            const tempCreationDate = dayjs(new Date()).toDate().toLocaleString();
             const tempGoods = this.getRandomGoods();
             const tempDistributions = this.getRandomDistributions();
             const status = BROCHURE_STATUSES[random(0, BROCHURE_STATUSES.length - 1)].value;

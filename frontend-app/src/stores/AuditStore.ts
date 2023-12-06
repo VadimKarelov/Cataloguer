@@ -1,7 +1,7 @@
 import { observable, action, makeAutoObservable } from "mobx";
 import {AuditDbProps} from "../types/AuditTypes";
 import AuditService from "../services/AuditService";
-import moment from "moment";
+import dayjs from "dayjs";
 
 /**
  * Класс хранилище для раздела аудита.
@@ -50,7 +50,7 @@ class AuditStore {
                     this.isLoadingLogs = false;
                     return;
                 }
-                this.logs = data.map((row: AuditDbProps) => ({...row, dateTime: moment(row.dateTime).format('DD.MM.YYYY HH:mm:ss')}));
+                this.logs = data.map((row: AuditDbProps) => ({...row, dateTime: dayjs(row.dateTime).format('DD.MM.YYYY HH:mm:ss')}));
             },
             (error) => console.error(error),
         ).finally(() => {
