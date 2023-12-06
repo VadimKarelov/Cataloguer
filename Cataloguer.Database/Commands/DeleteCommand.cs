@@ -45,8 +45,7 @@ public class DeleteCommand : AbstractCommand
         var brochure = Context.Brochures.FirstOrDefault(x => x.Id == brochureId);
         RememberState(brochure);
         brochure.PositionCount = Context.BrochurePositions
-            .Where(x => x.BrochureId == brochureId)
-            .Count();
+            .Count(x => x.BrochureId == brochureId);
 
         Context.Update(brochure);
         Context.SaveChanges();
