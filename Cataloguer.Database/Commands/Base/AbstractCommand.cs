@@ -55,7 +55,7 @@ public abstract class AbstractCommand
         foreach (var prop in notNullCollection!)
         {
             // игнорируем поля, помеченные для игнорирования сериализацией
-            if (prop.GetCustomAttributes().Any(a => a.GetType() is JsonIgnoreAttribute)) continue;
+            if (prop.GetCustomAttributes().Any(a => a is JsonIgnoreAttribute)) continue;
 
             var prevValue = previousObjectState != null ? prop.GetValue(previousObjectState) : null;
             var newValue = newObjectState != null ? prop.GetValue(newObjectState) : null;

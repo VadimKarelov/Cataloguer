@@ -194,7 +194,9 @@ public class GetCommand : AbstractCommand
 
     public IEnumerable<LogEntity> GetListLog(Func<LogEntity, bool>? predicate = null)
     {
-        return TryApplyPredicate(Context.Logs.AsNoTracking(), predicate).ToArray();
+        return TryApplyPredicate(Context.Logs.AsNoTracking(), predicate)
+            .OrderByDescending(x => x.DateTime)
+            .ToArray();
     }
 
     private static IEnumerable<T> TryApplyPredicate<T>(IQueryable<T> request, Func<T, bool>? predicate)
