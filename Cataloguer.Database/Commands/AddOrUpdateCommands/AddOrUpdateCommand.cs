@@ -185,7 +185,9 @@ public class AddOrUpdateCommand : AbstractCommand
         
         Random random = new Random();
 
-        for (int i = 0; i < 10; i++)
+        var maxMuhleg = Math.Min(100, Context.SellHistory.Count() * 0.005);
+        
+        for (int i = 0; i < maxMuhleg; i++)
         {
             var good = Context.BrochurePositions
                 .AsNoTracking()
