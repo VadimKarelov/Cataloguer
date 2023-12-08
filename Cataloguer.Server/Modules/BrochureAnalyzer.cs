@@ -5,8 +5,6 @@ using Cataloguer.Database.Base;
 using Cataloguer.Database.Commands.AddOrUpdateCommands;
 using Cataloguer.Database.Commands.GetCommands;
 using Serilog;
-using System.Security.Cryptography.Xml;
-using System.Windows.Markup;
 
 namespace Cataloguer.Server.Modules;
 
