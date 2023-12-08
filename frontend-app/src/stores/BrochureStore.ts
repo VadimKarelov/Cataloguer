@@ -10,13 +10,12 @@ import {
     GoodsProps, RunPointsDbProps,
     StatusArrayProps
 } from "../types/BrochureTypes";
-import {random} from "../Utils";
+import {cerr, cout, random} from "../Utils";
 import {ageGroups, genders, goodsNames, towns} from "./HandbookExamples";
 import GoodsService from "../services/GoodsService";
 import BrochureService from "../services/BrochureService";
-import moment from "moment";
-import {SHOULD_USE_ONLY_DB_DATA} from "../constants/Routes";
-import GoodsStore from "./GoodsStore";
+import dayjs from "dayjs";
+import {IS_DEBUG, SHOULD_USE_ONLY_DB_DATA} from "../constants/EnvironmentVariables";
 
 /**
  * Путь к данным каталога в session storage.
@@ -143,10 +142,10 @@ class BrochureStore {
         await BrochureService.releaseBrochure(brochureId).then(
             (response) => {
                 const data = response.data;
-                console.log(data);
+                cout(data);
             },
             (error) => {
-                console.error(error);
+                cerr(error);
             },
         );
     }
@@ -161,10 +160,10 @@ class BrochureStore {
         await BrochureService.startBrochureRun(brochureId).then(
             (response) => {
                 const data = response.data;
-                console.log(data);
+                cout(data);
             },
             (error) => {
-                console.error(error);
+                cerr(error);
             },
         );
     }
@@ -182,14 +181,14 @@ class BrochureStore {
             (responses) => {
                 const runData = responses[0].data;
                 const predictedRunData = responses[1].data;
-                console.log(runData)
-                console.log(predictedRunData)
+                cout(runData)
+                cout(predictedRunData)
                 if (runData instanceof Array) {
                     this.runPoints = runData;
                 }
             },
             (error) => {
-                console.error(error);
+                cerr(error);
             },
         )
     }
@@ -226,7 +225,7 @@ class BrochureStore {
                 return Promise.resolve("Каталог удалён успешно");
             },
             (error) => {
-                console.error(error);
+                cerr(error);
                 return Promise.reject("Ошибка при удалении каталога");
             }
         );
@@ -269,7 +268,7 @@ class BrochureStore {
                 return Promise.resolve("Каталог успешно изменён");
             },
             (error) => {
-                console.error(error);
+                cerr(error);
                 this.isBrochureLoading = false;
                 this.isBrochureMenuLoading = false;
                 return Promise.reject(rejectReason);
@@ -315,14 +314,15 @@ class BrochureStore {
      */
     @action public async handleCreateBrochure(brochure: CreateBrochureHandlerProps) {
         brochure.positions = [...this.checkedGoods.map(good => ({...good}))];
-
         this.isBrochureLoading = true;
         this.isBrochureMenuLoading = true;
         const {data} = await BrochureService.createBrochure(brochure);
 
         const id = data;
         if (!(typeof id === "number") || id === -1) {
-            return Promise.resolve("Ошибка при создании каталога");
+            this.isBrochureLoading = false;
+            this.isBrochureMenuLoading = false;
+            return Promise.reject("Ошибка при создании каталога");
         }
 
         await this.updateBrochureData(id);
@@ -344,7 +344,7 @@ class BrochureStore {
         return await GoodsService.addGoodsToBrochure(brochureId, this.checkedGoods).then(
             (response) => {
                 const data = response.data;
-                console.log(data);
+                cout(data);
 
                 if (!isNaN(parseInt(data)) && parseInt(data) === -1) {
                     return Promise.reject("Не удалось добавить товары в каталог");
@@ -352,7 +352,7 @@ class BrochureStore {
                 return Promise.resolve("Товары успешно добавлены в каталог");
             },
             (error) => {
-                console.error(error);
+                cerr(error);
                 return Promise.reject("Не удалось добавить товары в каталог");
             },
         );
@@ -381,7 +381,7 @@ class BrochureStore {
 
                 this.allGoods = response.data;
             }),
-            (error) => console.error(error)
+            (error) => cerr(error)
         );
     }
 
@@ -396,7 +396,7 @@ class BrochureStore {
 
                 this.allGoods = response.data;
             }),
-            (error) => console.log(error)
+            (error) => cerr(error)
         );
     }
 
@@ -466,7 +466,7 @@ class BrochureStore {
         const brochureCount = 100;
         for (let i = 0; i < brochureCount; ++i) {
             const tempCount = random(1, 5000);
-            const tempCreationDate = moment(new Date()).toDate().toDateString();
+            const tempCreationDate = dayjs(new Date()).toDate().toLocaleString();
             const tempGoods = this.getRandomGoods();
             const tempDistributions = this.getRandomDistributions();
             const status = BROCHURE_STATUSES[random(0, BROCHURE_STATUSES.length - 1)].value;
@@ -526,7 +526,6 @@ class BrochureStore {
                 foundBrochure = this.brochures.find(brochure => brochure.id === brochureId) ?? null;
             } else {
                 await this.getBrochureById(brochureId).then((response: {data: any}) => {
-                    console.log(response.data)
                     foundBrochure = response.data;
                 });
             }
@@ -552,7 +551,7 @@ class BrochureStore {
 
                 this.brochures = data;
             },
-            (error) => console.error(error)
+            (error) => cerr(error)
         );
     }
 

@@ -11,3 +11,7 @@
     align-items: center;
     height: calc(100vh - 120px);
 }
+
+.empty-brochure-data-style {
+    margin-top: calc(calc(100vh - 120px) / 2.5);
+}

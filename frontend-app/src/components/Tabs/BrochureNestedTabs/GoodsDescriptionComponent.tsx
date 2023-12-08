@@ -1,16 +1,17 @@
 import {Layout, Space, Spin, Table} from "antd";
-import React, {useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import {BaseStoreInjector, customProp, GoodProps} from "../../../types/BrochureTypes";
 import {inject, observer} from "mobx-react";
 import "../../../styles/Tabs/GoodsTab.css";
 import {Content, Header} from "antd/es/layout/layout";
 import GoodsStore from "../../../stores/GoodsStore";
-import {SHOULD_USE_ONLY_DB_DATA} from "../../../constants/Routes";
 import NoDataComponent from "../../NoDataComponent";
 import CreateBrochureButtonComponent, {
     ButtonModes
 } from "../../Operations/BrochureOperations/CreateBrochureButtonComponent";
 import DeleteGoodsButtonComponent from "../../Operations/GoodsOperations/DeleteGoodsButtonComponent";
+import {SHOULD_USE_ONLY_DB_DATA} from "../../../constants/EnvironmentVariables";
+import Search from "antd/es/input/Search";
 
 /**
  * Свойства компонента GoodsDescriptionComponent.
@@ -40,6 +41,11 @@ const GoodsDescriptionComponent: React.FC<GoodsDescriptionComponentProps> = inje
      * Есть данные или нет.
      */
     const hasData = brochure !== null && rows.length > 0;
+
+    /**
+     * Искомое значение для поиска.
+     */
+    const [searchValue, setSearchValue] = useState<string>("");
 
     /**
      * Сортирует столбец таблицы.
@@ -90,6 +96,7 @@ const GoodsDescriptionComponent: React.FC<GoodsDescriptionComponentProps> = inje
      * Обновляет список товаров.
      */
     const updateGoods = (): void => {
+        setSearchValue("");
         const id = brochure?.id ?? -1;
         if (id === -1) return;
         props.goodsStore?.updateCurrentBrochureGoods(id);
@@ -100,6 +107,28 @@ const GoodsDescriptionComponent: React.FC<GoodsDescriptionComponentProps> = inje
      */
     useEffect(updateGoods, [props.brochureStore?.currentBrochure?.id]);
 
+    /**
+     * Фильтрует таблицу.
+     * @param searchValue Искомое значение.
+     */
+
+    const onTableSearch = (searchValue: string) => {
+        setSearchValue(searchValue.trim().toLowerCase());
+    };
+
+    /**
+     * Возвращает фильрованные товары.
+     */
+    const getFilteredGoods = () => {
+        return rows.filter(row => {
+            const currentRow: customProp = row;
+            return searchValue === "" || Object.keys(row).some(key => {
+                const val = currentRow[key];
+                return val.toString().toLowerCase().includes(searchValue);
+            });
+        });
+    };
+
     return (
         brochure !== null ? (
             <Layout>
@@ -109,14 +138,23 @@ const GoodsDescriptionComponent: React.FC<GoodsDescriptionComponentProps> = inje
                     </Space>
                 </Header>
                 <Content className={"goods-tab-content-style"}>
+                    <Search
+                        className={"goods-tab-search"}
+                        size={"large"}
+                        onSearch={onTableSearch}
+                        allowClear
+                        title={"Найти товар"}
+                        disabled={!hasData}
+                    />
                     <Spin spinning={props.goodsStore?.isLoadingGoods} size={"large"}>
                         {hasData ? (<Table
                             className={"goods-table-style"}
                             size={"middle"}
                             scroll={{y: "calc(100vh - 283px)", x: "max-content"}}
                             columns={columns}
-                            dataSource={rows}
+                            dataSource={getFilteredGoods()}
                             pagination={false}
+                            bordered
                         />) : (
                             <NoDataComponent/>
                         )}

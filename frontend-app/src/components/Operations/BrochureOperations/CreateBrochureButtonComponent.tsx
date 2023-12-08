@@ -4,13 +4,10 @@ import {DatePicker, Form, Input} from "antd";
 import {BaseStoreInjector, EditBrochureHandlerProps} from "../../../types/BrochureTypes";
 import {inject, observer} from "mobx-react";
 import GoodsTableComponent from "./EditableTable/GoodsTableComponent";
-import moment from "moment";
-import {getValidator} from "../../../Utils";
+import {cerr, getValidator} from "../../../Utils";
 import {openNotification} from "../../NotificationComponent";
 import GoodsStore from "../../../stores/GoodsStore";
-import BrochureService from "../../../services/BrochureService";
-import GoodsService from "../../../services/GoodsService";
-import {TooltipProps} from "../../../types/OperationsTypes";
+import dayjs from "dayjs";
 
 /**
  * Перечисления типов в метаданных для компонента CreateBrochureButtonComponent.
@@ -88,7 +85,7 @@ const CreateBrochureButtonComponent: React.FC<CreateBrochureButtonComponentProps
      */
     const editFormMetadata: Readonly<MetadataProps[]> = [
         { id: "brochure_name", name: "Название", type: MetadataTypes.STR_FIELD, isRequired: true, min: 1, max: 30, helpText: "Значение по длине не более 30 символлов"},
-        { id: "brochure_date", name: "Период выпуска каталога", type: MetadataTypes.DATE_FIELD, isRequired: true, defaultValue: new Date().toDateString()},
+        { id: "brochure_date", name: "Период выпуска каталога", type: MetadataTypes.DATE_FIELD, isRequired: true, defaultValue: new Date().toLocaleString()},
         { id: "brochure_edition", name: "Тираж", type: MetadataTypes.NMBR_FIELD, isRequired: true, min: 1, max: 10_000, defaultValue: "1", helpText: "Значение не более 10 000"},
     ];
 
@@ -167,7 +164,7 @@ const CreateBrochureButtonComponent: React.FC<CreateBrochureButtonComponentProps
             <Form id={formId} form={form} name={formId} layout={"vertical"} colon={false}>
                 {metadata.map(formItem => {
                     const formItemName: Readonly<string> = formItem.id.slice(formItem.id.indexOf('_') + 1);
-                    const defaultValue = formItemName === "date" ? moment(formItem.defaultValue) : formItem.defaultValue;
+                    const defaultValue = formItemName === "date" ? dayjs(formItem.defaultValue) : formItem.defaultValue;
                     return (
                         <Form.Item
                             key={formItem.id}
@@ -193,7 +190,7 @@ const CreateBrochureButtonComponent: React.FC<CreateBrochureButtonComponentProps
      * @param values Значения полей.
      */
     const handleDbAction = (values: any) => {
-        values.date = moment(values?.date).format();
+        values.date = dayjs(values?.date).format();
         values.edition = parseFloat(values.edition);
 
         let response;
@@ -232,7 +229,7 @@ const CreateBrochureButtonComponent: React.FC<CreateBrochureButtonComponentProps
                                         return Promise.resolve();
                                     },
                                     (error) => {
-                                        console.log("Validate Failed:", error);
+                                        cerr(`Validate Failed: ${error}`);
                                         return Promise.reject();
                                     }
                                 );
@@ -280,7 +277,7 @@ const CreateBrochureButtonComponent: React.FC<CreateBrochureButtonComponentProps
         form.setFieldsValue({
             id: currentBrochure.id,
             name: currentBrochure.name,
-            date: moment(currentBrochure.date),
+            date: dayjs(currentBrochure.date),
             edition: currentBrochure?.edition,
         });
     };

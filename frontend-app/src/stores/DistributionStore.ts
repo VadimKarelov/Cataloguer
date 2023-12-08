@@ -8,6 +8,8 @@ import {
     GenderDbProps,
     TownDbProps
 } from "../types/DistributionTypes";
+import {cerr} from "../Utils";
+import {IS_DEBUG} from "../constants/EnvironmentVariables";
 
 /**
  * Класс хранилище для рассылок.
@@ -88,7 +90,7 @@ export class DistributionStore {
                 return Promise.resolve("Рассылка каталога удалёна успешно");
             },
             (error) => {
-                console.error(error);
+                cerr(error);
                 return Promise.reject("Ошибка при удалении каталога");
             },
         );
@@ -117,7 +119,7 @@ export class DistributionStore {
                 return Promise.resolve("Изменения сохранены");
             },
             (error) => {
-                console.error(error);
+                cerr(error);
                 this.isLoadingDistributions = false;
                 return Promise.reject("Не удалось изменить рассылку");
             },
@@ -141,7 +143,7 @@ export class DistributionStore {
                 return Promise.resolve("Рассылка успешно создана");
             },
             (error) => {
-                console.error(error);
+                cerr(error);
                 this.isLoadingDistributions = false;
                 return Promise.reject("Не удалось создать рассылку");
             }
@@ -172,7 +174,7 @@ export class DistributionStore {
                 }
                 this.distributions = data;
             },
-            (error) => console.error(error),
+            (error) => cerr(error),
         ).finally(() => setTimeout(() => this.isLoadingDistributions = false, 300));
     }
 
@@ -211,7 +213,7 @@ export class DistributionStore {
                 this.ageGroups = ageGroupsAxiosResponse.data;
                 this.towns = townsAxiosResponse.data;
             },
-            (error) => console.error(error)
+            (error) => cerr(error)
         );
     }
 
