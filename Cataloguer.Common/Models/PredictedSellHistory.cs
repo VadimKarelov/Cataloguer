@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace Cataloguer.Common.Models;
 
@@ -16,10 +17,11 @@ public class PredictedSellHistory
     [Column("brochure_id")]
     public int BrochureId { get; set; }
     
+    [JsonIgnore] // нужен, чтобы это поле не отображалось в логах
     public Brochure? Brochure { get; set; }
     
     [Column("prediction_date")]
-    public DateTime PredictionDate { get; set; }
+    public DateOnly PredictionDate { get; set; }
     
     /// <summary>
     /// Предсказанное значение

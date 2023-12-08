@@ -49,9 +49,11 @@ public class GetCommand : AbstractCommand
     {
         var request = Context.Brochures
             .AsNoTracking()
-            .OrderByDescending(x => x.Id);
+            .OrderByDescending(x => x.Id)
+            .AsQueryable();
 
-        if (includeFields) request.Include(x => x.Status);
+        if (includeFields) 
+            request = request.Include(x => x.Status);
 
         var brochures = TryApplyPredicate(request, predicate);
 
@@ -83,7 +85,7 @@ public class GetCommand : AbstractCommand
         var request = Context.BrochurePositions.AsNoTracking();
 
         if (includeFields)
-            request.Include(x => x.Brochure)
+            request = request.Include(x => x.Brochure)
                 .Include(x => x.Good);
 
        return TryApplyPredicate(request, predicate);
@@ -110,7 +112,7 @@ public class GetCommand : AbstractCommand
         var request = Context.Distributions.AsNoTracking();
 
         if (includeFields)
-            request.Include(x => x.Town)
+            request = request.Include(x => x.Town)
                 .Include(x => x.AgeGroup)
                 .Include(x => x.Brochure)
                 .Include(x => x.Gender);
@@ -161,7 +163,7 @@ public class GetCommand : AbstractCommand
         var request = Context.SellHistory.AsNoTracking();
 
         if (includeFields)
-            request.Include(x => x.Town)
+            request = request.Include(x => x.Town)
                 .Include(x => x.Good)
                 .Include(x => x.Gender);
 

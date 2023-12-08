@@ -1,4 +1,5 @@
 ﻿using Cataloguer.Common.Models;
+using Cataloguer.Common.Models.SpecialModels.OutputApiModels;
 using Cataloguer.Database.Base;
 using Cataloguer.Database.Commands.Base;
 using Microsoft.EntityFrameworkCore;
@@ -45,6 +46,36 @@ namespace Cataloguer.Database.Commands.AddOrUpdateCommands
 
             LogChange(brochure);
             return $"OK";
+        }
+
+        /// <summary>
+        /// Добавит прогноз и посчитает выручку каталога
+        /// </summary>
+        public void AddPredictedHistory(int brochureId, List<SellHistoryForChart> prediction)
+        {
+            var brochure = Context.Brochures.FirstOrDefault(x => x.Id == brochureId);
+
+            if (brochure == null) return;
+            
+            // расчет выручки каталога
+            RememberState(brochure);
+            brochure.PotentialIncome = prediction.Sum(x => x.Income);
+            Context.Update(brochure);
+            
+            // сохранение истории
+            var entitiesToAdd = prediction
+                .Select(x => new PredictedSellHistory()
+                {
+                    BrochureId = brochureId,
+                    PredictionDate = new DateOnly(x.Date.Year, x.Date.Month, x.Date.Day),
+                    Value = x.Income,
+                }).ToList();
+            
+            Context.PredictedSellHistory.AddRange(entitiesToAdd);
+            Context.SaveChanges();
+
+            foreach (var entity in entitiesToAdd) 
+                LogChange(null, entity);
         }
     }
 }

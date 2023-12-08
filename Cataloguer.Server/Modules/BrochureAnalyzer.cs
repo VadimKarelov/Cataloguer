@@ -1,7 +1,7 @@
 ﻿using Accord.Statistics.Models.Regression.Linear;
-using Cataloguer.Common.Models;
 using Cataloguer.Common.Models.SpecialModels.OutputApiModels;
 using Cataloguer.Database.Base;
+using Cataloguer.Database.Commands;
 using Cataloguer.Database.Commands.AddOrUpdateCommands;
 using Cataloguer.Database.Commands.GetCommands;
 using Serilog;
@@ -14,63 +14,83 @@ public static class BrochureAnalyzer
     {
         try
         {
-            var res = ComputeBrochurePotentialIncome(config, brochureId);
+            TryComputeBrochurePotentialIncome(config, brochureId);
 
             // обновляем данные в таблице
             var brochure = new GetCommand(config).GetBrochure(brochureId);
-            brochure.PotentialIncome = res;
-            new AddOrUpdateCommand(config).AddOrUpdate(brochure);
 
-            return Math.Round(res, 2).ToString();
+            return Math.Round(brochure.PotentialIncome, 2).ToString();
         }
         catch (Exception ex)
         {
-            Log.Error(ex, "Произошла ошибка во время вычисления эффективности каталога.");
+            Log.Error(ex, $"Произошла ошибка во время вычисления эффективности каталога.\n{ex.Message}");
             return ex.Message;
         }
     }
 
-    private static decimal ComputeBrochurePotentialIncome(DataBaseConfiguration config, int brochureId)
+    private static void TryComputeBrochurePotentialIncome(DataBaseConfiguration config, int brochureId)
     {
-        var brochure = new GetCommand(config).GetBrochure(brochureId, true);
-
+        var brochure = new GetCommand(config).GetBrochure(brochureId);
         if (brochure == null)
             throw new Exception($"Каталог с id={brochureId} не найден в базе данных!");
+        
+        // история продаж по определенной рассылке с товарами из каталога (отсортировано по дате)
+        var sellHistory = new GetSpecialRequestCommand(config).GetSellHistoryForBrochureGoodsAndDistributions(brochureId);
 
-        var distributions = new GetCommand(config).GetListDistribution(x => x.BrochureId == brochureId, true);
-
-        if (distributions == null)
-            throw new Exception($"Каталог с id={brochureId} не содержит рассылок!");
-
-        var goodsFromBrochure = new GetSpecialRequestCommand(config).GetGoodsFromBrochure(brochureId);
-
-        if (goodsFromBrochure == null)
-            throw new Exception($"Каталог с id={brochureId} не содержит товаров!");
-
+        if (!sellHistory.Any())
+            throw new Exception($"Для каталога id={brochureId} недостаточно данных для расчета эффективности! Добавьте больше товаров или рассылок");
+        
+        // начало расчета
+        
         decimal income = 0;
-
-        foreach (var distrib in distributions)
+        
+        DateTime minDate = DateTime.MaxValue, maxDate = DateTime.MinValue;
+        foreach (var sell in sellHistory)
         {
-            // список товаров из истории, которые есть в каталоге и в истории с фильтром по конкретной рассылке
-            var historyForDistribution = new GetSpecialRequestCommand(config).GetGoodsForBrochureDistribution(brochureId, distrib.Id);
-
-            // список только товаров, не повторяющихся
-            var goods = historyForDistribution.Select(x => x.Good).Distinct().ToList();
-
-            // идем по товарам
-            foreach (var good in goods)
-            {
-                // записи из истории по конкретному товару
-                var historyNotes = historyForDistribution.Where(x => x.GoodId == good!.Id);
-
-                // количество проданных товаров по рассылке
-                var n = historyNotes.Count();
-
-                income += n * historyNotes.Average(x => x.Price);
-            }
+            if (sell.SellDate > maxDate)
+                maxDate = sell.SellDate;
+            if (sell.SellDate < minDate)
+                minDate = sell.SellDate;
         }
 
-        return income;
+        var values = new List<(double x, double y)>();
+        
+        for (DateTime date = minDate; date <= maxDate; date = date.AddDays(1))
+        {
+            var sales = sellHistory
+                .Where(x => x.SellDate.Date.Date == date.Date)
+                .Select(x => x.Price);
+
+            // в какие-то дни могло не быть продаж
+            double sum = sales.Any() ? (double)sales.Sum() : 0;
+
+            values.Add((date.ToOADate(), sum));
+        }
+
+        // подготовленные для обучения данные
+        var xs = values.Select(x => x.x).ToArray();
+        var ys = values.Select(x => x.y).ToArray();
+
+        // обучение
+        SimpleLinearRegression regression = new OrdinaryLeastSquares().Learn(xs, ys);
+
+        List<SellHistoryForChart> prediction = new();
+
+        // предсказание
+        for (DateTime date = brochure.Date; date <= brochure.Date.AddDays(30); date = date.AddDays(1))
+        {
+            prediction.Add(new SellHistoryForChart()
+            {
+                Date = date,
+                Income = (decimal)regression.Transform(date.ToOADate())
+            });
+        }
+
+        // удаление старой истории
+        new DeleteCommand(config).DeletePredictionHistory(brochureId);
+        
+        // сохранение данных
+        new SpecialAddOrUpdateCommand(config).AddPredictedHistory(brochureId, prediction);
     }
 
 
@@ -117,73 +137,4 @@ public static class BrochureAnalyzer
 
         }
     }*/
-
-    public static List<SellHistoryForChart> GetPredictedSellHistoryForChart(DataBaseConfiguration config, int brochureId)
-    {
-        var brochure = new GetCommand(config).GetBrochure(brochureId);
-
-        if (brochure == null) return new List<SellHistoryForChart>();
-
-        var distributions = new GetCommand(config).GetListDistribution(x => x.BrochureId == brochureId);
-
-        // история продаж по определенной рассылке с товарами из каталога (отсортировано по дате)
-        var sellHistory = new GetSpecialRequestCommand(config).GetSellHistoryForBrochureGoodsAndDistributions(brochureId);
-
-        if (!sellHistory.Any())
-        {
-            Log.Error($"Для каталога id={brochureId} не нашлось истории покупок!");
-            SetNewPotentialIncomeToBrochure(config, brochure, 0);
-            return new List<SellHistoryForChart>();
-        }
-
-        DateTime minDate = DateTime.MaxValue, maxDate = DateTime.MinValue;
-        foreach (var sell in sellHistory)
-        {
-            if (sell.SellDate > maxDate)
-                maxDate = sell.SellDate;
-            if (sell.SellDate < minDate)
-                minDate = sell.SellDate;
-        }
-
-        var values = new List<(double x, double y)>();
-        
-        for (DateTime date = minDate; date <= maxDate; date.AddDays(1))
-        {
-            var sales = sellHistory.Where(x => x.SellDate.Date == date).Select(x => x.Price);
-
-            // в какие-то дни могло не быть продаж
-            double sum = sales.Any() ? (double)sales.Sum() : 0;
-
-            values.Add((date.ToOADate(), sum));
-        }
-
-        // подготовленные для обучения данные
-        var xs = values.Select(x => x.x).ToArray();
-        var ys = values.Select(x => x.y).ToArray();
-
-        // обучение
-        SimpleLinearRegression regression = new OrdinaryLeastSquares().Learn(xs, ys);
-
-        List<SellHistoryForChart> prediction = new();
-
-        // предсказание
-        for (DateTime date = brochure.Date; date <= date.AddDays(30); date.AddDays(1))
-        {
-            prediction.Add(new SellHistoryForChart()
-            {
-                Date = date,
-                Income = (decimal)regression.Transform(date.ToOADate())
-            });
-        }
-
-        SetNewPotentialIncomeToBrochure(config, brochure, prediction.Sum(x => x.Income));
-
-        return prediction;
-    }
-
-    private static void SetNewPotentialIncomeToBrochure(DataBaseConfiguration config, Brochure brochure, decimal income)
-    {
-        brochure.PotentialIncome = income;
-        new AddOrUpdateCommand(config).AddOrUpdate(brochure);
-    }
 }

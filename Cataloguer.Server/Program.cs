@@ -134,7 +134,7 @@ public class Program
             (int brochureId) => new GetSpecialRequestCommand(config).GetSellHistoryForChart(brochureId));
 
         app.MapGet(_baseRoute + "/getPredictedSellHistoryForChart/id={brochureId}",
-            (int brochureId) => BrochureAnalyzer.GetPredictedSellHistoryForChart(config, brochureId));
+            (int brochureId) => new GetSpecialRequestCommand(config).GetPredictedSellHistoryForChart(brochureId));
     }
 
     [EnableCors]

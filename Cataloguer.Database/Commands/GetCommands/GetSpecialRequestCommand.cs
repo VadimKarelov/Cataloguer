@@ -20,7 +20,7 @@ public class GetSpecialRequestCommand : AbstractCommand
             .Where(x => x.BrochureId == brochureId)
             .Include(x => x.Good)
             .Where(x => x.Good != null)
-            .Select(x => new Good() { Name = x.Good!.Name, Price = x.Price })
+            .Select(x => new Good() { Id = x.GoodId, Name = x.Good!.Name, Price = x.Price})
             .ToArray();
     }
     
@@ -119,8 +119,8 @@ public class GetSpecialRequestCommand : AbstractCommand
                 distributions.Any(z => z.BrochureId == brochureId &&
                                                z.TownId == x.TownId &&
                                                z.GenderId == x.GenderId &&
-                                               z.AgeGroup!.MinimalAge >= x.Age &&
-                                               z.AgeGroup!.MaximalAge <= x.Age))
+                                               z.AgeGroup!.MinimalAge <= x.Age &&
+                                               z.AgeGroup!.MaximalAge >= x.Age))
             .ToArray();
     }
 
@@ -148,8 +148,8 @@ public class GetSpecialRequestCommand : AbstractCommand
                 .Where(y => distributions.Any(z => z.BrochureId == brochureId &&
                                                    z.TownId == y.TownId &&
                                                    z.GenderId == y.GenderId &&
-                                                   z.AgeGroup.MinimalAge >= y.Age &&
-                                                   z.AgeGroup.MaximalAge <= y.Age))
+                                                   z.AgeGroup.MinimalAge <= y.Age &&
+                                                   z.AgeGroup.MaximalAge >= y.Age))
                 .Where(y => y.SellDate.Day == x.Day &&
                             y.SellDate.Month == x.Month &&
                             y.SellDate.Year == x.Year)
@@ -157,5 +157,16 @@ public class GetSpecialRequestCommand : AbstractCommand
         })
         .OrderBy(x => x.Date)
         .ToArray();
+    }
+    
+    public IEnumerable<SellHistoryForChart> GetPredictedSellHistoryForChart(int brochureId)
+    {
+        return Context.PredictedSellHistory
+            .Where(x => x.BrochureId == brochureId)
+            .Select(x => new SellHistoryForChart()
+            {
+                Date = x.PredictionDate.ToDateTime(new TimeOnly()),
+                Income = x.Value
+            }).ToList();
     }
 }

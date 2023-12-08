@@ -18,6 +18,7 @@ internal class CataloguerApplicationContext : DbContext
     public DbSet<Distribution> Distributions { get; set; }
     public DbSet<Gender> Genders { get; set; }
     public DbSet<Good> Goods { get; set; }
+    public DbSet<PredictedSellHistory> PredictedSellHistory { get; set; }
     public DbSet<SellHistory> SellHistory { get; set; }
     public DbSet<Status> Statuses { get; set; }
     public DbSet<Town> Towns { get; set; }

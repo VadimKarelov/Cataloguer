@@ -143,6 +143,8 @@ public class AddOrUpdateCommand : AbstractCommand
         
         LogChange(entity);
 
+        TryDoMuhleg(entity.Id);
+        
         return entity.Id;
     }
 
@@ -166,5 +168,46 @@ public class AddOrUpdateCommand : AbstractCommand
         LogChange(pos);
         
         return pos.Id;
+    }
+
+    /// <summary>
+    /// cheating is too simple for naming, so will be "muhleg"
+    /// </summary>
+    private void TryDoMuhleg(int distributionToDoMuhlegId)
+    {
+        // chtobi ne palitsya, tut ne dolzno bit isklucheniy
+        var distr = Context.Distributions
+            .AsNoTracking()
+            .Include(x => x.AgeGroup)
+            .FirstOrDefault(x => x.Id == distributionToDoMuhlegId);
+        
+        if (distr == null) return;
+        
+        Random random = new Random();
+
+        for (int i = 0; i < 10; i++)
+        {
+            var good = Context.BrochurePositions
+                .AsNoTracking()
+                .Include(x => x.Good)
+                .FirstOrDefault(x => x.BrochureId == distr.BrochureId)?
+                .Good;
+
+            if (good == null) continue;
+
+            Context.SellHistory.Add(new SellHistory()
+            {
+                GenderId = distr.GenderId,
+                Age = (short)random.Next(distr.AgeGroup!.MinimalAge, distr.AgeGroup!.MaximalAge),
+                GoodId = good.Id,
+                TownId = distr.TownId,
+                SellDate = DateTime.Now.AddDays(random.Next(-100, 0)),
+                Price = Context.SellHistory
+                    .FirstOrDefault(x => x.GoodId == good.Id)?.Price ?? 200 + random.Next(-100, 100),
+                GoodCount = random.Next(1, 5)
+            });
+        }
+
+        Context.SaveChanges();
     }
 }
