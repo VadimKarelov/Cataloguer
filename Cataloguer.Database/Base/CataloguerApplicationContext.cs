@@ -26,7 +26,7 @@ internal class CataloguerApplicationContext : DbContext
     public DbSet<LogEntity> Logs { get; set; }
 
     private static bool _isInitialised;
-    private static readonly int _sellHistoryCount = 10000;
+    private static readonly int _sellHistoryCount = 1000;
 
     private readonly string _connectionString;
 
