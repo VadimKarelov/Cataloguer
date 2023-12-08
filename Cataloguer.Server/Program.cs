@@ -180,7 +180,7 @@ public class Program
         app.MapGet(_baseRoute + "/computeBrochurePotentialIncome/id={brochureId}",
             (int brochureId) => BrochureAnalyzer.TryComputeBrochureIncome(config, brochureId));
 
-        app.Map(_baseRoute + "/releaseBrochure/brochureId={brochureId}",
+        app.Map(_baseRoute + "/releaseBrochure/id={brochureId}",
             (int brochureId) => new SpecialAddOrUpdateCommand(config).TryMarkBrochureAsReleased(brochureId));
     }
 }
