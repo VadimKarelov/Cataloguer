@@ -15,7 +15,7 @@ import {ageGroups, genders, goodsNames, towns} from "./HandbookExamples";
 import GoodsService from "../services/GoodsService";
 import BrochureService from "../services/BrochureService";
 import dayjs from "dayjs";
-import {IS_DEBUG, SHOULD_USE_ONLY_DB_DATA} from "../constants/EnvironmentVariables";
+import {SHOULD_USE_ONLY_DB_DATA} from "../constants/EnvironmentVariables";
 
 /**
  * Путь к данным каталога в session storage.
@@ -89,6 +89,17 @@ class BrochureStore {
     @observable public runPoints: RunPointsDbProps[];
 
     /**
+     * Множество точек для постороения графика предсказанных значений.
+     */
+    @observable public predictedRunPoints: RunPointsDbProps[];
+
+    /**
+     * Загружается ли график.
+     */
+    @observable public isLoadingChart: boolean;
+
+
+    /**
      * Конструктор.
      */
     constructor() {
@@ -96,11 +107,13 @@ class BrochureStore {
         this.allGoods = [];
         this.checkedGoods = [];
         this.runPoints = [];
+        this.predictedRunPoints = [];
         this.currentBrochure = null;
         this.isBrochureSelected = false;
         this.isBrochureLoading = false;
         this.isBrochureMenuLoading = false;
         this.isLoadingGoods = false;
+        this.isLoadingChart = false;
 
         makeAutoObservable(this);
 
@@ -137,15 +150,24 @@ class BrochureStore {
      */
     @action public async releaseBrochure() {
         const brochureId = this.currentBrochure?.id ?? -1;
-        if (brochureId === -1) return;
+        if (brochureId === -1) {
+            return Promise.reject(`Каталог не получилось выпустить`);
+        }
 
-        await BrochureService.releaseBrochure(brochureId).then(
+        return await BrochureService.releaseBrochure(brochureId).then(
             (response) => {
                 const data = response.data;
-                cout(data);
+                if (data !== "OK") {
+                    return Promise.reject(`Каталог не получилось выпустить`);
+                }
+
+                this.onBrochureClick(brochureId);
+                this.loadBrochures();
+                return Promise.resolve(`Каталог успешно выпущен`);
             },
             (error) => {
                 cerr(error);
+                return Promise.reject(`Каталог не получилось выпустить`);
             },
         );
     }
@@ -155,15 +177,21 @@ class BrochureStore {
      */
     @action public async startBrochureRun() {
         const brochureId = this.currentBrochure?.id ?? -1;
-        if (brochureId === -1) return;
+        if (brochureId === -1) {
+            return Promise.reject(`Расчёт завершился с ошибкой`);
+        }
 
-        await BrochureService.startBrochureRun(brochureId).then(
+        return await BrochureService.startBrochureRun(brochureId).then(
             (response) => {
                 const data = response.data;
                 cout(data);
+                this.onBrochureClick(brochureId);
+                this.loadBrochures();
+                return Promise.resolve(`Расчёт выполнился успешно. Эффективность составляет ${data}`);
             },
             (error) => {
                 cerr(error);
+                return Promise.reject(`Расчёт завершился с ошибкой`);
             },
         );
     }
@@ -172,6 +200,7 @@ class BrochureStore {
      * Обновляет коллекцию точек для графика.
      */
     @action public updateRunChartPoints() {
+        this.isLoadingChart = true;
         const brochureId: number = this.currentBrochure?.id ?? -1;
         if (brochureId === -1) return;
         Promise.all([
@@ -181,16 +210,19 @@ class BrochureStore {
             (responses) => {
                 const runData = responses[0].data;
                 const predictedRunData = responses[1].data;
-                cout(runData)
-                cout(predictedRunData)
+
                 if (runData instanceof Array) {
                     this.runPoints = runData;
+                }
+
+                if (predictedRunData instanceof Array) {
+                    this.predictedRunPoints = predictedRunData;
                 }
             },
             (error) => {
                 cerr(error);
             },
-        )
+        ).finally(() => this.isLoadingChart = false);
     }
 
     /**
@@ -344,7 +376,6 @@ class BrochureStore {
         return await GoodsService.addGoodsToBrochure(brochureId, this.checkedGoods).then(
             (response) => {
                 const data = response.data;
-                cout(data);
 
                 if (!isNaN(parseInt(data)) && parseInt(data) === -1) {
                     return Promise.reject("Не удалось добавить товары в каталог");

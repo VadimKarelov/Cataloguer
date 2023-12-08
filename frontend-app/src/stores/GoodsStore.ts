@@ -1,7 +1,7 @@
 import { observable, action, makeAutoObservable } from "mobx";
 import GoodsService from "../services/GoodsService";
 import {GoodsProps} from "../types/BrochureTypes";
-import {cerr, cout} from "../Utils";
+import {cerr} from "../Utils";
 
 /**
  * Класс хранилище для раздела товаров.
@@ -43,7 +43,6 @@ class GoodsStore {
         return await GoodsService.deleteBrochureGood(goodId, brochureId).then(
             async(response) => {
                 const data = response.data;
-                cout(data);
 
                 await this.updateCurrentBrochureGoods(brochureId);
                 if (!isNaN(parseInt(data)) && parseInt(data) === -1) {

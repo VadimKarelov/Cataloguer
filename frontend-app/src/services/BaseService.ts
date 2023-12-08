@@ -1,5 +1,4 @@
 import axios from "axios";
-import {customProp} from "../types/BrochureTypes";
 
 /**
  * Базовый класс сервис.

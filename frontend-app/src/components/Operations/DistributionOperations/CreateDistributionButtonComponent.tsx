@@ -65,7 +65,15 @@ const CreateDistributionButtonComponent: React.FC<CreateDistributionButtonCompon
         switch (formItem.type) {
             case MetadataTypes.NMBR_FIELD: return (<Input type={"number"}/>);
             case MetadataTypes.STR_FIELD: return (<Input/>);
-            case MetadataTypes.LIST_FIELD: return (<Select placeholder={`Выбрать '${formItem.name.toLowerCase()}'`}>{getSelectOptions(formItem)}</Select>);
+            case MetadataTypes.LIST_FIELD: return (
+                <Select
+                    showSearch
+                    optionFilterProp={'children'}
+                    placeholder={`Выбрать '${formItem.name.toLowerCase()}'`}
+                >
+                    {getSelectOptions(formItem)}
+                </Select>
+            );
             default: return null;
         }
     };

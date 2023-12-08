@@ -3,6 +3,7 @@ import BaseButtonComponent from "../BaseButtonComponent";
 import {inject, observer} from "mobx-react";
 import {BaseStoreInjector} from "../../../types/BrochureTypes";
 import React from "react";
+import {openNotification} from "../../NotificationComponent";
 
 /**
  * Свойства компонента ReleaseBrochureButtonComponent.
@@ -46,7 +47,11 @@ const ReleaseBrochureButtonComponent: React.FC<ReleaseBrochureButtonComponentPro
      * Вызывает метод запуска расчёта.
      */
     const onOkClick = () => {
-        props.brochureStore?.releaseBrochure();
+        const response = props.brochureStore?.releaseBrochure();
+        response?.then(
+            (resolve: string) => {openNotification("Успех", resolve, "success")},
+            (error: string) => {openNotification("Ошибка", error, "error")}
+        );
         return Promise.resolve();
     };
 

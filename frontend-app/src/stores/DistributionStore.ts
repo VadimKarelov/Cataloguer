@@ -3,13 +3,11 @@ import DistributionService from "../services/DistributionService";
 import {
     AgeGroupDbProps,
     CreateDistributionDbProps,
-    DistributionDbProps,
     EditDistributionDbProps,
     GenderDbProps,
     TownDbProps
 } from "../types/DistributionTypes";
 import {cerr} from "../Utils";
-import {IS_DEBUG} from "../constants/EnvironmentVariables";
 
 /**
  * Класс хранилище для рассылок.

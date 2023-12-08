@@ -2,6 +2,7 @@ import {MetadataProps, MetadataTypes} from "./components/Operations/BrochureOper
 import {customProp} from "./types/BrochureTypes";
 
 import {IS_DEBUG} from "./constants/EnvironmentVariables";
+import dayjs from "dayjs";
 
 /**
  * Возвращает случайное число в промежутке от min до max.
@@ -52,6 +53,13 @@ export const getValidator = (_: any, value: any, itemMetadata: MetadataProps) =>
 };
 
 /**
+ * Проверяет, является ли строка датой по формату.
+ * @param value Исходная строка (дата).
+ * @param format Формат даты.
+ */
+const isDate = (value: string, format = "YYYY-MM-DD") => (dayjs(value, format, true).isValid());
+
+/**
  * Сортирует столбец таблицы.
  * @param a Строка 1.
  * @param b Строка 2.
@@ -60,6 +68,12 @@ export const getValidator = (_: any, value: any, itemMetadata: MetadataProps) =>
 export const sorter = (a: any, b: any, key: string) => {
     const f: customProp = a, s: customProp = b;
     const first = f[key], second = s[key];
+
+    if (isDate(first)) {
+        return new Date(first).getTime() - new Date(second).getTime();
+    } else if (isDate(second)) {
+        return new Date(second).getTime() - new Date(first).getTime();
+    }
 
     if (typeof first === "string") return first.localeCompare(second);
     if (typeof first === "number") return first - second;

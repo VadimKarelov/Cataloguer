@@ -128,8 +128,8 @@ const BrochureWorkingAreaComponent: React.FC<BrochureWorkingAreaComponentProps> 
     const getBrochureBaseInfo = (): string => {
         if (brochure === null) return "";
 
-        const {name, edition, statusName} = brochure;
-        return `${name} \\ ${edition} \\ ${statusName}`;
+        const {name, edition, statusName, potentialIncome} = brochure;
+        return `${name} \\ ${edition} \\ ${potentialIncome} \\ ${statusName}`;
     };
 
     return (

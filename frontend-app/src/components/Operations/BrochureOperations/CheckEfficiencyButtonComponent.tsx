@@ -3,6 +3,7 @@ import BaseButtonComponent from "../BaseButtonComponent";
 import {inject, observer} from "mobx-react";
 import {BaseStoreInjector} from "../../../types/BrochureTypes";
 import React from "react";
+import {openNotification} from "../../NotificationComponent";
 
 /**
  * Свойства компонента CheckEfficiencyButtonComponent.
@@ -31,7 +32,11 @@ const CheckEfficiencyButtonComponent: React.FC<CheckEfficiencyButtonComponentPro
      * Вызывает метод запуска расчёта.
      */
     const onOkClick = () => {
-        props.brochureStore?.startBrochureRun();
+        const response = props.brochureStore?.startBrochureRun();
+        response?.then(
+            (resolve: string) => {openNotification("Успех", resolve, "success")},
+            (error: string) => {openNotification("Ошибка", error, "error")}
+        );
         return Promise.resolve();
     };
 
