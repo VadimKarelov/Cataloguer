@@ -82,7 +82,7 @@ public static class BrochureAnalyzer
             prediction.Add(new SellHistoryForChart()
             {
                 Date = date,
-                Income = (decimal)regression.Transform(date.ToOADate())
+                Income = Math.Max((decimal)regression.Transform(date.ToOADate()), 0)
             });
         }
 
