@@ -98,7 +98,6 @@ class BrochureStore {
      */
     @observable public isLoadingChart: boolean;
 
-
     /**
      * Конструктор.
      */
@@ -185,8 +184,14 @@ class BrochureStore {
             (response) => {
                 const data = response.data;
                 cout(data);
+
+                if (isNaN(parseFloat(data))) {
+                    return Promise.reject(data);
+                }
+
                 this.onBrochureClick(brochureId);
                 this.loadBrochures();
+                this.updateRunChartPoints();
                 return Promise.resolve(`Расчёт выполнился успешно. Эффективность составляет ${data}`);
             },
             (error) => {
@@ -366,8 +371,10 @@ class BrochureStore {
 
     /**
      * Обрабатывает изменение товаров в каталоге.
+     * @param updateGoods Функция обновления товаров.
+     * Используется в качетсве параметра, так как находится внутри другого хранилища.
      */
-    @action public async handleUpdateBrochureGoods(): Promise<string> {
+    @action public async handleUpdateBrochureGoods(updateGoods: (brochureId: number) => Promise<void>): Promise<string> {
         const brochureId = this.currentBrochure?.id ?? -1;
         if (brochureId === -1) {
             return Promise.reject("Не удалось добавить товары в каталог");
@@ -380,6 +387,8 @@ class BrochureStore {
                 if (!isNaN(parseInt(data)) && parseInt(data) === -1) {
                     return Promise.reject("Не удалось добавить товары в каталог");
                 }
+
+                updateGoods(brochureId);
                 return Promise.resolve("Товары успешно добавлены в каталог");
             },
             (error) => {

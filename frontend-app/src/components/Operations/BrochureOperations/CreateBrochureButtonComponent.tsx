@@ -207,8 +207,11 @@ const CreateBrochureButtonComponent: React.FC<CreateBrochureButtonComponentProps
                 response = props.brochureStore?.handleEditBrochure(brochureEditProps);
             } break;
             case ButtonModes.CREATE_GOODS: {
-                response = props.brochureStore?.handleUpdateBrochureGoods();
-                props.goodsStore?.updateCurrentBrochureGoods(currentBrochure?.id ?? -1);
+                const callback = props.goodsStore?.updateCurrentBrochureGoods;
+
+                response = callback ?
+                    props.brochureStore?.handleUpdateBrochureGoods(callback)
+                    : Promise.reject("Ошибка с хранилищем товаров");
             } break;
         }
 

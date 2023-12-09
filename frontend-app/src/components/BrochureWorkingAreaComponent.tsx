@@ -23,29 +23,6 @@ enum TabKeys {
 }
 
 /**
- * Множество вкладок.
- */
-const tabs: Readonly<TabsProps["items"]> = [
-    {
-        key: TabKeys.BROCHURE_TAB,
-        label: "Каталог",
-    },
-    {
-        key: TabKeys.GOODS_TAB,
-        label: 'Состав',
-    },
-    {
-        key: TabKeys.DISTRIBUTION_TAB,
-        label: 'Рассылка',
-    },
-    {
-        key: TabKeys.RUN_TAB,
-        label: 'Расчёт',
-        disabled: false,
-    },
-];
-
-/**
  * Свойства компонента BrochureWorkingAreaComponent.
  */
 interface BrochureWorkingAreaComponentProps extends BaseStoreInjector {
@@ -69,6 +46,29 @@ const BrochureWorkingAreaComponent: React.FC<BrochureWorkingAreaComponentProps> 
      * Ключ текущей (выбранной) вкладки.
      */
     const [currentTabKey, setCurrentTabKey] = useState<string>(TabKeys.BROCHURE_TAB);
+
+    /**
+     * Множество вкладок.
+     */
+    const tabs = [
+        {
+            key: TabKeys.BROCHURE_TAB,
+            label: "Каталог",
+        },
+        {
+            key: TabKeys.GOODS_TAB,
+            label: 'Состав',
+        },
+        {
+            key: TabKeys.DISTRIBUTION_TAB,
+            label: 'Рассылка',
+        },
+        {
+            key: TabKeys.RUN_TAB,
+            label: 'Расчёт',
+            disabled: brochure?.potentialIncome === 0,
+        },
+    ];
 
     /**
      * Хук для изменения текущей вкладки.

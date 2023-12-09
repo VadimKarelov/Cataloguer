@@ -149,7 +149,7 @@ const DistributionDescriptionComponent: React.FC<DistributionDescriptionComponen
                         {hasData ? (<Table
                             className={"distributions-table-style"}
                             size={"middle"}
-                            scroll={{y: "calc(100vh - 278px)", x: "max-content"}}
+                            scroll={{y: "calc(100vh - 340px)", x: "max-content"}}
                             columns={columns}
                             dataSource={getFilteredDistributions()}
                             pagination={false}

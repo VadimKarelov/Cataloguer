@@ -41,7 +41,7 @@ const DeleteGoodsButtonComponent: React.FC<DeleteGoodsButtonComponentProps> = in
 
     return (
         <Popconfirm title={`Удалить товар?`} okText={"Удалить"} cancelText={"Отменить"} onConfirm={onOkClick}>
-            <Button>
+            <Button danger>
                 Удалить
             </Button>
         </Popconfirm>

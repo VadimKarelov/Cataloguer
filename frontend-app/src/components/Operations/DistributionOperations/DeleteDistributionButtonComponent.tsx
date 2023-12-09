@@ -34,7 +34,7 @@ const DeleteDistributionButtonComponent: React.FC<DeleteDistributionButtonCompon
 
     return (
         <Popconfirm title={`Удалить рассылку?`} okText={"Удалить"} cancelText={"Отменить"} onConfirm={onOkClick}>
-            <Button>
+            <Button danger>
                 Удалить
             </Button>
         </Popconfirm>

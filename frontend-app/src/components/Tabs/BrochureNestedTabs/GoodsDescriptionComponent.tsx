@@ -150,7 +150,7 @@ const GoodsDescriptionComponent: React.FC<GoodsDescriptionComponentProps> = inje
                         {hasData ? (<Table
                             className={"goods-table-style"}
                             size={"middle"}
-                            scroll={{y: "calc(100vh - 283px)", x: "max-content"}}
+                            scroll={{y: "calc(100vh - 340px)", x: "max-content"}}
                             columns={columns}
                             dataSource={getFilteredGoods()}
                             pagination={false}
