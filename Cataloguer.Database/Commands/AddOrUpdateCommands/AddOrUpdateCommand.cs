@@ -53,6 +53,8 @@ public class AddOrUpdateCommand : AbstractCommand
         }
         
         LogChange(brochure);
+        
+        new SpecialAddOrUpdateCommand(DBConfig).GenerateSellHistory(brochureId);
     }
 
     /// <summary>
@@ -142,8 +144,8 @@ public class AddOrUpdateCommand : AbstractCommand
         Context.SaveChanges();
         
         LogChange(entity);
-
-        TryDoMuhleg(entity.Id);
+        
+        new SpecialAddOrUpdateCommand(DBConfig).GenerateSellHistory(entity.BrochureId);
         
         return entity.Id;
     }

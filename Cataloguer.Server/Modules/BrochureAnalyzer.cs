@@ -103,6 +103,8 @@ public static class BrochureAnalyzer
         if (brochure == null)
             throw new Exception($"Каталог с id={brochureId} не найден в базе данных!");
 
+        new SpecialAddOrUpdateCommand(config).GenerateSellHistoryIfNotExist(brochureId);
+        
         var distributions = new GetCommand(config).GetListDistribution(x => x.BrochureId == brochureId);
 
         bool enoughData = false;
