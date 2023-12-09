@@ -81,6 +81,7 @@ public class GetSpecialRequestCommand : AbstractCommand
 
         var distribution = Context.Distributions
             .AsNoTracking()
+            .Include(x => x.AgeGroup)
             .FirstOrDefault(x => x.Id == distributionId);
 
         if (brochure == null || distribution == null)
@@ -96,8 +97,8 @@ public class GetSpecialRequestCommand : AbstractCommand
             .Where(x => goodsFromBrochure.Contains(x.GoodId))
             .Where(x => x.GenderId == distribution.GenderId &&
                         x.TownId == distribution.TownId &&
-                        x.Age >= distribution.AgeGroup.MinimalAge &&
-                        x.Age <= distribution.AgeGroup.MaximalAge)
+                        x.Age >= distribution.AgeGroup!.MinimalAge &&
+                        x.Age <= distribution.AgeGroup!.MaximalAge)
             .OrderBy(x => x.SellDate)
             .ToArray();
     }
