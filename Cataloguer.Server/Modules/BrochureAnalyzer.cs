@@ -97,6 +97,8 @@ public static class BrochureAnalyzer
     
     public static void TryComputeBrochurePotentialIncome(DataBaseConfiguration config, int brochureId)
     {
+        const short regressionPow = 3;
+        
         var brochure = new GetCommand(config).GetBrochure(brochureId);
         if (brochure == null)
             throw new Exception($"Каталог с id={brochureId} не найден в базе данных!");
@@ -150,13 +152,14 @@ public static class BrochureAnalyzer
             var ys = values.Select(x => x.y).ToArray();
 
             // обучение
-            SimpleLinearRegression regression = new OrdinaryLeastSquares().Learn(xs, ys);
+            //SimpleLinearRegression regression = new OrdinaryLeastSquares().Learn(xs, ys);
+            MultivariateLinearRegression regression = new OrdinaryLeastSquares().Learn(xs, ys, regressionPow);
 
             // предсказание для рассылки
             for (DateTime date = predictionMinDate; date <= predictionMaxDate; date = date.AddDays(1))
             {
-                //var inc = Math.Max(regression.Transform(date.ToOADate()), 0);
-                var inc = regression.Transform(date.ToOADate());
+                var inc = Math.Max(regression.Transform(date.ToOADate(), regressionPow), 0);
+                //var inc = regression.Transform(date.ToOADate());
                 AddToDictionary(prediction, date.ToOADate(), inc);
             }
         }
