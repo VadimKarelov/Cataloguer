@@ -80,10 +80,25 @@ const RunResultComponent: React.FC<RunResultComponentProps> = inject("brochureSt
         },
     };
 
+    /**
+     * Выбранный каталог.
+     */
+    const brochure = props.brochureStore?.currentBrochure ?? null;
+
     return (
         <Spin size={"large"} spinning={props.brochureStore?.isLoadingChart}>
                 <Plot
                     data={[
+                        {
+                            x: brochure ? [brochure.date, brochure.date] : ["", ""],
+                            y: [0, Math.max(...ys) * 1.10],
+                            name: "Выпуск каталога",
+                            type: 'scatter',
+                            line: {
+                                dash: 'dot',
+                                width: 2
+                            }
+                        },
                         {
                             x: xs,
                             y: ys,
