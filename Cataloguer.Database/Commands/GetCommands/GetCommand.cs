@@ -198,6 +198,7 @@ public class GetCommand : AbstractCommand
     {
         return TryApplyPredicate(Context.Logs.AsNoTracking(), predicate)
             .OrderByDescending(x => x.DateTime)
+            .Take(1000)
             .ToArray();
     }
 

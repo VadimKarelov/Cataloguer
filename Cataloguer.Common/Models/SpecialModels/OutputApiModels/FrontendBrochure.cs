@@ -13,7 +13,7 @@ public class FrontendBrochure : Brochure
         this.Edition = brochure.Edition;
         this.Name = brochure.Name;
         this.PositionCount = brochure.PositionCount;
-        this.PotentialIncome = brochure.PotentialIncome;
+        this.PotentialIncome = Math.Round(brochure.PotentialIncome, 2, MidpointRounding.ToZero);
     }
 
     [JsonPropertyName("statusName")]

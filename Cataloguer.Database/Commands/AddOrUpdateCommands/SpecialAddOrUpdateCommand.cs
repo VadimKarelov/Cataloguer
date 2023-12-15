@@ -116,7 +116,7 @@ namespace Cataloguer.Database.Commands.AddOrUpdateCommands
             const int pickDate = 15;
 
             // число месяцев, в которые нужно сгенерировать историю
-            const short numberOfMonths = 1;
+            const short numberOfMonths = 3;
 
             DateTime initDate = DateTime.Today.Date.AddDays(-30 * numberOfMonths);
             DateTime finishDate = DateTime.Today.Date;

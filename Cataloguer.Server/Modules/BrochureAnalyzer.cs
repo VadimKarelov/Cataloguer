@@ -154,14 +154,14 @@ public static class BrochureAnalyzer
             var ys = values.Select(x => x.y).ToArray();
 
             // обучение
-            //SimpleLinearRegression regression = new OrdinaryLeastSquares().Learn(xs, ys);
-            MultivariateLinearRegression regression = new OrdinaryLeastSquares().Learn(xs, ys, regressionPow);
+            SimpleLinearRegression regression = new OrdinaryLeastSquares().Learn(xs, ys);
+            //MultivariateLinearRegression regression = new OrdinaryLeastSquares().Learn(xs, ys, regressionPow);
 
             // предсказание для рассылки
             for (DateTime date = predictionMinDate; date <= predictionMaxDate; date = date.AddDays(1))
             {
-                var inc = Math.Max(regression.Transform(date.ToOADate(), regressionPow), 0);
-                //var inc = regression.Transform(date.ToOADate());
+                //var inc = Math.Max(regression.Transform(date.ToOADate(), regressionPow), 0);
+                var inc = regression.Transform(date.ToOADate());
                 AddToDictionary(prediction, date.ToOADate(), inc);
             }
         }
