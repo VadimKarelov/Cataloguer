@@ -4,7 +4,7 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>        
         <FrontendPath>..\frontend-app\</FrontendPath>
-        <FrontendBuildPath>$(ProjectPath)build\</FrontendBuildPath>
+        <FrontendBuildPath>$(FrontendPath)build\</FrontendBuildPath>
         <ProjectStaticFilesPath>wwwroot\</ProjectStaticFilesPath>
         <ScriptsPath>Scripts\</ScriptsPath>
     </PropertyGroup>
@@ -20,14 +20,6 @@
 
     <ItemGroup>
       <Folder Include="Logs\" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <_ContentIncludedByDefault Remove="wwwroot\static\css\main.8c21164d.css" />
-      <_ContentIncludedByDefault Remove="wwwroot\static\css\main.8c21164d.css.map" />
-      <_ContentIncludedByDefault Remove="wwwroot\static\js\main.586ad7eb.js" />
-      <_ContentIncludedByDefault Remove="wwwroot\static\js\main.586ad7eb.js.LICENSE.txt" />
-      <_ContentIncludedByDefault Remove="wwwroot\static\js\main.586ad7eb.js.map" />
     </ItemGroup>
     
     <Target Name="CleanFolders" BeforeTargets="Build" Condition="'$(Configuration)' == 'Release'">

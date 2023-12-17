@@ -31,14 +31,6 @@
     font-size: 28px !important;
 }
 
-.main-tabs-style:where(.css-dev-only-do-not-override-1uzqhm2).ant-tabs .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
-    color: black !important;
-}
-
-.main-tabs-style:where(.css-dev-only-do-not-override-1uzqhm2).ant-tabs .ant-tabs-tab:hover {
-    color: white !important;
-}
-
 .sider-style {
     background-color: rgb(240, 240, 240) !important;
     height: calc(100vh - 110px);

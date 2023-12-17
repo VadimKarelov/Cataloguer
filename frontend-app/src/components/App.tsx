@@ -1,6 +1,6 @@
 import '../styles/App.css';
 import React, {useState} from "react";
-import {Layout, Tabs, Typography} from "antd";
+import {ConfigProvider, Layout, Tabs, Typography} from "antd";
 import {Header} from 'antd/es/layout/layout';
 import BrochureTabContent from './Tabs/BrochureTabContentComponent';
 import AuditTabContentComponent from "./Tabs/AuditTabContentComponent";
@@ -48,12 +48,19 @@ const App = () => {
                 <Typography.Title className={"header-title"}>
                     Формирование эффективного каталога товаров
                 </Typography.Title>
-                <Tabs
-                    className={"main-tabs-style"}
-                    activeKey={currentTab}
-                    onChange={setCurrentTab}
-                    items={TABS.map(tab => tab)}
-                />
+                <ConfigProvider theme={{
+                    token: {
+                        colorPrimary: 'black',
+                        colorPrimaryHover: 'white',
+                    }}}
+                >
+                    <Tabs
+                        className={"main-tabs-style"}
+                        activeKey={currentTab}
+                        onChange={setCurrentTab}
+                        items={TABS.map(tab => tab)}
+                    />
+                </ConfigProvider>
             </Header>
             <Layout className={"main-window-layout"}>
                 {getTabContent()}
