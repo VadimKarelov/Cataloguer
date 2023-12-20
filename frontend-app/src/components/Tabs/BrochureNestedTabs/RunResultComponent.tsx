@@ -87,39 +87,39 @@ const RunResultComponent: React.FC<RunResultComponentProps> = inject("brochureSt
 
     return (
         <Spin size={"large"} spinning={props.brochureStore?.isLoadingChart}>
-                <Plot
-                    data={[
-                        {
-                            x: brochure ? [brochure.date, brochure.date] : ["", ""],
-                            y: [0, Math.max(...ys) * 1.10],
-                            name: "Выпуск каталога",
-                            type: 'scatter',
-                            line: {
-                                dash: 'dot',
-                                width: 2
-                            }
-                        },
-                        {
-                            x: xs,
-                            y: ys,
-                            xaxis: 'date',
-                            yaxis: 'income',
-                            name: "Доход по истории продаж",
-                            type: 'scatter'
-                        },
-                        {
-                            x: predictedXs,
-                            y: predictedYs,
-                            xaxis: 'date',
-                            yaxis: 'income',
-                            name: "Предсказанный доход",
-                            type: 'scatter'
-                        },
-                    ]}
-                    style={{width: "calc(100vw - 500px)", height: "calc(100vh - 200px)", marginTop: 5}}
-                    layout={layout}
-                    config={{responsive: true}}
-                />
+            <Plot
+                data={[
+                    {
+                        x: brochure ? [brochure.date, brochure.date] : ["", ""],
+                        y: [0, Math.max(...ys) * 1.10],
+                        name: "Выпуск каталога",
+                        type: 'scatter',
+                        line: {
+                            dash: 'dot',
+                            width: 2
+                        }
+                    },
+                    {
+                        x: xs,
+                        y: ys,
+                        xaxis: 'date',
+                        yaxis: 'income',
+                        name: "Доход по истории продаж",
+                        type: 'scatter'
+                    },
+                    {
+                        x: predictedXs,
+                        y: predictedYs,
+                        xaxis: 'date',
+                        yaxis: 'income',
+                        name: "Предсказанный доход",
+                        type: 'scatter'
+                    },
+                ]}
+                style={{width: "calc(100vw - 500px)", height: "calc(100vh - 200px)", marginTop: 5}}
+                layout={layout}
+                config={{responsive: true, locale: 'ru-RU'}}
+            />
         </Spin>
     );
 }));
