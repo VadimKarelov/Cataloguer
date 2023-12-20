@@ -8,6 +8,8 @@ import {cerr, getValidator} from "../../../Utils";
 import {openNotification} from "../../NotificationComponent";
 import GoodsStore from "../../../stores/GoodsStore";
 import dayjs from "dayjs";
+import locale from 'antd/es/date-picker/locale/ru_RU';
+import 'dayjs/locale/ru';
 
 /**
  * Перечисления типов в метаданных для компонента CreateBrochureButtonComponent.
@@ -120,9 +122,9 @@ const CreateBrochureButtonComponent: React.FC<CreateBrochureButtonComponentProps
      */
     const getFormItemComponent = (formItem: MetadataProps) => {
         switch (formItem.type) {
-            case MetadataTypes.NMBR_FIELD: return (<Input type={"number"}/>);
-            case MetadataTypes.STR_FIELD: return (<Input/>);
-            case MetadataTypes.DATE_FIELD: return (<DatePicker format={"DD.MM.YYYY"}/>);
+            case MetadataTypes.NMBR_FIELD: return (<Input placeholder={formItem.name} type={"number"}/>);
+            case MetadataTypes.STR_FIELD: return (<Input placeholder={formItem.name}/>);
+            case MetadataTypes.DATE_FIELD: return (<DatePicker style={{width: "100%"}} format={"DD.MM.YYYY"} locale={locale}/>);
             case MetadataTypes.TBL_FIELD: return (<GoodsTableComponent/>);
             default: return null;
         }

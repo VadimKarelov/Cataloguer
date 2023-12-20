@@ -37,7 +37,7 @@ root.render(
               theme={{
                   token: {
                       colorPrimary: '#d3a325',
-                  },
+                  }
               }}
               locale={ru_RU}
           >
