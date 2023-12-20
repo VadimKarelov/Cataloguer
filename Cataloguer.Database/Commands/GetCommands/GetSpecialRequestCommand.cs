@@ -124,6 +124,30 @@ public class GetSpecialRequestCommand : AbstractCommand
                                                z.AgeGroup!.MaximalAge >= x.Age))
             .ToArray();
     }
+    
+    /// <param name="lastDateTime">Число, до которого делается выборка</param>
+    public IEnumerable<SellHistory> GetSellHistoryForBrochureGoodsAndDistributionsForConcreteDay(int brochureId, int day, DateTime lastDateTime)
+    {
+        var distributions = new GetCommand(DBConfig)
+            .GetListDistribution(x => x.BrochureId == brochureId, true);
+
+        var brochurePositions = Context.BrochurePositions
+            .AsNoTracking()
+            .Where(x => x.BrochureId == brochureId)
+            .ToList();
+
+        return Context.SellHistory
+            .AsNoTracking()
+            .Where(x => x.SellDate.Day == day)
+            .AsEnumerable()
+            .Where(x => brochurePositions.Any(y => y.GoodId == x.GoodId) &&
+                        distributions.Any(z => z.BrochureId == brochureId &&
+                                               z.TownId == x.TownId &&
+                                               z.GenderId == x.GenderId &&
+                                               z.AgeGroup!.MinimalAge <= x.Age &&
+                                               z.AgeGroup!.MaximalAge >= x.Age))
+            .ToArray();
+    }
 
     public IEnumerable<SellHistoryForChart> GetSellHistoryForChart(int brochureId)
     {
@@ -164,10 +188,12 @@ public class GetSpecialRequestCommand : AbstractCommand
     {
         return Context.PredictedSellHistory
             .Where(x => x.BrochureId == brochureId)
+            .OrderBy(x => x.PredictionDate)
             .Select(x => new SellHistoryForChart()
             {
                 Date = x.PredictionDate.ToDateTime(new TimeOnly()),
                 Income = x.Value
-            }).ToList();
+            })
+            .ToList();
     }
 }

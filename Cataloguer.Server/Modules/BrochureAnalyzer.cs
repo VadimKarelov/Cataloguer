@@ -1,4 +1,5 @@
-﻿using Accord.Statistics.Models.Regression.Linear;
+﻿using System.Runtime.InteropServices.JavaScript;
+using Accord.Statistics.Models.Regression.Linear;
 using Cataloguer.Common.Models.SpecialModels.OutputApiModels;
 using Cataloguer.Database.Base;
 using Cataloguer.Database.Commands;
@@ -95,7 +96,7 @@ public static class BrochureAnalyzer
     // }
     */
     
-    public static void TryComputeBrochurePotentialIncome(DataBaseConfiguration config, int brochureId)
+    /*public static void TryComputeBrochurePotentialIncome(DataBaseConfiguration config, int brochureId)
     {
         const short regressionPow = 3;
         
@@ -172,6 +173,80 @@ public static class BrochureAnalyzer
         List<SellHistoryForChart> predictionChart = new();
 
         // предсказание
+        for (DateTime date = predictionMinDate; date <= predictionMaxDate; date = date.AddDays(1))
+        {
+            predictionChart.Add(new SellHistoryForChart()
+            {
+                Date = date,
+                Income = (decimal)prediction[date.ToOADate()]
+            });
+        }
+
+        // удаление старой истории
+        new DeleteCommand(config).DeletePredictionHistory(brochureId);
+        
+        // сохранение данных
+        new SpecialAddOrUpdateCommand(config).AddPredictedHistory(brochureId, predictionChart);
+        
+    }*/
+    
+    public static void TryComputeBrochurePotentialIncome(DataBaseConfiguration config, int brochureId)
+    {
+        const short regressionPow = 3;
+        
+        var brochure = new GetCommand(config).GetBrochure(brochureId);
+        if (brochure == null)
+            throw new Exception($"Каталог с id={brochureId} не найден в базе данных!");
+
+        new SpecialAddOrUpdateCommand(config).GenerateSellHistoryIfNotExist(brochureId);
+        
+        var distributions = new GetCommand(config).GetListDistribution(x => x.BrochureId == brochureId);
+
+        bool enoughData = false;
+
+        var predictionMinDate = DateTime.Today < brochure.Date
+            ? DateTime.Today.AddDays(-30).Date
+            : brochure.Date.AddDays(-30).Date;
+
+        var predictionMaxDate = brochure.Date.AddDays(30);
+        
+        // результат по всем дням (key=date, value=income)
+        var prediction = new Dictionary<double, double>();
+
+        for (DateTime date = predictionMinDate; date <= predictionMaxDate; date = date.AddDays(1))
+        {
+            // получаем историю продаж в конкретные дни месяца
+            var sellHistory = new GetSpecialRequestCommand(config)
+                .GetSellHistoryForBrochureGoodsAndDistributionsForConcreteDay(brochureId, date.Day, date);
+            
+            if (!sellHistory.Any()) continue;
+            enoughData = true; // смотрим, что хоть где-то хватило данных
+            
+            // Готовим обучающие данные
+            // считаем сумму продаж по месяцам
+            var monthesIncome = new Dictionary<double, double>();
+
+            foreach (var history in sellHistory)
+            {
+                AddToDictionary(monthesIncome, history.SellDate.ToOADate(), (double)history.Price);
+            }
+
+            double[] xs = monthesIncome.Keys.ToArray();
+            double[] ys = monthesIncome.Values.ToArray();
+            
+            // обучение
+            SimpleLinearRegression regression = new OrdinaryLeastSquares().Learn(xs, ys);
+            
+            var inc = regression.Transform(date.ToOADate());
+            AddToDictionary(prediction, date.ToOADate(), inc);
+        }
+        
+        if (!enoughData)
+            throw new Exception($"Для каталога id={brochureId} недостаточно данных для расчета эффективности! Добавьте больше товаров или рассылок");
+        
+        List<SellHistoryForChart> predictionChart = new();
+
+        // формирование предсказанного графика
         for (DateTime date = predictionMinDate; date <= predictionMaxDate; date = date.AddDays(1))
         {
             predictionChart.Add(new SellHistoryForChart()
