@@ -4,7 +4,7 @@ import {inject, observer} from "mobx-react";
 import {BaseStoreInjector, BrochureBaseInfoProps, customProp} from "../../../types/BrochureTypes";
 import "../../../styles/Tabs/BrochureTab.css";
 import {NO_DATA_TEXT} from "../../../constants/Messages";
-import moment from "moment";
+import dayjs from "dayjs";
 
 /**
  * Метаданные к разделу.
@@ -57,7 +57,7 @@ const BrochureDescriptionComponent: React.FC<BrochureDescriptionComponentProps> 
                 {sortedMetaData.map(field => {
                     const value = parsableBrochure[field.name];
                     const label = (<div className={"brochure-form-item-label-style"}>{field.displayName}</div>);
-                    const valueToShow = field.name === "date" ? moment(value).format('DD.MM.YYYY HH:mm:ss') : value;
+                    const valueToShow = field.name === "date" ? dayjs(value).format('DD.MM.YYYY HH:mm:ss') : value;
                     return (
                         <Form.Item key={`brochure_description_${field.name}`} label={label}>
                             <Typography.Text className={"brochure-form-item-text-style"}>

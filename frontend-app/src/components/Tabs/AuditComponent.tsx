@@ -1,4 +1,4 @@
-import React, {useEffect} from "react";
+import React from "react";
 import AuditStore from "../../stores/AuditStore";
 import {inject, observer} from "mobx-react";
 import {Spin, Table} from "antd";
@@ -32,13 +32,6 @@ const AuditComponent: React.FC<AuditComponentProps> = inject("auditStore")(obser
      * Логи.
      */
     const logs = props.auditStore?.logs ?? [];
-
-    /**
-     * Вызывает запрос на обновление логов.
-     */
-    // useEffect(() => {
-    //     props.auditStore?.updateCurrentLogs();
-    // }, []);
 
     return (
         <Spin size={"large"} spinning={props.auditStore?.isLoadingLogs}>

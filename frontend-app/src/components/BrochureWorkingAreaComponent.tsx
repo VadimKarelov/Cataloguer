@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from "react";
 import {Layout, Tabs, Typography} from "antd";
-import type { TabsProps } from 'antd';
 import {Content, Header} from "antd/es/layout/layout";
 import "../styles/BrochureWorkingArea.css"
 import BrochureDescriptionComponent from "./Tabs/BrochureNestedTabs/BrochureDescriptionComponent";
@@ -71,6 +70,14 @@ const BrochureWorkingAreaComponent: React.FC<BrochureWorkingAreaComponentProps> 
     ];
 
     /**
+     * Возвращает ключ вкладки.
+     */
+    const getTabKey = () => {
+        const oldTab = sessionStorage.getItem(SS_SAVED_TAB);
+        return oldTab !== null ? oldTab : TabKeys.BROCHURE_TAB;
+    };
+
+    /**
      * Хук для изменения текущей вкладки.
      * При обновлении страницы подставляет выбранную вкладку.
      * При смене каталога устанавливает первую вкладку.
@@ -81,15 +88,15 @@ const BrochureWorkingAreaComponent: React.FC<BrochureWorkingAreaComponentProps> 
 
             const prevId = prevBrochure !== null ? prevBrochure.id : -1;
             const currentBrochure = props.brochureStore?.currentBrochure ?? null;
-
             if (currentBrochure) {
                 const currentId = currentBrochure.id;
-                if (currentId !== prevId && prevId === -1) {
-                    const oldTab = sessionStorage.getItem(SS_SAVED_TAB);
-                    key = oldTab !== null ? oldTab : TabKeys.BROCHURE_TAB;
+                const areSameBrochures = currentId === prevId;
+                const isPrevBrochureNull = prevId === -1;
+                if ((!areSameBrochures && isPrevBrochureNull) ||
+                        (areSameBrochures && !isPrevBrochureNull)) {
+                    key = getTabKey();
                 }
             }
-
             setCurrentTabKey(key);
             return currentBrochure;
         });

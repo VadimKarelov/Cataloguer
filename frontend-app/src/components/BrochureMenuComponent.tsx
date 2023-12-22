@@ -82,8 +82,6 @@ const BrochureMenuComponent: React.FC<BrochureMenuComponentProps> = inject("broc
      * @param event Событие, содержащее данные по каталогу.
      */
     const onSelectBrochure = (event: {key: string}): void => {
-        props.brochureStore?.reset();
-
         const brochureKey: string = event.key ?? "";
         const id = brochureKey.slice(brochureKey.indexOf('_') + 1);
         props.brochureStore?.onBrochureClick(id !== "undefined" ? parseInt(id) : -1);

@@ -33,7 +33,11 @@ const BrochureComponent: React.FC<BrochureComponentProps> = inject("brochureStor
                     {
                         (currentBrochure !== null) ?
                             <BrochureWorkingAreaComponent/>
-                        : <Empty className={"empty-brochure-data-style"} image={Empty.PRESENTED_IMAGE_SIMPLE}/>
+                        : <Empty
+                                className={"empty-brochure-data-style"}
+                                image={Empty.PRESENTED_IMAGE_SIMPLE}
+                                description={"Выберите каталог"}
+                            />
                     }
                 </Spin>
             </Content>
