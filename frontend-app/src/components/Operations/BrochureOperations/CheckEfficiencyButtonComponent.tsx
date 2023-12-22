@@ -2,29 +2,53 @@ import {Typography} from "antd";
 import BaseButtonComponent from "../BaseButtonComponent";
 import {inject, observer} from "mobx-react";
 import {BaseStoreInjector} from "../../../types/BrochureTypes";
-import React from "react";
+import React, {useEffect} from "react";
 import {openNotification} from "../../NotificationComponent";
+import {DistributionStore} from "../../../stores/DistributionStore";
 
 /**
  * Свойства компонента CheckEfficiencyButtonComponent.
  */
 interface CheckEfficiencyButtonComponentProps extends BaseStoreInjector {
+    distributionStore?: DistributionStore;
 }
 
 /**
  * Компонент кнопки Проверить, открывающий свою модалку.
  */
-const CheckEfficiencyButtonComponent: React.FC<CheckEfficiencyButtonComponentProps> = inject("brochureStore")(observer((props) => {
+const CheckEfficiencyButtonComponent: React.FC<CheckEfficiencyButtonComponentProps> = inject("brochureStore", "distributionStore")(observer((props) => {
     /**
      * Выбранный каталог.
      */
     const currentBrochure = props.brochureStore?.currentBrochure ?? null;
 
     /**
+     * Выбран каталог или нет.
+     */
+    const isBrochureSelected = currentBrochure !== null;
+
+    /**
+     * Есть рассылки или нет.
+     */
+    const hasDistributions = (props.distributionStore?.distributions ?? []).length > 0;
+
+    /**
+     * Обновляет число рассылок для текущего каталога.
+     */
+    useEffect(() => {
+        if (currentBrochure) {
+            props.distributionStore?.updateBrochureDistributions(currentBrochure?.id);
+        }
+    }, [currentBrochure?.id]);
+
+    /**
      * Возвращает настройки хинта.
      */
     const getTooltipProps = () => {
-        const title = "Необходимо выбрать каталог";
+        let title = "Необходимо выбрать каталог";
+        if (isBrochureSelected && !hasDistributions) {
+            title = "Необходимо добавить рассылки";
+        }
         return {title: title};
     };
 
@@ -56,7 +80,7 @@ const CheckEfficiencyButtonComponent: React.FC<CheckEfficiencyButtonComponentPro
      */
     const buttonProps = {
         buttonText: "Проверить",
-        isDisabled: currentBrochure === null,
+        isDisabled: !isBrochureSelected || !hasDistributions,
         tooltip: getTooltipProps(),
     };
 
