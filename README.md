@@ -38,6 +38,15 @@
 
 ### Запуск ASP.NET
 
+##### Через консоль
+
+- Prod версия: Запустить скрипт соотв. ОС:
+  - Windows: .\Scripts\runReleaseBuild.bat
+  - Unix: ./Scripts/runReleaseBuild.sh
+- Dev (без сборки frontend): Запустить скрипт соотв. ОС:
+  - Windows: .\Scripts\runDebugBuild.bat
+  - Unix: ./Scripts/runDebugBuild.sh
+
 ##### Через Visual Studio
 
 1. Выбрать в качестве запускаемого проекта Cataloguer.Server
