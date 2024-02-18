@@ -7,6 +7,7 @@
         <FrontendBuildPath>$(FrontendPath)build\</FrontendBuildPath>
         <ProjectStaticFilesPath>wwwroot\</ProjectStaticFilesPath>
         <ScriptsPath>Scripts\</ScriptsPath>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     </PropertyGroup>
 
     <ItemGroup>
@@ -19,7 +20,9 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Logs\" />
+        <Folder Include="Logs\" />
+        <FilesToMove Include="$(FrontendBuildPath)**\*" />
+        <FolderMoveTo Include="$(ProjectStaticFilesPath)**\*" />
     </ItemGroup>
     
     <Target Name="CleanFolders" BeforeTargets="Build" Condition="'$(Configuration)' == 'Release'">
@@ -28,12 +31,12 @@
         <MakeDir Directories="$(ProjectStaticFilesPath)" MSBuildRuntime="*" />
     </Target>
 
-	<Target Name="BuildFrontend" BeforeTargets="Build" Condition="'$(Configuration)' == 'Release'">
+	<Target Name="BuildFrontend" AfterTargets="CleanFolders" Condition="'$(Configuration)' == 'Release'">
         <Exec ConsoleToMSBuild="true" WorkingDirectory="$(FrontendPath)" Command="npm install" />
         <Exec ConsoleToMSBuild="true" WorkingDirectory="$(FrontendPath)" Command="npm run build" />
     </Target>
 
-    <Target Name="CopyStaticFiles" AfterTargets="BuildFrontend" Condition="'$(Configuration)' == 'Release'">
+    <Target Name="CopyStaticFiles" AfterTargets="BuildFrontend" Condition="'$(Configuration)' == 'Release'">        
         <Exec Command="$(ScriptsPath)moveStaticFiles.sh" Condition="'$(OS)' != 'Windows_NT'" />
         <Exec Command="$(ScriptsPath)moveStaticFiles.bat" Condition="'$(OS)' == 'Windows_NT'" />
     </Target>

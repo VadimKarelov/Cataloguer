@@ -1,0 +1,35 @@
+version: "3.9"
+networks:
+  deploy-network:
+    driver: bridge
+services:
+  web_app: 
+    container_name: cataloguer-app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "9595:9595"
+      - "3000:3000"
+    networks:
+      - deploy-network
+    depends_on:
+      - cataloguer_db
+    volumes:
+      - cataloguer-app:/app
+  cataloguer_db:
+    container_name: db-postgres
+    image: postgres:16.2
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: CataloguerDataBasePostgres
+    ports:
+      - "5432:5432"
+    networks:
+      - deploy-network
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+volumes:
+  postgres-data:
+  cataloguer-app:
