@@ -1,35 +1,36 @@
-version: "3.9"
-networks:
-  deploy-network:
-    driver: bridge
+version: '3.9'
 services:
-  web_app: 
-    container_name: cataloguer-app
+  web-app:
     build:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "9595:9595"
-      - "3000:3000"
-    networks:
-      - deploy-network
+      - 9595:9595
+    volumes:
+      - ./frontend-app:/app/frontend-app
     depends_on:
-      - cataloguer_db
-    volumes:
-      - cataloguer-app:/app
-  cataloguer_db:
-    container_name: db-postgres
-    image: postgres:16.2
+      - database
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: CataloguerDataBasePostgres
+      - DataBaseConnectionString=User ID=postgres;Password=postgres;Host=database;Port=5432;Database=CataloguerDataBasePostgres;Include Error Detail=true;
+      - BackendConnectionString=http://+:9595
+      - BaseRoute=/api/v1/cataloguer
+    networks:
+      - deploy-network
+  database:
+    image: postgres:16.2
     ports:
-      - "5432:5432"
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=CataloguerDataBasePostgres
     networks:
       - deploy-network
     volumes:
-      - postgres-data:/var/lib/postgresql/data
+      - cataloguer-db:/var/lib/postgresql/data
 volumes:
-  postgres-data:
-  cataloguer-app:
+  cataloguer-db:
+  frontend-app:
+networks:
+  deploy-network:
+    driver: bridge
