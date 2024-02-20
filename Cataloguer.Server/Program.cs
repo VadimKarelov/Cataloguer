@@ -14,6 +14,46 @@ public class Program
 {
     private static string _baseRoute = string.Empty;
 
+    /// <summary>
+    /// Рекурсивно перемещает все вложенныые файлы и каталоги.
+    /// </summary>
+    /// <param name="sourceDirectory">Каталог, из которого надо перемещать</param>
+    /// <param name="targetDirectory">Каталог, в который надо перемещать</param>
+    private static void MoveStaticFiles(string sourceDirectory, string targetDirectory)
+    {
+        try
+        {
+            // Если каталог назначения не существует, создаем его
+            if (!Directory.Exists(targetDirectory))
+            {
+                Directory.CreateDirectory(targetDirectory);
+            }
+
+            // Перемещаем все файлы
+            foreach (string file in Directory.GetFiles(sourceDirectory))
+            {
+                string fileName = Path.GetFileName(file);
+                string destFile = Path.Combine(targetDirectory, fileName);
+                File.Move(file, destFile);
+            }
+
+            // Рекурсивно перемещаем все подкаталоги с их файлами и каталогами
+            foreach (string subdirectory in Directory.GetDirectories(sourceDirectory))
+            {
+                string subdirectoryName = Path.GetFileName(subdirectory);
+                string destSubdirectory = Path.Combine(targetDirectory, subdirectoryName);
+                MoveStaticFiles(subdirectory, destSubdirectory);
+            }
+
+            // После перемещения всех файлов и каталогов, удаляем исходный каталог
+            Directory.Delete(sourceDirectory);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("Ошибка при перемещении файлов и каталогов: " + e.Message);
+        }
+    }
+    
     public static void Main(string[] args)
     {
         Log.Logger = new LoggerConfiguration()
@@ -26,6 +66,15 @@ public class Program
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            var currentPath = Directory.GetCurrentDirectory();
+            var parentPath = Directory.GetParent(currentPath)?.FullName;
+            if (parentPath != null)
+            {
+                var sourceDirectory = Path.Combine(parentPath, "frontend-app", "build");
+                var destinationDirectory = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
+                MoveStaticFiles(sourceDirectory, destinationDirectory);
+            }
+            
             builder.Services.AddCors(options =>
             {
                 options.AddDefaultPolicy(builder =>
@@ -45,7 +94,7 @@ public class Program
                 .UseKestrel(options => { options.AllowSynchronousIO = true; });
 
             builder.Host.UseSerilog();
-            
+
             var app = builder.Build();
 
             app.UseDefaultFiles();
