@@ -5,6 +5,10 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <FrontendPath>..\frontend-app\</FrontendPath>
         <FrontendBuildPath>$(FrontendPath)build\</FrontendBuildPath>
+        <BuildStaticPath>static\</BuildStaticPath>
+        <BuildStaticCssPath>$(BuildStaticPath)css\</BuildStaticCssPath>
+        <BuildStaticJsPath>$(BuildStaticPath)js\</BuildStaticJsPath>
+        <BuildStaticMediaPath>$(BuildStaticPath)media\</BuildStaticMediaPath>
         <ProjectStaticFilesPath>wwwroot\</ProjectStaticFilesPath>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     </PropertyGroup>
@@ -22,6 +26,13 @@
         <Folder Include="Logs\" />
     </ItemGroup>
 
+    <ItemGroup>
+        <CopyItems Include="$(FrontendBuildPath)*.*" />
+        <CopyCssItems Include="$(FrontendBuildPath)$(BuildStaticCssPath)*.*" />
+        <CopyJsItems Include="$(FrontendBuildPath)$(BuildStaticJsPath)*.*" />
+        <CopyMediaItems Include="$(FrontendBuildPath)$(BuildStaticMediaPath)*.*" />
+    </ItemGroup>
+    
     <Target Name="CleanFolders" BeforeTargets="Build" Condition="'$(Configuration)' == 'Release'">
         <RemoveDir Directories="$(ProjectStaticFilesPath)" MSBuildRuntime="*" />
         <RemoveDir Directories="$(FrontendBuildPath)" MSBuildRuntime="*" />
@@ -31,5 +42,12 @@
 	<Target Name="BuildFrontend" AfterTargets="CleanFolders" Condition="'$(Configuration)' == 'Release'">
         <Exec ConsoleToMSBuild="true" WorkingDirectory="$(FrontendPath)" Command="npm install" />
         <Exec ConsoleToMSBuild="true" WorkingDirectory="$(FrontendPath)" Command="npm run build" />
+    </Target>
+
+    <Target Name="MoveStaticFiles" AfterTargets="BuildFrontend" Condition="'$(Configuration)' == 'Release'">
+        <Copy SourceFiles="@(CopyItems)" DestinationFolder="$(ProjectStaticFilesPath)"/>
+        <Copy SourceFiles="@(CopyCssItems)" DestinationFolder="$(ProjectStaticFilesPath)$(BuildStaticCssPath)"/>
+        <Copy SourceFiles="@(CopyJsItems)" DestinationFolder="$(ProjectStaticFilesPath)$(BuildStaticJsPath)"/>
+        <Copy SourceFiles="@(CopyMediaItems)" DestinationFolder="$(ProjectStaticFilesPath)$(BuildStaticMediaPath)"/>
     </Target>
 </Project>
