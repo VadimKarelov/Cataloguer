@@ -1,5 +1,15 @@
 version: '3.9'
 services:
+  nginx:
+    image: 'jc21/nginx-proxy-manager:latest'
+    restart: unless-stopped
+    ports:
+      - '80:80'
+      - '81:81'
+      - '443:443'
+    volumes:
+      - ./data:/data
+      - ./letsencrypt:/etc/letsencrypt
   web-app:
     build:
       context: .
@@ -22,7 +32,7 @@ services:
     expose:
       - 5433
     ports:
-      - 5433:5433
+      - 5433:5432
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
@@ -32,6 +42,8 @@ services:
       - deploy-network
     volumes:
       - cataloguer-db:/var/lib/postgresql/data
+    depends_on:
+      - nginx
 volumes:
   cataloguer-db:
   frontend-app:

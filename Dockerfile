@@ -25,16 +25,12 @@ RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
 #        nodejs \
 #    && rm -rf /var/lib/apt/lists/*
 
-#WORKDIR /app/Cataloguer.Database
-#RUN dotnet publish -c Release -o out
-
 WORKDIR /app/Cataloguer.Server
 RUN dotnet publish -c Release -o out
 
 # Образ для запуска asp .net приложения
 FROM mcr.microsoft.com/dotnet/aspnet:7.0 
 WORKDIR /app
-#COPY --from=build /app/Cataloguer.Database/out ./
 COPY --from=build /app/Cataloguer.Server/out ./
 
 # Открытие порта 9595 для asp .net приложения
