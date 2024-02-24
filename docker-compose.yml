@@ -1,0 +1,52 @@
+version: '3.9'
+services:
+  nginx:
+    image: 'jc21/nginx-proxy-manager:latest'
+    restart: unless-stopped
+    ports:
+      - '80:80'
+      - '81:81'
+      - '443:443'
+    volumes:
+      - ./data:/data
+      - ./letsencrypt:/etc/letsencrypt
+  web-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 9595:9595
+    volumes:
+      - ./frontend-app:/app/frontend-app
+    depends_on:
+      - database
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - DataBaseConnectionString=User ID=postgres;Password=postgres;Host=database;Port=5433;Database=CataloguerDataBasePostgres;Include Error Detail=true;
+      - BackendConnectionString=http://+:9595
+      - BaseRoute=/api/v1/cataloguer
+    networks:
+      - deploy-network
+  database:
+    image: postgres:16.2
+    expose:
+      - 5433
+    ports:
+      - 5433:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=CataloguerDataBasePostgres
+      - PGPORT=5433
+    networks:
+      - deploy-network
+    volumes:
+      - cataloguer-db:/var/lib/postgresql/data
+    depends_on:
+      - nginx
+volumes:
+  cataloguer-db:
+  frontend-app:
+networks:
+  deploy-network:
+    driver: bridge

@@ -2,24 +2,35 @@
     <PropertyGroup>
         <TargetFramework>net7.0</TargetFramework>
         <Nullable>enable</Nullable>
-        <ImplicitUsings>enable</ImplicitUsings>        
+        <ImplicitUsings>enable</ImplicitUsings>
         <FrontendPath>..\frontend-app\</FrontendPath>
         <FrontendBuildPath>$(FrontendPath)build\</FrontendBuildPath>
+        <BuildStaticPath>static\</BuildStaticPath>
+        <BuildStaticCssPath>$(BuildStaticPath)css\</BuildStaticCssPath>
+        <BuildStaticJsPath>$(BuildStaticPath)js\</BuildStaticJsPath>
+        <BuildStaticMediaPath>$(BuildStaticPath)media\</BuildStaticMediaPath>
         <ProjectStaticFilesPath>wwwroot\</ProjectStaticFilesPath>
-        <ScriptsPath>Scripts\</ScriptsPath>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     </PropertyGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\Cataloguer.Database\Cataloguer.Database.csproj" />
     </ItemGroup>
-
+    
     <ItemGroup>
         <PackageReference Include="Accord.MachineLearning" Version="3.8.0" />
         <PackageReference Include="serilog.aspnetcore" Version="7.0.0" />
     </ItemGroup>
+    
+    <ItemGroup>
+        <Folder Include="Logs\" />
+    </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Logs\" />
+        <CopyItems Include="$(FrontendBuildPath)*.*" />
+        <CopyCssItems Include="$(FrontendBuildPath)$(BuildStaticCssPath)*.*" />
+        <CopyJsItems Include="$(FrontendBuildPath)$(BuildStaticJsPath)*.*" />
+        <CopyMediaItems Include="$(FrontendBuildPath)$(BuildStaticMediaPath)*.*" />
     </ItemGroup>
     
     <Target Name="CleanFolders" BeforeTargets="Build" Condition="'$(Configuration)' == 'Release'">
@@ -28,13 +39,15 @@
         <MakeDir Directories="$(ProjectStaticFilesPath)" MSBuildRuntime="*" />
     </Target>
 
-	<Target Name="BuildFrontend" BeforeTargets="Build" Condition="'$(Configuration)' == 'Release'">
+	<Target Name="BuildFrontend" AfterTargets="CleanFolders" Condition="'$(Configuration)' == 'Release'">
         <Exec ConsoleToMSBuild="true" WorkingDirectory="$(FrontendPath)" Command="npm install" />
         <Exec ConsoleToMSBuild="true" WorkingDirectory="$(FrontendPath)" Command="npm run build" />
     </Target>
 
-    <Target Name="CopyStaticFiles" AfterTargets="BuildFrontend" Condition="'$(Configuration)' == 'Release'">
-        <Exec Command="$(ScriptsPath)moveStaticFiles.sh" Condition="'$(OS)' != 'Windows_NT'" />
-        <Exec Command="$(ScriptsPath)moveStaticFiles.bat" Condition="'$(OS)' == 'Windows_NT'" />
+    <Target Name="MoveStaticFiles" AfterTargets="BuildFrontend" Condition="'$(Configuration)' == 'Release'">
+        <Copy SourceFiles="@(CopyItems)" DestinationFolder="$(ProjectStaticFilesPath)"/>
+        <Copy SourceFiles="@(CopyCssItems)" DestinationFolder="$(ProjectStaticFilesPath)$(BuildStaticCssPath)"/>
+        <Copy SourceFiles="@(CopyJsItems)" DestinationFolder="$(ProjectStaticFilesPath)$(BuildStaticJsPath)"/>
+        <Copy SourceFiles="@(CopyMediaItems)" DestinationFolder="$(ProjectStaticFilesPath)$(BuildStaticMediaPath)"/>
     </Target>
 </Project>

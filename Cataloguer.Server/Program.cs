@@ -13,7 +13,7 @@ namespace Cataloguer.Server;
 public class Program
 {
     private static string _baseRoute = string.Empty;
-
+    
     public static void Main(string[] args)
     {
         Log.Logger = new LoggerConfiguration()
@@ -25,7 +25,7 @@ public class Program
         try
         {
             var builder = WebApplication.CreateBuilder(args);
-
+            
             builder.Services.AddCors(options =>
             {
                 options.AddDefaultPolicy(builder =>
@@ -36,8 +36,9 @@ public class Program
                         .AllowCredentials();
                 });
             });
-
-            builder.Configuration.AddJsonFile("appsettings.json");
+            
+            var configSettings = builder.Environment.IsDevelopment() ? "appsettings.Development.json" : "appsettings.json";
+            builder.Configuration.AddJsonFile(configSettings);
 
             _baseRoute = builder.Configuration["BaseRoute"];
 
@@ -45,7 +46,7 @@ public class Program
                 .UseKestrel(options => { options.AllowSynchronousIO = true; });
 
             builder.Host.UseSerilog();
-            
+
             var app = builder.Build();
 
             app.UseDefaultFiles();
