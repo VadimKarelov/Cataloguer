@@ -36,8 +36,9 @@ public class Program
                         .AllowCredentials();
                 });
             });
-
-            builder.Configuration.AddJsonFile("appsettings.json");
+            
+            var configSettings = builder.Environment.IsDevelopment() ? "appsettings.Development.json" : "appsettings.json";
+            builder.Configuration.AddJsonFile(configSettings);
 
             _baseRoute = builder.Configuration["BaseRoute"];
 

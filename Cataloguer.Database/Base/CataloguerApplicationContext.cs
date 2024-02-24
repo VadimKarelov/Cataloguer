@@ -126,7 +126,7 @@ internal class CataloguerApplicationContext : DbContext
     private string[] ReadTownsFromFile()
     {
         // при запуске из VS и exe файла разные пути до файлов
-        string[] paths = { @"Resources\goroda.txt", @"..\Cataloguer.Database\Resources\goroda.txt" };
+        string[] paths = { @"Resources\goroda.txt", @"..\Cataloguer.Database\Resources\goroda.txt", @"../Resources/goroda.txt", @"Resources/goroda.txt" };
 
         foreach (var path in paths)
             try
@@ -152,7 +152,7 @@ internal class CataloguerApplicationContext : DbContext
     private string[] ReadGoodsFromFile()
     {
         // при запуске из VS и exe файла разные пути до файлов
-        string[] paths = { @"Resources\goods.txt", @"..\Cataloguer.Database\Resources\goods.txt" };
+        string[] paths = { @"Resources\goods.txt", @"..\Cataloguer.Database\Resources\goods.txt", @"Resources/goods.txt" };
 
         foreach (var path in paths)
             try

@@ -11,19 +11,23 @@ services:
     depends_on:
       - database
     environment:
-      - DataBaseConnectionString=User ID=postgres;Password=postgres;Host=database;Port=5432;Database=CataloguerDataBasePostgres;Include Error Detail=true;
+      - ASPNETCORE_ENVIRONMENT=Development
+      - DataBaseConnectionString=User ID=postgres;Password=postgres;Host=database;Port=5433;Database=CataloguerDataBasePostgres;Include Error Detail=true;
       - BackendConnectionString=http://+:9595
       - BaseRoute=/api/v1/cataloguer
     networks:
       - deploy-network
   database:
     image: postgres:16.2
+    expose:
+      - 5433
     ports:
-      - 5432:5432
+      - 5433:5433
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=CataloguerDataBasePostgres
+      - PGPORT=5433
     networks:
       - deploy-network
     volumes:
