@@ -126,7 +126,7 @@ internal class CataloguerApplicationContext : DbContext
     private string[] ReadTownsFromFile()
     {
         // при запуске из VS и exe файла разные пути до файлов
-        string[] paths = { @"Resources\goroda.txt", @"..\Cataloguer.Database\Resources\goroda.txt" };
+        string[] paths = { @"..\Cataloguer.Database\Resources\goroda.txt", Path.Combine("Resources", "goroda.txt") };
 
         foreach (var path in paths)
             try
@@ -152,7 +152,7 @@ internal class CataloguerApplicationContext : DbContext
     private string[] ReadGoodsFromFile()
     {
         // при запуске из VS и exe файла разные пути до файлов
-        string[] paths = { @"Resources\goods.txt", @"..\Cataloguer.Database\Resources\goods.txt" };
+        string[] paths = { @"..\Cataloguer.Database\Resources\goods.txt", Path.Combine("Resources", "goods.txt") };
 
         foreach (var path in paths)
             try
@@ -183,8 +183,26 @@ internal class CataloguerApplicationContext : DbContext
         var result = new List<SellHistory>();
 
         var availableGoods = Goods.ToArray();
+        if (availableGoods.Any())
+        {
+            Log.Error($"Не удалось сгенерировать историю. Таблица {nameof(Goods)} пустая.");
+            return new List<SellHistory>();
+        }
+        
         var availableTowns = Towns.ToArray();
+        if (availableTowns.Any())
+        {
+            Log.Error($"Не удалось сгенерировать историю. Таблица {nameof(Towns)} пустая.");
+            return new List<SellHistory>();
+        }
+        
         var availableGenders = Genders.ToArray();
+        if (availableGenders.Any())
+        {
+            Log.Error($"Не удалось сгенерировать историю. Таблица {nameof(Genders)} пустая.");
+            return new List<SellHistory>();
+        }
+        
         var today = DateTime.Now.ToOADate();
 
         for (var i = count; i > 0; i--)
